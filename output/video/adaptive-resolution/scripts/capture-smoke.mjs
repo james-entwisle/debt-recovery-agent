@@ -1,0 +1,21 @@
+import {chromium} from 'playwright';
+import {mkdir} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+import assert from 'node:assert/strict';
+
+const checkDir=`checks/${process.env.CHROME_PATH?'native':'matched'}`;
+await mkdir(checkDir,{recursive:true});
+const browser=await chromium.launch({...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
+const context=await browser.newContext({viewport:{width:1600,height:1000},recordVideo:{dir:`${checkDir}/raw`,size:{width:1600,height:1000}}});
+const page=await context.newPage();
+await page.setContent('<style>html,body{margin:0;background:#123456;height:100%}button{position:fixed;bottom:8px;right:8px}</style><button>Footer control</button>');
+await page.getByRole('button',{name:'Footer control'}).click();
+await page.waitForTimeout(1600);
+const video=page.video();
+await context.close();
+await video.saveAs(`${checkDir}/viewport-smoke.webm`);
+await browser.close();
+const rgb=execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-ss','1','-i',`${checkDir}/viewport-smoke.webm`,'-vf','crop=16:16:10:960','-frames:v','1','-f','rawvideo','-pix_fmt','rgb24','pipe:1']);
+assert.ok(rgb.length>0,'Recording must contain the footer-area frame');
+for(const [channel,expected] of [18,52,86].entries()) assert.ok(Math.abs(rgb[channel]-expected)<8,`Bottom recording pixels clipped or padded: ${[...rgb.subarray(0,3)]}`);
+console.log('PASS: full 1600×1000 viewport recorded, including footer controls');
