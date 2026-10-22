@@ -1,0 +1,1427 @@
+InDebted Product Lead Case Study: Master Project Brief & Execution Instructions
+
+0. Your role
+
+You are my principal product-engineering partner for a time-boxed Product Lead take-home assessment for InDebted, a technology-enabled debt collections company.
+
+Help me work as a commercially minded, technically hands-on Product Lead. We need to demonstrate three equally important capabilities:
+
+1. Product judgement: Identifying a meaningful consumer problem, interpreting evidence, selecting the right intervention, and making deliberate trade-offs.
+2. Entrepreneurial judgement: Understanding unit economics, opportunity sizing, investment returns, assumptions, and the evidence required to justify further investment.
+3. Building ability: Designing and implementing a real, working product demonstration, with meaningful business logic, credible technical architecture, and tests.
+
+Consumer safety, compliance and honest interpretation of evidence are non-negotiable.
+
+I want the output to demonstrate product strategy, financial literacy, engineering ability, AI-native development, experimentation and design judgement.
+
+The total take-home timebox is three hours, including reading, development and documentation. We should aim for an unusually strong submission without excessive architecture, unnecessary abstractions or documentation bloat.
+
+This is not an exercise in producing an elaborate PRD or attractive mock-ups. We must produce a small working demonstration and a clear investment decision.
+
+Work autonomously where practical, explain important decisions succinctly, and maintain an accurate record of assumptions, constraints and incomplete work.
+
+Do not simply create a plan and stop. Implement the vertical slice, run it, test it and prepare the submission.
+
+⸻
+
+1. Read the original case materials first
+
+The repository should contain these original files, ideally under case-materials/:
+
+* START_HERE.md
+* 01_candidate_brief.md
+* 02_supporting_pack.md
+* 03_historical_cohorts.csv
+* 04_consumer_scenarios.json
+
+Read all five thoroughly before implementing anything.
+
+These files are the source of truth.
+
+The strategy and calculations below reflect our initial interpretation and brainstorming. Validate them against the original files. If something is inconsistent, privilege the original brief and supporting pack, record the discrepancy and correct our assumptions.
+
+Do not silently invent capabilities, customer research, creditor permissions, payment-plan terms or existing integrations.
+
+Keep the original case materials unchanged.
+
+Everything in the supporting pack is synthetic. Only the background description of Composer represents an actual InDebted product.
+
+What InDebted explicitly asks for
+
+The assignment is to:
+
+* Select one consumer problem and segment.
+* Make a defensible investment recommendation.
+* Estimate consumer and commercial value.
+* Identify the assumptions most likely to invalidate the investment.
+* Compare the recommended approach with a credible alternative.
+* Build a small working demonstration using synthetic data.
+* Show a normal case and at least two meaningful exceptions.
+* Explain the technical implementation and AI autonomy boundaries.
+* Propose a four-week pilot, success measures and investment gates.
+* Explain when to expand, change, pause or stop.
+* Provide run instructions and briefly document AI-assisted development.
+
+The final decision note must be no more than two pages.
+
+The interview is structured around a recommendation, working demonstration, product/commercial discussion, an unexpected constraint and questions.
+
+Make the implementation sufficiently modular that we can modify a rule or demonstrate an alternative behaviour during the interview.
+
+⸻
+
+2. Our initial strategic interpretation
+
+InDebted’s existing product and opportunity
+
+InDebted has an AI capability called Composer.
+
+Composer generates personalised collection emails and SMS using consumer account information, payment history and previous engagement.
+
+A separate model reviews generated content for potential compliance issues.
+
+Composer is already live in Australia, Canada and the UAE, where personalised messages are evaluated against templated alternatives.
+
+However, Composer currently operates within a fixed collections contact schedule.
+
+It determines what a scheduled message might say, but not the broader logic of when the journey should change in response to consumer behaviour.
+
+Composer is not yet authorised for US production use. The US is described as InDebted’s largest market and currently uses templated communications.
+
+The current example schedule is:
+
+Journey day	Channel	Purpose
+0	Email	Account and options
+3	SMS	Reminder
+7	Email	Payment and help options
+14	SMS	Reminder
+21	Email	Options and assistance
+
+The schedule already responds to certain account states, such as pending payments, confirmed plans and account holds.
+
+However, it does not adapt to engagement itself.
+
+A message click, authenticated portal visit or incomplete plan does not change the sequence.
+
+This creates an opportunity to make the collections journey itself adaptive, rather than focusing exclusively on generating better message copy.
+
+Working investment thesis
+
+Our working product concept is:
+
+Adaptive Resolution
+
+A consumer-intent-aware collections journey that responds to engagement events, provides relevant guidance in the portal and dynamically coordinates future communications.
+
+The opportunity is not simply to generate more messages.
+
+It is to decide the most appropriate next consumer interaction based on behaviour, authoritative account state, demonstrated intent and consumer preferences.
+
+The system should sometimes:
+
+* Present a more relevant portal experience.
+* Replace a generic scheduled message with an approved contextual alternative.
+* Defer contact until a permitted time.
+* Route a consumer to appropriate assistance.
+* Suppress contact entirely.
+* Take no additional action.
+
+The long-term vision is an intelligent journey orchestration capability that works alongside Composer and the existing account, contact and portal systems.
+
+The immediate investment is a bounded experiment to determine whether such a capability produces enough additional settled collections to justify further development.
+
+This is our working thesis, not a predetermined conclusion. Challenge it when the evidence warrants doing so.
+
+⸻
+
+3. How we arrived at this direction
+
+Capture this reasoning in a concise docs/discovery.md or equivalent working document.
+
+We considered several opportunities before arriving at Adaptive Resolution.
+
+Option A: Roll out Composer in the US
+
+Opportunity:
+
+* Broad potential reach.
+* Existing technology and messaging infrastructure.
+* Improved contextual relevance of message content.
+
+Limitations:
+
+* No US production approval.
+* No approved US prompt set or evaluation results.
+* No causal evidence of additional collections.
+* Better message wording does not fundamentally address the rigid schedule.
+
+Conclusion: Not our preferred first investment.
+
+Option B: Send reminders after abandoned repayment plans
+
+Opportunity:
+
+* High-intent segment.
+* Clear observable event.
+* Direct supporting interviews.
+* Straightforward to implement.
+
+Limitations:
+
+* Only 2,000 consumers per synthetic monthly intake.
+* Many consumers pay anyway under the current experience.
+* A reminder may not solve the underlying reason a consumer left.
+* A narrow investment has limited commercial upside.
+
+Conclusion: Valuable initial use case, but too narrow as the full investment thesis.
+
+Option C: Improve repayment-plan building
+
+Opportunity:
+
+* Consumer interviews identify payment-date mismatch, interruptions and uncertainty.
+* Could improve consumer outcomes and plan completion.
+* Creates a pathway towards affordability-aware repayment experiences.
+
+Limitations:
+
+* Existing creditor-approved terms cannot be modified in the four-week pilot.
+* A new interface cannot create financial flexibility that the creditor has not authorised.
+* Portal-only improvements do not address later re-engagement and the existing contact schedule.
+
+Conclusion: A valuable component, but not a complete response to the problem described in the brief.
+
+Option D: Activate consumers with low or no engagement
+
+Opportunity:
+
+* Much larger population.
+* Small changes in paid conversion could create considerable incremental contribution.
+
+Limitations:
+
+* Weak qualitative evidence explaining their behaviour.
+* Cannot assume non-engagement reflects a communication problem.
+* May require different interventions or additional discovery.
+
+Conclusion: Attractive future expansion, but more uncertain as the first test.
+
+Recommended direction: Adaptive Resolution
+
+Combine the strongest elements of the options above:
+
+1. Capture consumer intent through a small, adaptive portal experience.
+2. Respond to observable engagement events.
+3. Coordinate contextual follow-ups with the existing schedule.
+4. Use approved repayment options and safe assistance routes.
+5. Validate the incremental commercial outcome.
+6. Expand to additional journey states only when justified.
+
+This offers more meaningful product capability than an abandoned-plan reminder, without requiring a full collections-platform rebuild.
+
+Keep this alternatives assessment visible but concise.
+
+The final decision note should demonstrate that we considered alternatives, selected an investment and understood its opportunity cost.
+
+⸻
+
+4. Consumer problem and target segment
+
+Consumer problem
+
+Consumers can demonstrate interest in resolving their debt without being ready or able to make an immediate commitment.
+
+The current journey does not sufficiently respond to their behaviour or help distinguish between different barriers to resolution.
+
+A generic scheduled reminder may arrive despite the consumer having already visited the portal, reviewed repayment options or requested help.
+
+A consumer who starts but does not confirm a repayment plan may need:
+
+* An arrangement aligned with their pay cycle.
+* Clarification of the balance or creditor.
+* Time to review household expenses.
+* Assistance finding an appropriate option.
+* An opportunity to return after an interruption.
+
+The problem is not necessarily a lack of willingness to pay.
+
+Our hypothesis is that timely, relevant and consumer-led next steps will help more consumers progress to sustainable repayment.
+
+Target segment
+
+Target US consumers with an observed engagement signal but no active repayment plan or pending payment at the initial decision point.
+
+The initial opportunity comprises three mutually exclusive historical cohorts:
+
+Cohort	Consumers per 30-day intake	Paid within 30 days	Settled cash within 30 days
+Message click only	10,000	18%	$306,000
+Portal visit, no plan started	6,000	30%	$324,000
+Plan started, incomplete	2,000	50%	$190,000
+Combined	18,000	25.6%	$820,000
+
+All figures are synthetic USD amounts.
+
+The cohorts are mutually exclusive at t0, not sequential steps in a measured funnel.
+
+Do not depict their population sizes or conversion rates as if they were observed transitions between stages.
+
+A consumer’s cohort reflects the deepest engagement signal in the 24 hours before t0.
+
+All included consumers have no active plan or pending payment at t0, but their state may change later.
+
+Why these cohorts?
+
+They provide an observable basis for contextual intervention.
+
+The deeper the engagement, the more we may know about the consumer’s next useful action.
+
+However, greater engagement is correlated with greater payment conversion. We do not know whether engagement causes payment.
+
+Importantly, the eight interviews only cover consumers who left an incomplete plan.
+
+Do not assume their reasons generalise to the entire 18,000-consumer population.
+
+Pilot population versus expansion opportunity
+
+Distinguish:
+
+Addressable opportunity: The 18,000 engaged consumers in the three historical cohorts.
+
+Initial implementation: A small set of event-driven journeys, particularly authenticated portal visits and incomplete plan starts, with message clicks used as a weaker engagement signal.
+
+Effective reach: The subset of consumers who actually encounter the intervention and remain eligible.
+
+Do not use the entire 18,000-person opportunity to justify the investment without modelling intervention reach and its uncertainty.
+
+A click alone is not evidence that someone successfully authenticated or reached the portal.
+
+⸻
+
+5. Evidence from consumer research
+
+The supporting pack includes eight interviews with consumers who started but did not complete a repayment plan.
+
+Findings:
+
+Observation	Interviews
+Available payment dates didn’t align with payday	3/8
+Consumer was interrupted and expected to return	2/8
+Creditor or balance was unclear	2/8
+Concern about committing before reviewing expenses	1/8
+
+The operational observations also include 50 support conversations after portal visits:
+
+* 12 about plan dates.
+* 9 about account or balance questions.
+* 7 about resuming an unfinished plan.
+* 22 about other topics.
+
+These observations suggest that payment-date suitability, information clarity and interrupted journeys are meaningful problems.
+
+They do not establish population-level prevalence or causal effects.
+
+Crucial product nuance
+
+plan_started does not mean a repayment plan was confirmed.
+
+Consumers have entered the plan flow but have not explicitly committed to an arrangement.
+
+We do not know which stage they reached or why they left.
+
+Existing plans cannot be saved and resumed.
+
+The existing event stream records that a plan flow started, but not the reason for non-completion.
+
+Consequently:
+
+* Do not invent consumer motivations.
+* Treat an incomplete plan as a behavioural signal, not proof of willingness or ability to pay.
+* Collect explicit preferences where useful.
+* Distinguish stated intent from inferred intent.
+* Do not claim the initial intervention can resume saved plan progress when the underlying capability does not exist.
+
+Our system should improve both relevance and the information available for future product decisions.
+
+⸻
+
+6. Product hypothesis and commercial hypothesis
+
+Product hypothesis
+
+For engaged US consumers without an active arrangement, an adaptive journey that captures consumer needs, provides a relevant portal experience and adjusts subsequent communications will increase useful consumer actions and ultimately settled payments compared with the existing fixed journey.
+
+Mechanisms to test:
+
+1. More relevant portal interactions help consumers understand their options and identify the next useful action.
+2. Capturing explicit preferences reduces ambiguity about why consumers do not progress.
+3. Contextual follow-ups can make the next scheduled communication more useful.
+4. Better orchestration can avoid unnecessary or inappropriate contacts.
+5. Connecting the interaction across multiple touchpoints improves the likelihood of resolution.
+
+These mechanisms are hypotheses, not established facts.
+
+The initial randomised experiment tests the combined journey, rather than isolating the independent effect of the portal and the messaging changes.
+
+Commercial hypothesis
+
+A relatively small absolute improvement in payment conversion across a sufficiently large engaged population could generate meaningful incremental settled cash and retained collections contribution.
+
+We need to establish whether that contribution justifies the initial investment and subsequent expansion.
+
+The primary commercial outcome is incremental settled cash, not message responses, clicks, portal visits or plan confirmations.
+
+InDebted earns its commission when payments settle.
+
+⸻
+
+7. Commercial modelling requirements
+
+Implement a small, transparent financial model.
+
+This can be a reusable calculation in the application, a lightweight spreadsheet or a clearly documented analysis script.
+
+Ideally, expose the assumptions through editable controls in the internal demo.
+
+Supplied economics
+
+All figures in USD.
+
+* Retained collections fee: 15% of settled cash.
+* Variable payment cost: 2% of settled cash.
+* Email cost: $0.003 per send.
+* SMS cost: $0.035 per send.
+* Composer generation/review attempt: $0.012.
+* Incremental support conversation: $6.
+* Engineering capacity: 40 engineer-days at $1,000 per day.
+* Shared design/compliance allocation: $10,000.
+* Maximum four-week allocation: $50,000.
+
+The baseline marginal contribution from incremental collections before additional communication and support costs is therefore 13%.
+
+For example:
+
+$100 incremental settled cash
+→ $15 retained revenue
+→ $2 variable payment cost
+→ $13 contribution before incremental messaging and support.
+
+Do not confuse:
+
+* Total recovered cash.
+* InDebted retained revenue.
+* Marginal contribution.
+* Net investment return.
+
+Do not count the full collected debt as company revenue.
+
+Historical baseline
+
+All five cohorts combined:
+
+* 100,000 consumers per 30-day intake.
+* $1.78m settled cash.
+* $231,400 contribution at 13%, before communication and support costs.
+
+The 18,000-person engaged opportunity:
+
+* $820,000 settled cash per 30-day intake.
+* Approximately 25.6% 30-day paid conversion.
+* Approximately $106,600 contribution at 13%, before other variable costs.
+
+These are baseline economics, not incremental investment value.
+
+Conversion lift model
+
+Use the historical average cash collected per paying consumer as an illustrative proxy:
+
+* Clicked-only cohort: $170 per paying consumer.
+* Portal-only cohort: $180 per paying consumer.
+* Incomplete-plan cohort: $190 per paying consumer.
+
+At full reach, each absolute one-percentage-point improvement across all three cohorts represents approximately $31,600 in additional settled cash per 30-day intake.
+
+A three-percentage-point improvement therefore implies:
+
+* $94,800 additional monthly settled cash.
+* $14,220 additional retained revenue.
+* $1,896 payment costs.
+* $12,324 monthly contribution before incremental messaging/support.
+* $147,888 annualised contribution before incremental messaging/support.
+
+This is a scenario, not a forecast.
+
+A ten-point improvement would approach $493k in annual contribution before other variable costs, but this is an optimistic upside case rather than a defensible base prediction.
+
+Reach-adjusted modelling
+
+Build an interactive model with these assumptions:
+
+* Monthly population.
+* Cohort mix.
+* Eligible and effectively reached percentage.
+* Absolute paid-conversion improvement among reached consumers.
+* Average settled cash per additional payer.
+* Incremental communication costs.
+* Additional support conversation rate.
+* Investment cost.
+* Persistence of lift across successive monthly cohorts.
+
+Suggested scenarios:
+
+* Conservative: +1 percentage point.
+* Base: +3 percentage points.
+* Upside: +5 percentage points.
+* Stretch: +10 percentage points, clearly labelled speculative.
+
+Example base assumptions:
+
+* 60% effective reach.
+* +3 percentage-point paid-conversion improvement among reached consumers.
+* 2% incremental support conversation rate among reached consumers.
+* $50,000 one-off investment.
+
+These imply approximately $73k annual incremental contribution after additional support cost, but before other possible incremental costs.
+
+Show simple payback.
+
+Allow assumptions to be changed without modifying formulas.
+
+Do not assume a contextual message improves conversion unless the pilot establishes it.
+
+Important commercial nuance
+
+A newly converted payer might settle less than the historical average payer.
+
+The historical average is a modelling proxy, not an observed incremental payment amount.
+
+Plan confirmations have no direct retained collections fee until instalments settle.
+
+Longer-term plan adherence and 60/90-day cash outcomes are unknown.
+
+Distinguish acceleration of payments from genuinely incremental payments.
+
+Investment decision
+
+Recommend a four-week pilot with a maximum $50,000 allocation, but recognise that a smaller initial build may be justified.
+
+A useful investment decision should evaluate:
+
+* Expected incremental annual contribution.
+* Simple payback.
+* Safety and consumer outcomes.
+* Technical and compliance complexity.
+* Opportunity cost.
+* Whether the initial effect can credibly persist or scale.
+* Whether additional evidence is required before expansion.
+
+Do not make the model artificially optimistic to justify the decision.
+
+⸻
+
+8. The actual product we’re building
+
+Build a working end-to-end demonstration of Adaptive Resolution.
+
+The demonstration should contain two connected experiences:
+
+1. An adaptive consumer portal.
+2. An internal contextual journey orchestration simulator.
+
+Both should operate from the same underlying consumer state and decision rules.
+
+The goal is to demonstrate product value and technical substance, not merely design aesthetics.
+
+A. Adaptive consumer portal
+
+Use Next.js and HeroUI, with a clean, restrained financial-services design.
+
+The portal represents an authenticated consumer experience.
+
+Show an illustrative creditor, account balance and available actions using synthetic account data.
+
+Do not bypass or simulate insecure authentication as if it were production-ready.
+
+The consumer should encounter a clear prompt such as:
+
+“Let’s find your next step.”
+
+Depending on their context, offer appropriate choices:
+
+* Make a one-off payment.
+* Explore repayment options.
+* Find an arrangement that fits payday.
+* Understand the creditor or balance.
+* Request help.
+* Review options later without making a commitment.
+
+The UI should be adaptive, but not a generic chatbot.
+
+Payment preference interaction
+
+If a consumer wants a suitable repayment arrangement, collect optional preferences such as:
+
+* Next payday.
+* Payment frequency: weekly, fortnightly or monthly.
+* Preferred instalment amount or affordability concern.
+
+Use these inputs to match against existing creditor-approved repayment plans.
+
+Do not fabricate new approved terms.
+
+Where the supplied scenario data lacks plan options, create explicitly labelled synthetic fixtures and document them separately from supplied data.
+
+Implement a transparent matching function that can explain why options match or do not match.
+
+If no approved option fits:
+
+* Say so clearly.
+* Do not invent a new arrangement.
+* Offer to submit a structured assistance request.
+* Do not promise immediate human support.
+
+A consumer must explicitly confirm an approved plan before it becomes active.
+
+For the prototype, plan confirmation and payments may be simulated, but the behaviour must be clear.
+
+Consumer intent
+
+Record structured intent such as:
+
+* explore_payment
+* explore_plan
+* payday_preference
+* balance_question
+* affordability_concern
+* request_help
+* review_later
+
+These should be explicitly selected by the consumer rather than inferred from arbitrary engagement signals.
+
+Keep intent data use and retention considerations visible in the documentation.
+
+Contextual arrival
+
+If a consumer returns to the portal following a relevant event or follow-up, display an appropriate next step rather than assuming every consumer wants to pay immediately.
+
+This can be a small contextual landing interaction after authentication.
+
+Do not claim to resume a previously saved incomplete plan unless we have implemented a simulated save/resume capability and clearly labelled it as future functionality.
+
+B. Contextual journey orchestration
+
+The second view should demonstrate the underlying decision-making system.
+
+It must show:
+
+* Consumer identity and account state.
+* Recent engagement events.
+* Existing scheduled communications.
+* Recorded consumer intent, where available.
+* Contact permissions.
+* Applicable policy constraints.
+* The decision taken.
+* The reason for that decision.
+* Any proposed scheduled action.
+* What changes compared with the original fixed schedule.
+
+Use a timeline or decision replay interface.
+
+Behavioural trigger families
+
+Support these event types, with different confidence levels:
+
+1. Message click
+
+The consumer has clicked a link but may not have authenticated or entered the portal.
+
+This is a relatively weak signal.
+
+The system may consider a contextual replacement for a later eligible scheduled message, but should not invent a deeper consumer motivation.
+
+2. Authenticated portal visit
+
+The consumer reached the account portal but did not progress to an active plan or pending payment.
+
+The system can determine whether subsequent contact should be adapted or whether a portal interaction can provide a useful next step.
+
+A visit alone is not consent to additional messages.
+
+3. Plan started but not confirmed
+
+The consumer entered the plan-building flow but has not committed to an arrangement.
+
+After a defined waiting interval, the system can evaluate whether a contextual follow-up would be useful.
+
+It must not automatically assume they want to proceed.
+
+4. Explicit consumer preference
+
+The consumer indicates a specific need, such as payday alignment, balance clarification or assistance.
+
+This can influence the portal experience and appropriately approved follow-up content.
+
+It does not override creditor terms or communication permissions.
+
+5. Account or preference change
+
+A payment is initiated, a plan becomes active, a consumer opts out, or an account hold appears.
+
+The system re-evaluates its proposed next action and suppresses or changes behaviour when required.
+
+Candidate decisions
+
+Design an explicit set of outcomes:
+
+* ADAPT_PORTAL
+* REPLACE_CONTACT
+* RESCHEDULE
+* DEFER
+* SUPPRESS
+* NO_ACTION
+* ROUTE_TO_SUPPORT
+
+Not every event should result in a new communication.
+
+For the initial pilot, prefer replacing or coordinating an existing scheduled contact instead of adding more contacts.
+
+Demonstrate how the original schedule differs from the proposed journey.
+
+A user should be able to understand:
+
+* What event was observed?
+* What did the system know?
+* What did it decide?
+* Why?
+* What would the consumer experience?
+* When would that happen?
+* What would happen if their circumstances changed?
+
+⸻
+
+9. Architecture and technology
+
+Preferred stack:
+
+* Elixir for core decision logic.
+* Ash Framework for domain modelling and business operations.
+* Phoenix for a lightweight backend/API.
+* Next.js for the web frontend.
+* HeroUI for clean interface components where practical.
+* TypeScript for frontend types and interactions.
+
+A monorepo structure is appropriate.
+
+Suggested layout:
+
+/
+├── case-materials/
+│   ├── START_HERE.md
+│   ├── 01_candidate_brief.md
+│   ├── 02_supporting_pack.md
+│   ├── 03_historical_cohorts.csv
+│   └── 04_consumer_scenarios.json
+│
+├── apps/
+│   ├── api/                   # Phoenix, Ash, Elixir
+│   └── web/                   # Next.js, TypeScript, HeroUI
+│
+├── docs/
+│   ├── discovery.md
+│   ├── assumptions.md
+│   ├── architecture.md
+│   └── build-log.md
+│
+├── DECISION.md                # Final two-page submission
+└── README.md                  # Demo and run instructions
+
+Adjust the structure where it reduces setup time.
+
+Do not introduce Postgres, Redis, a message queue or other infrastructure merely for architectural completeness.
+
+In-memory adapters, fixtures or a simple persistent store are fine for the three-hour demonstration.
+
+If the preferred Elixir/Ash toolchain is not available, identify the issue early and use the simplest workable fallback. Do not sacrifice the working demonstration to dependency setup.
+
+Core decision engine
+
+Implement a central, testable function or service conceptually equivalent to:
+
+evaluate_next_action(
+  account_state,
+  engagement_event,
+  consumer_intent,
+  contact_state,
+  evaluation_time
+)
+
+The result should be structured and inspectable.
+
+Suggested output:
+
+decision
+reason_codes
+consumer_context
+eligibility_result
+template_id
+proposed_send_time
+existing_contact_action
+audit_metadata
+
+The output must distinguish a proposal from an action actually executed.
+
+Build a pure or mostly pure policy evaluation layer so it can be tested independently from the UI.
+
+Domain model
+
+Potential Ash resources or equivalent lightweight structures:
+
+* ConsumerAccount
+* EngagementEvent
+* ConsumerIntent
+* ApprovedPlanOption
+* JourneyDecision
+* ContactAttempt
+* ExperimentAssignment
+
+Only implement the resources genuinely needed for the demonstration.
+
+Avoid spending time building a fully generic workflow platform.
+
+Integration boundaries
+
+Model the supplied system capabilities using local adapters:
+
+* Account service.
+* Event stream.
+* Contact service.
+* Portal.
+* Composer sandbox.
+* Experiment assignment and analytics.
+
+Use real interfaces and test doubles where that improves design clarity.
+
+There is no need to connect to actual messaging, payment or AI providers.
+
+⸻
+
+10. Safety and compliance requirements
+
+The pilot rules in the supporting pack are mandatory.
+
+Implement the relevant rules as deterministic safeguards, not as suggestions from a language model.
+
+For outbound pilot messages:
+
+* Require pilot_scope_allowed=true.
+* Require language=en.
+* Respect channel-specific permissions.
+* Suppress contact if the balance is zero, payment is pending, a plan is active, or the account has a hold.
+* Treat unknown required eligibility values as ineligible for outreach.
+* Respect verified timezone and local contact windows.
+* Send pilot reminders only Monday to Friday, 9 am inclusive to 6 pm exclusive, unless a narrower permitted window applies.
+* Enforce one non-transactional outbound attempt per rolling 24 hours.
+* Enforce three non-transactional outbound attempts per rolling seven days.
+* Count attempts across all channels.
+* Include boundary-time attempts according to the supplied rules.
+* Count provider-handoff attempts even if delivery fails.
+* Coordinate triggered and scheduled contacts to avoid double-sending.
+* Re-read authoritative state before sending.
+* Handle duplicate, delayed and out-of-order events.
+* Log decisions, reason codes, template versions, inputs and outcomes.
+* Provide a simulated stop control for the pilot.
+
+Do not assume an open, click or portal visit grants communication consent.
+
+Use authoritative account information for balances and available terms.
+
+No model may:
+
+* Determine legal eligibility.
+* Invent or change repayment terms.
+* Create an agreement without explicit consumer confirmation.
+* Authorise a debit.
+* Invent consequences, deadlines, discounts or promises.
+* Override deterministic safety rules.
+
+Keep the fixed, versioned disclosure and opt-out component in outbound message previews, identified as a placeholder.
+
+Do not invent legal disclosure language.
+
+A human compliance reviewer must approve material journey changes and outbound templates before any real pilot.
+
+For held, disputed, hardship or otherwise restricted accounts, make the safe outcome visible without inventing payment pressure.
+
+Compliance is part of the product behaviour, not merely a paragraph in the decision note.
+
+⸻
+
+11. Composer and AI behaviour
+
+Composer is relevant to the strategic narrative, but a US production rollout is not required or authorised.
+
+For the initial implementation:
+
+* Use approved template selection.
+* Optionally demonstrate mock Composer drafting in a clearly labelled sandbox.
+* Show the distinction between deciding the next action and composing its content.
+* Keep eligibility and permissions deterministic.
+* Never treat model-based review as legal approval.
+
+Our conceptual architecture has two independent responsibilities:
+
+Journey intelligence: Whether to act, what action to take and when.
+
+Content intelligence: What approved content to present after an action has been determined.
+
+If useful, show a future interface through which Composer could draft an approved contextual message.
+
+Do not spend the majority of the build implementing a language-model integration.
+
+Evaluations
+
+Create two kinds of evaluations.
+
+Deterministic safety and correctness evaluations
+
+Do decisions comply with the supplied policy and current state?
+
+Examples:
+
+* Opt-out suppresses a queued send.
+* Pending payment suppresses a queued send.
+* Unknown timezone prevents pilot outreach.
+* Hardship hold prevents outreach.
+* Duplicate events do not create duplicate actions.
+* Cross-channel contact limits are respected.
+* A plan is never created without explicit confirmation.
+
+Message and product-quality evaluations
+
+If AI-generated content is demonstrated in the sandbox:
+
+* Is the content grounded in verified account information?
+* Does it avoid invented repayment terms?
+* Does it preserve autonomy?
+* Does it avoid inappropriate pressure?
+* Does it send consumers towards the correct approved next step?
+
+These evaluations are not the commercial outcome.
+
+The commercial outcome is measured through the randomised pilot.
+
+⸻
+
+12. Working demo scenarios
+
+Use the supplied 04_consumer_scenarios.json as the source for initial scenario replay.
+
+Do not treat these 12 examples as a representative sample of the historical population.
+
+Use at least three in the demonstration.
+
+Primary case: S04
+
+Consumer starts a repayment plan but does not confirm it.
+
+Demonstrate:
+
+1. The plan_started event is received.
+2. The system recognises the incomplete plan.
+3. The system checks authoritative account state.
+4. It evaluates the existing queued contact.
+5. It proposes a contextual replacement at an eligible time.
+6. It shows the consumer-facing approved message and portal destination.
+7. It records the decision and reason codes.
+
+The initial output is a proposal, not necessarily an immediate send.
+
+Exception 1: S05
+
+The consumer opts out after the initial event.
+
+The opt-out takes effect in the authoritative account service before its event notification arrives.
+
+Demonstrate that a send-time recheck observes the changed permissions and suppresses outreach.
+
+Exception 2: S06
+
+The consumer initiates a payment after the initial engagement event.
+
+The authoritative account service records the pending payment before the event notification arrives.
+
+Demonstrate that the system suppresses outreach rather than relying on a stale event snapshot.
+
+Additional regression scenarios
+
+Where time allows, test:
+
+* S07: Rolling contact limits.
+* S08: Unknown timezone.
+* S09: Out-of-scope consumer.
+* S10: Hardship review.
+* S11: Duplicate event.
+* S12: Active plan and delayed notification.
+
+Add synthetic portal/plan-matching fixtures where required, clearly identifying them as invented examples.
+
+The demo should allow changing a small number of variables and immediately re-evaluating the decision.
+
+Avoid a UI that simply displays hard-coded results selected by scenario ID.
+
+⸻
+
+13. User experience and visual design
+
+The demonstration should look like a credible financial-services product, not a generic AI dashboard.
+
+Design principles:
+
+* Clean and restrained.
+* Minimal unnecessary decoration.
+* Clear hierarchy.
+* Short, direct copy.
+* Consumer autonomy.
+* Transparent decisions.
+* Visible eligibility and safety outcomes.
+* Progressive disclosure where complexity is necessary.
+
+Use HeroUI if available without major setup cost.
+
+Suggested application views:
+
+Consumer portal
+
+A mobile-friendly, adaptive interaction with contextual options, optional payday preferences, approved-plan matching and assistance routes.
+
+Journey simulator
+
+An internal interface showing account state, engagement events, scheduled contacts, proposed decisions, policy checks and rendered communication previews.
+
+Commercial model
+
+A compact internal view or panel showing the baseline economics, lift assumptions, incremental contribution and payback.
+
+The application does not need many pages or complicated navigation.
+
+The three views can be routes or simple sections of the same application.
+
+Prefer working behaviour and thoughtful detail over visual spectacle.
+
+⸻
+
+14. Four-week pilot
+
+Design a limited experiment comparing the new adaptive journey with the existing fixed experience.
+
+Experimental design
+
+Randomise eligible consumers at the appropriate pre-treatment decision point.
+
+Control
+
+* Existing portal experience.
+* Existing fixed communication schedule.
+* Existing approved repayment options.
+
+Treatment
+
+* Adaptive portal next-step experience.
+* Contextual journey orchestration.
+* Approved contextual message templates.
+* Same underlying creditor-approved terms.
+
+Assign experiments consistently per consumer.
+
+Do not reassign consumers based on behaviours produced by the intervention.
+
+Track assignment, exposure, eligibility decisions and outcomes separately.
+
+The initial experiment measures the combined treatment. It cannot independently identify the portal effect versus the messaging effect.
+
+Primary outcome
+
+Incremental 30-day settled cash per randomised consumer.
+
+Translate measured incremental cash into retained contribution after marginal costs.
+
+Leading indicators
+
+* Seven-day paid conversion.
+* Thirty-day paid conversion.
+* Plan confirmation.
+* Useful portal actions.
+* Explicit consumer intent captured.
+* Requests for assistance.
+* Time to first settled payment.
+
+Distinguish an encouraging early signal from realised company value.
+
+Consumer guardrails
+
+* Complaints.
+* Opt-outs.
+* Additional support demand.
+* Incorrect or prohibited communications.
+* Unauthorised plan changes.
+* Consumer confusion or inappropriate payment pressure.
+* Signs of unsustainable repayment outcomes.
+
+Where observable, examine later plan adherence and 60/90-day collections.
+
+Timeline
+
+Week 1: Confirm scope, decision policy, data contracts, approved message content and measurement approach.
+
+Week 2: Implement event processing, source-state checks, contact coordination and decision logging.
+
+Week 3: Implement adaptive portal interactions, experiment assignment and end-to-end integration.
+
+Week 4: Test, review compliance, launch limited exposure and establish monitoring.
+
+The four-week period is the launch horizon, not necessarily the point at which all 30-day outcomes are available.
+
+Investment gates
+
+Propose practical criteria to:
+
+* Expand.
+* Iterate.
+* Pause.
+* Stop.
+
+Suggested investment hurdle: credible incremental contribution with a plausible payback within 12 months at validated scale, subject to consumer safety and statistical uncertainty.
+
+Treat this as a proposed decision threshold, not a rule supplied by InDebted.
+
+Consider whether sample size and payment variance allow a definitive four-week inference.
+
+If the study is underpowered, explain what evidence it can still provide and when a longer observation period is justified.
+
+Stop for material safety failures regardless of commercial performance.
+
+Biggest assumption
+
+The largest uncertainty is whether improving contextual relevance actually addresses why consumers fail to progress.
+
+Consumers may instead be constrained by affordability, unsuitable creditor-approved plans or unresolved account disputes.
+
+The pilot should gather evidence about those obstacles rather than assuming better communications solve them.
+
+⸻
+
+15. Product roadmap beyond the pilot
+
+Include a brief future direction to show strategic thinking, without confusing it with the investment being requested.
+
+Phase 1: Adaptive Resolution pilot
+
+* Event-aware orchestration.
+* Small adaptive portal.
+* Approved templates.
+* Current creditor-approved options.
+* Randomised experiment.
+
+Phase 2: More complete consumer journeys
+
+* Additional contextual triggers.
+* More sophisticated intent capture.
+* Secure partial-plan persistence and resumption.
+* Better assistance routing.
+* Expanded journey personalisation.
+* Creditor-specific flexibility where separately agreed.
+
+Phase 3: Affordability-aware repayment
+
+Potential future capabilities:
+
+* Consumer-declared payday alignment.
+* More flexible creditor-approved payment dates and frequencies.
+* Better plan sustainability measurement.
+* Optional banking-data connectivity to assist with affordability.
+* Separate, explicitly authorised payment scheduling.
+
+These require additional product validation, creditor agreements, data/privacy reviews and payment authorisations.
+
+Do not frame them as capabilities included in the four-week pilot.
+
+The strategic principle is to progressively learn what prevents sustainable repayment, rather than simply optimise message response rates.
+
+⸻
+
+16. Required repository artefacts
+
+Create these artefacts, keeping them concise and useful.
+
+README.md
+
+A reviewer-friendly entry point containing:
+
+* One-paragraph investment thesis.
+* What the application demonstrates.
+* Architecture summary.
+* Local run instructions.
+* Test instructions.
+* Example scenarios.
+* What is real versus simulated.
+* Known limitations.
+* How AI tools contributed.
+
+DECISION.md
+
+The final submission note, strictly no more than two pages when exported using normal readable formatting.
+
+Suggested structure:
+
+Page 1: The investment
+
+1. Executive recommendation.
+2. Consumer problem and target segment.
+3. Supporting evidence and biggest uncertainty.
+4. Alternatives considered.
+5. Commercial opportunity and sensitivity.
+
+Page 2: The execution
+
+1. MVP behaviour and deliberate exclusions.
+2. Architecture and AI autonomy boundaries.
+3. Four-week pilot.
+4. Measurement and safety guardrails.
+5. Expand/change/stop criteria.
+6. Important unresolved dependencies.
+
+This is a decision note, not a full technical specification.
+
+docs/discovery.md
+
+Capture the brainstorming and evaluation that led to the chosen direction.
+
+Include discarded options and reasons for rejecting them.
+
+Preserve the distinction between evidence, assumptions and decisions.
+
+docs/assumptions.md
+
+A compact assumption register.
+
+For each material assumption, include:
+
+* Assumption.
+* Evidence available.
+* Impact if wrong.
+* How we will validate it.
+
+docs/architecture.md
+
+A small diagram and technical explanation.
+
+Show the relationship between event ingestion, authoritative account state, decision evaluation, contact scheduling and portal experience.
+
+docs/build-log.md
+
+Briefly record:
+
+* Important implementation decisions.
+* AI tools used and their contributions.
+* Tests performed.
+* Simplifications.
+* What remains incomplete.
+* Time spent, where practical.
+
+Do not create unnecessary documentation beyond what materially supports the submission.
+
+⸻
+
+17. Build and execution instructions
+
+We need to start working immediately.
+
+Proceed in the following order.
+
+Step 1: Inspect and validate
+
+Read the source files.
+
+Inspect the repository environment, dependencies and available runtimes.
+
+Confirm the key economics and relevant pilot rules.
+
+Identify only genuinely blocking questions.
+
+Do not spend excessive time writing a strategy essay.
+
+Step 2: Establish the project
+
+Create the monorepo structure.
+
+Initialise the frontend and backend.
+
+Add the supplied scenarios as fixtures.
+
+Write a concise initial README.
+
+Step 3: Implement the domain logic
+
+Start with the decision engine rather than visual components.
+
+Implement:
+
+* Event handling.
+* Eligibility checks.
+* Contact-budget rules.
+* Decision outcomes.
+* Contact coordination.
+* Audit output.
+* Replay of supplied scenarios.
+
+Use a modular structure suitable for changing the rules in the interview.
+
+Step 4: Implement the consumer experience
+
+Build one complete adaptive portal journey, including:
+
+* Stated consumer intent.
+* Payday/frequency preferences.
+* Matching against approved synthetic plan options.
+* Clear no-match behaviour.
+* Assistance routes.
+* Explicit confirmation boundaries.
+
+Step 5: Implement the journey simulator
+
+Build a scenario-driven dashboard showing:
+
+* Existing scheduled communications.
+* Incoming consumer events.
+* Decision evaluation.
+* Proposed adaptations.
+* Contact suppression and deferral.
+* The resulting consumer-facing message.
+* Audit and reason codes.
+
+Support the primary case and two required exceptions.
+
+Step 6: Implement the commercial model
+
+Build a small, transparent sensitivity calculator.
+
+Verify its arithmetic.
+
+Separate baseline cash, additional settled cash, retained revenue, variable costs, incremental contribution and investment payback.
+
+Step 7: Test
+
+Run the application and test suite.
+
+Address material failures.
+
+Make sure the normal and exception scenarios demonstrate actual underlying logic.
+
+Step 8: Prepare the submission
+
+Finalise the two-page decision note.
+
+Check run instructions.
+
+Document simulated behaviour and unresolved work.
+
+Ensure the commercial recommendation matches the working product.
+
+⸻
+
+18. Time management
+
+We have approximately three hours for the entire exercise, including reading.
+
+Suggested allocation:
+
+Activity	Time
+Read/validate materials, lock thesis	20 min
+Scaffold and implement decision engine	55 min
+Build adaptive portal and simulator UI	45 min
+Implement commercial model and scenario tests	30 min
+Finalise decision note, README and review	30 min
+Total	180 min
+
+These are guidelines, not strict phase gates.
+
+If we fall behind, prioritise:
+
+1. A working decision engine.
+2. One coherent consumer interaction.
+3. A normal case plus two meaningful exceptions.
+4. Accurate commercial reasoning.
+5. A credible two-page recommendation.
+6. Reliable run instructions.
+
+Do not sacrifice functional completeness for extensive visual polish.
+
+⸻
+
+19. Definition of done
+
+The submission is ready when:
+
+* [ ]	The recommendation is clearly framed as an investment decision.
+* [ ]	The consumer problem and target are explicit.
+* [ ]	Historical cohorts are analysed correctly.
+* [ ]	Consumer interview evidence is represented accurately.
+* [ ]	Assumptions and causal uncertainties are visible.
+* [ ]	At least one credible alternative is evaluated.
+* [ ]	The commercial model is reproducible and reach-adjusted.
+* [ ]	The frontend has a working adaptive consumer interaction.
+* [ ]	The backend has a real event-aware decision function.
+* [ ]	The decision system coordinates with the existing schedule.
+* [ ]	The primary scenario and two exceptions work.
+* [ ]	Compliance constraints are enforced deterministically.
+* [ ]	AI autonomy boundaries are explicit.
+* [ ]	A four-week pilot and experiment are documented.
+* [ ]	Commercial and consumer outcomes have measurable success criteria.
+* [ ]	Expand/change/stop gates are defined.
+* [ ]	The decision note is no longer than two pages.
+* [ ]	Run and test instructions are accurate.
+* [ ]	Simulations, limitations and AI contributions are documented.
+* [ ]	The code is understandable and sufficiently modular to modify live.
+
+⸻
+
+20. How to work with me
+
+I want an opinionated, technically competent product-building partner.
+
+Challenge weak assumptions and unnecessary scope.
+
+Do not repeatedly re-open settled decisions without new evidence.
+
+Do not treat speculative revenue as proven ROI.
+
+Do not make up research findings or technology capabilities.
+
+Avoid generic product-management language and excessive AI-generated documentation.
+
+Prefer concise technical explanations, credible financial analysis and concrete implementation.
+
+When a decision arises, recommend a sensible default and proceed unless the choice is materially consequential or genuinely ambiguous.
+
+Maintain a clear separation between:
+
+* Facts supplied by InDebted.
+* Our analysis and calculations.
+* Our hypotheses.
+* Simulated implementation behaviour.
+* Future roadmap ideas.
+
+Use British English spelling in documentation and avoid em dashes.
+
+Start now
+
+Begin by:
+
+1. Inspecting the repository and reading all supplied source materials.
+2. Validating the investment thesis, cohort calculations and scope constraints.
+3. Giving me a concise summary of the implementation approach, key risks and any corrections required.
+4. Creating the initial repository structure and essential project documents.
+5. Starting implementation of the Elixir/Ash decision engine and Next.js frontend.
+
+Do not stop after generating a plan. Continue through implementation, testing and submission preparation.
+
+Our objective is to demonstrate that we can go from commercial problem and consumer insight to an appropriately scoped, working product investment in three hours.

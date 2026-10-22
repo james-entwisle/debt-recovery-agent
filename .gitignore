@@ -11,3 +11,7 @@ apps/api/_build/
 apps/api/deps/
 apps/api/doc/
 apps/api/erl_crash.dump
+
+# Local verification bytecode
+__pycache__/
+*.pyc

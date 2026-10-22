@@ -1,0 +1,22 @@
+{
+  "monthly_engaged_consumers": 18000,
+  "cohort_weights": {"C2": 10000, "C3": 6000, "C4": 2000},
+  "effective_reach_by_cohort": {"C2": 0.6, "C3": 0.6, "C4": 0.6},
+  "lift_scenarios_pp": [1, 3, 5, 10],
+  "incremental_payer_cash_multiplier": 1.0,
+  "retained_fee_rate": 0.15,
+  "payment_cost_rate": 0.02,
+  "email_cost_usd": 0.003,
+  "sms_cost_usd": 0.035,
+  "composer_attempt_cost_usd": 0.012,
+  "support_conversation_cost_usd": 6.0,
+  "added_emails_per_reached": 1.0,
+  "replaced_emails_per_reached": 1.0,
+  "added_sms_per_reached": 0.0,
+  "replaced_sms_per_reached": 0.0,
+  "composer_attempts_per_reached": 0.0,
+  "added_support_conversations_per_reached": 0.02,
+  "other_recurring_cost_per_intake_usd": 0.0,
+  "investment_usd": 50000.0,
+  "lift_persistence_by_intake": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+}

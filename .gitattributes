@@ -1,2 +1,4 @@
 # Preserve original source files, including their line endings and whitespace.
 brief/** -text -whitespace
+*.pdf binary
+apps/web/public/brand/Manrope-OFL.txt -text -whitespace

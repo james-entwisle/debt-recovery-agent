@@ -1,0 +1,10 @@
+case,lift_among_reached_pp,engaged_consumers_per_intake,effective_reached_consumers,effective_reach_pct,paid_lift_all_assigned_pp,additional_payers_per_intake,additional_settled_cash_per_intake_usd,retained_revenue_per_intake_usd,payment_cost_per_intake_usd,gross_contribution_per_intake_usd,added_communication_cost_per_intake_usd,replaced_communication_cost_per_intake_usd,net_communication_cost_per_intake_usd,composer_attempts_per_intake,composer_cost_per_intake_usd,added_support_conversations_per_intake,support_cost_per_intake_usd,other_recurring_cost_per_intake_usd,steady_contribution_per_intake_usd,annual_contribution_usd,annual_net_after_investment_usd,simple_run_rate_payback_months,payback_within_modelled_year_months
+reference,3,18000,10800.0,60.0,1.8,324.0,56880.0,8532.0,1137.6,7394.4,32.4,32.4,0.0,0.0,0.0,216.0,1296.0,0.0,6098.4,73180.8,23180.8,8.198872,8.198872
+double_recurring_volume_constant_lift_and_linear_costs,3,36000,21600.0,60.0,1.8,648.0,113760.0,17064.0,2275.2,14788.8,64.8,64.8,0.0,0.0,0.0,432.0,2592.0,0.0,12196.8,146361.6,96361.6,4.099436,4.099436
+30pct_reach,3,18000,5400.0,30.0,0.9,162.0,28440.0,4266.0,568.8,3697.2,16.2,16.2,0.0,0.0,0.0,108.0,648.0,0.0,3049.2,36590.4,-13409.6,16.397744,
+5pct_support,3,18000,10800.0,60.0,1.8,324.0,56880.0,8532.0,1137.6,7394.4,32.4,32.4,0.0,0.0,0.0,540.0,3240.0,0.0,4154.4,49852.8,-147.2,12.035432,
+half_incremental_payer_cash,3,18000,10800.0,60.0,1.8,324.0,28440.0,4266.0,568.8,3697.2,32.4,32.4,0.0,0.0,0.0,216.0,1296.0,0.0,2401.2,28814.4,-21185.6,20.822922,
+lift_fades_after_six_intakes_costs_continue,3,18000,10800.0,60.0,1.8,324.0,56880.0,8532.0,1137.6,7394.4,32.4,32.4,0.0,0.0,0.0,216.0,1296.0,0.0,6098.4,28814.4,-21185.6,8.198872,
+one_extra_sms_no_replacement,3,18000,10800.0,60.0,1.8,324.0,56880.0,8532.0,1137.6,7394.4,410.4,32.4,378.0,0.0,0.0,216.0,1296.0,0.0,5720.4,68644.8,18644.8,8.740648,8.740648
+additional_2000_ongoing_cost,3,18000,10800.0,60.0,1.8,324.0,56880.0,8532.0,1137.6,7394.4,32.4,32.4,0.0,0.0,0.0,216.0,1296.0,2000,4098.4,49180.8,-819.2,12.199883,
+no_lift,0,18000,10800.0,60.0,0.0,0.0,0.0,0.0,0.0,0.0,32.4,32.4,0.0,0.0,0.0,216.0,1296.0,0.0,-1296.0,-15552.0,-65552.0,,

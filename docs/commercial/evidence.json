@@ -1,0 +1,10 @@
+{
+  "source": "brief/03_historical_cohorts.csv",
+  "source_sha256": "dcd076fcb34ccbb0ce8188c3113e1341ebbbe3eb2b6d7a60b5399f9c2d4cf4f7",
+  "all_consumers": 100000,
+  "all_settled_cash_usd": 1780000,
+  "engaged_consumers": 18000,
+  "engaged_paid": 4600,
+  "engaged_settled_cash_usd": 820000,
+  "approx_total_sample_for_3pp_reached_lift": 18852
+}

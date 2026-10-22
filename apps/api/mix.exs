@@ -16,6 +16,14 @@ defmodule IndebtedApi.MixProject do
   end
 
   defp deps do
-    [{:ash, "~> 3.37"}, {:bandit, "~> 1.13"}, {:plug, "~> 1.19"}, {:jason, "~> 1.4"}]
+    [
+      {:ash, "~> 3.37"},
+      {:simple_sat, "~> 0.1"},
+      {:phoenix, "~> 1.8"},
+      {:tzdata, "~> 1.2"},
+      {:bandit, "~> 1.13"},
+      {:plug, "~> 1.19"},
+      {:jason, "~> 1.4"}
+    ]
   end
 end

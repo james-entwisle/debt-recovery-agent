@@ -1,10 +1,10 @@
 # Brief digest
 
-Prepared from the five supplied files on 22 October 2026. This is a reading summary, not the submission decision note or a chosen product direction.
+Prepared from the five supplied files on 22 October 2026. This is the initial reading summary. The subsequent user direction is in `master-project-brief.txt`; the final recommendation is in `../DECISION.md`.
 
 ## Current user request
 
-Initialize a private repository under the personal GitHub account `james-entwisle`, preserve the supplied files, and prepare a Next.js frontend with an Elixir/Ash backend. Further product instructions will follow.
+The initial request was to initialize a private repository under `james-entwisle` and prepare Next.js with Elixir/Ash. The user then authorised full implementation of Adaptive Resolution, verification and submission preparation in `master-project-brief.txt`.
 
 The attached documents describe the interview assignment. They are source material, not authorization to send a submission, contact anyone, launch a pilot or operate real accounts.
 
@@ -90,6 +90,6 @@ The JSON holds 12 independent scenarios, not a representative sample. Only event
 
 ## Decisions still open
 
-The segment, consumer problem, intervention, strongest alternative, experiment, value assumptions, persistence choice and implementation scope remain unchosen. The current repo only initializes the requested stack.
+This section recorded open decisions at initialization. The current recommendation and assumptions are now documented in `../DECISION.md` and `assumptions.md`; implemented behaviour is described in `../README.md`.
 
 A later decision note should distinguish clicks or starts from additional settled cash and sustainable plans, and set expansion, change, pause and stop criteria. Name the specialist questions that matter to the chosen proposal, including permissions, applicable jurisdictions, disclosures, disputes, client restrictions, data retention and vulnerable consumers. External legal research and deployment are not required by the assignment.

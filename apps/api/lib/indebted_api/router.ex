@@ -1,18 +1,20 @@
 defmodule IndebtedApi.Router do
-  use Plug.Router
+  use Phoenix.Router
 
-  plug(:match)
-  plug(:dispatch)
-
-  get "/health" do
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(200, Jason.encode!(%{status: "ok", service: "indebted_api"}))
+  pipeline :api do
+    plug(:accepts, ["json"])
   end
 
-  match _ do
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(404, Jason.encode!(%{error: "not_found"}))
+  scope "/", IndebtedApi do
+    pipe_through(:api)
+    get("/health", ApiController, :health)
+    get("/scenarios", ApiController, :scenarios)
+    post("/sessions", ApiController, :open)
+    get("/sessions/:id", ApiController, :view)
+    post("/sessions/:id/commands", ApiController, :command)
+    get("/economics", ApiController, :economics)
+    post("/economics", ApiController, :economics)
   end
+
+  match(:*, "/*path", IndebtedApi.ApiController, :not_found)
 end

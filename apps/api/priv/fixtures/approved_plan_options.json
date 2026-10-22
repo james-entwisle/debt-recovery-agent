@@ -1,0 +1,10 @@
+{
+  "synthetic": true,
+  "source": "Invented demonstration fixtures; not supplied by InDebted and not production-approved",
+  "creditor_display_name": "Harbour Utilities (synthetic)",
+  "options": [
+    {"id":"weekly-80", "label":"Weekly", "frequency":"weekly", "first_payment_date":"2026-09-18", "instalment_usd":80, "instalments":8, "total_usd":640},
+    {"id":"fortnightly-160", "label":"Fortnightly", "frequency":"fortnightly", "first_payment_date":"2026-09-25", "instalment_usd":160, "instalments":4, "total_usd":640},
+    {"id":"monthly-160", "label":"Monthly", "frequency":"monthly", "first_payment_date":"2026-10-02", "instalment_usd":160, "instalments":4, "total_usd":640}
+  ]
+}

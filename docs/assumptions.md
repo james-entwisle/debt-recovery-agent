@@ -1,0 +1,20 @@
+# Commercial assumptions and validation priorities
+
+The [supporting pack](../brief/02_supporting_pack.md) supplies synthetic observations and exercise economics. The [master brief](master-project-brief.txt) proposes reach and lift scenarios. None is evidence of intervention effectiveness. Defaults and sensitivity outputs live in [the model](commercial/README.md).
+
+| Assumption | Evidence available | Consequence if wrong | Validation |
+| --- | --- | --- | --- |
+| 18,000 eligible engaged consumers recur per intake | C2-C4 in one complete historical intake. Equivalent non-overlapping intakes are permitted for exercise sizing. | Smaller actual US volume weakens payback. | Verify eligible US counts and repeating cohort mix before expansion. |
+| 60% effective reach in each cohort | Illustrative master-brief input. No exposure data. | Clicks may not reach the portal. At 30% reach the +3-point case pays back in 16.4 months. | Log the joint rate of current eligibility and actual intervention exposure by cohort. Avoid multiplying overlapping reach estimates. |
+| +1, +3, +5 or +10 points among reached | Scenarios only. Historical differences are observational. | No lift loses $15,552 annual support cost plus build cost at the reference settings. | Randomised cash and paid outcomes, with intention-to-treat analysis. +10 is speculative. |
+| Each added payer contributes historical payer cash | Derived C2 $170, C3 $180, C4 $190 over 30 days | New payers may pay less. Half the proxy gives 20.8-month payback at +3 points. | Measure net cash per assigned consumer directly. Never infer cash from plan creation. |
+| 2% additional support conversations per reached consumer | No support-demand rate supplied. This is a conversation count rate, not unique-user prevalence. | At 5%, annual contribution falls to $49,853, just below the $50,000 investment. | Measure conversation counts and effort relative to control, plus backlog and response time. |
+| One-for-one same-channel replacement gives zero net send cost | Contact APIs can coordinate queued sends. This is an operating assumption, not verified savings. | Failed cancellations or extra sends raise costs and safety risk. | Reconcile actual provider handoffs, cancelled sends and control costs. Count failures that reach the provider. |
+| Templates, no US Composer attempts | US Composer has no production permission or approved evaluation. | New model work adds attempt costs and approval burden. | Keep all model outputs mocked in demonstration. Evaluate a separate AI trial if authorised later. |
+| 15% fee less 2% payment cost | Supplied exercise prices, not externally verified company economics | Margin differs from the case assumption. | Confirm applicable client and payment economics for a real investment. |
+| Lift persists across twelve new 30-day intakes | One historical window, no intervention data | If lift vanishes after six intakes but costs continue, annual contribution is $28,814 and no first-year payback. | Repeat cohort estimates and observe treatment decay. Do not book future plan instalments. |
+| Additional 30-day cash is durable | Cash is net of in-window reversals. No 60/90-day data. | Control may catch up, or repayments may fail later. | Compare mature 60/90-day net cash and plan adherence. Keep acceleration separate. |
+| $50,000 cap; no other recurring costs in reference case | Full supplied allocation, not an implementation quote | At $2,000 extra ongoing cost per intake, payback exceeds 12 months. | Cost both delivery options in week one. Measure operations, analytics, maintenance and infrastructure. |
+| Consumer benefit and safety hold | Small qualitative samples, exercise rules, no pilot results | Collections gains could accompany confusion, pressure or harm. | Review complaints, opt-outs, unmet needs and plan sustainability with compliance and support. |
+
+Unknowns remain unknown. The historical CSV has no consumer-level cash variance, causal lift, reason for abandonment, real US scale, channel reach, incremental support rate or long-term outcomes. The 12 fixtures cannot fill these gaps.
