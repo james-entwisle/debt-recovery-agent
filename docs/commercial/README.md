@@ -1,8 +1,61 @@
-# Reproducible commercial model
+# Commercial reasoning and reproducible models
 
-This is an investment sensitivity model for a synthetic exercise, not a forecast. The authoritative inputs are the [historical CSV](../../brief/03_historical_cohorts.csv) and [supporting pack](../../brief/02_supporting_pack.md). The [master brief](../master-project-brief.txt) proposes the 60% reach and 2% support reference scenario. The model makes no claim about implemented application behaviour.
+The investment question is whether resolving stated consumer needs creates enough additional settled cash to cover conversation, support and delivery costs. V2 recommends staged learning, capped at $50,000 with a week-one checkpoint. The current illustrative range does not justify broad rollout. [DECISION.md](../../DECISION.md) owns the recommendation and decision gates; this guide owns the calculations and their limits. All amounts are USD and all evidence is synthetic.
 
-## Reproduce or change assumptions
+| Model | Question and denominator | Implementation and inputs |
+| --- | --- | --- |
+| V2 conversational sensitivity | What happens after eligible SMS reach and a consumer reply? Lift is among responders. | UI calculation checked against [conversation_model.py](conversation_model.py), [inputs](conversation-assumptions.json) and [saved cases](conversation-scenarios.json). |
+| Original reach/lift model | What if a fraction encounters the broader contextual intervention? Lift is among reached consumers. | Backend Economics and independent [model.py](model.py), [inputs](assumptions.json) and [saved cases](scenarios.csv). |
+
+Read V2 first. The original model remains useful for comparison and sensitivity; its returns are not conversational returns. The [historical CSV](../../brief/03_historical_cohorts.csv) and [supporting pack](../../brief/02_supporting_pack.md) supply baselines and unit costs. The [V1 request](../master-project-brief.txt) and [V2 request](../v2-project-brief.txt) supply proposed directions and modelling assumptions, not measured effects.
+
+## V2 conversational extension
+
+The Financial Model preserves the original model and adds this independent conversational sensitivity. It does not silently treat the original effective-reach assumption as both SMS availability and reply rate. The extension inherits the calculated population, cohort mix, marginal-payer cash multiplier and investment from the original screen. Its own inputs are SMS-reachable share, reply rate, absolute conversion lift among responders, AI turns and hypothetical cost, net extra SMS, added support and avoided support. Support savings default to zero. The saved Python cases reproduce the default 18,000-person cohort mix.
+
+```sh
+python3 docs/commercial/conversation_model.py
+python3 docs/commercial/conversation_model.py --check
+node --experimental-strip-types docs/commercial/check-conversation-ui.mjs
+```
+
+Inputs are in [conversation-assumptions.json](conversation-assumptions.json); saved results are in [conversation-scenarios.json](conversation-scenarios.json). The standard-library script checks the baseline, arithmetic, zero reach and response, conversion caps, invalid costs and output freshness. It leaves the earlier model and generated files unchanged.
+
+```text
+SMS reachable = engaged population × eligible SMS-reachable share
+responders = SMS reachable × response rate
+extra payers_i = responders × cohort share_i × min(responder lift, remaining conversion headroom_i)
+extra cash = sum(extra payers_i × historical cash per payer_i × payer cash multiplier)
+contribution = cash × 15% - cash × 2%
+               - responders × net extra SMS × $0.035
+               - responders × AI turns × hypothetical turn cost
+               - responders × added support rate × $6
+               + responders × avoided support rate × $6
+annual contribution = contribution × 12 equivalent new intakes
+simple payback = investment / contribution, when positive
+```
+
+These costs are incremental to control. The starting SMS is assumed to replace an existing scheduled contact without a net send increase; the extra-send input captures subsequent service replies after any verified displacement savings. Costs for non-responders, content approval, human review, provider setup, maintenance and infrastructure are not supplied and require a delivery estimate. Do not subtract the earlier model's support and communication costs again. They describe a separate scenario, not an additional cost layer.
+
+The editable $0.01 AI-turn placeholder is hypothetical. The source's $0.012 applies to Composer draft/review attempts and has not been validated for a multi-turn assistant. Four assumed turns should include the chosen review/retry allowance; production estimates must measure actual attempts and oversight. The UI uses no live model and incurs no provider costs.
+
+Reference inputs are 60% SMS reach, 30% reply rate, four net extra SMS and four AI turns per responder, two additional support conversations per 100 responders, no avoided support, unchanged historical payer cash and $50,000 build. All are assumptions except the exercise unit costs and historical cash proxy. Do not call them conservative.
+
+| Hypothetical responder lift | Extra cash per intake | Annual contribution before build | Simple payback |
+| --- | ---: | ---: | ---: |
+| 0 points | $0 | -$11,664 | None |
+| +1 point | $5,688 | -$2,791 | None |
+| +3 points | $17,064 | $14,956 | 40.12 intakes |
+| +5 points | $28,440 | $32,702 | 18.35 intakes |
+| +10 points, speculative | $56,880 | $77,069 | 7.79 intakes |
+
+The +1 to +5-point range is sensitivity, not a forecast or confidence interval. At +3 points, 10,800 SMS-reachable consumers become 3,240 responders and 97.2 additional expected payers. Fees are $2,559.60, payment costs $341.28, SMS $453.60, hypothetical AI $129.60 and support $388.80, giving $1,246.32 per intake. No-lift losses illustrate that help and conversation cost money even without collections gains. Other benefits such as reduced confusion may matter but are unpriced here.
+
+A lift among responders has a different denominator from the earlier reached-consumer model. Under a simplifying constant-effect assumption, +3 responder points at 60% reach and 30% replies corresponds to +0.54 points across the assigned population. Responders are self-selected and may have a different baseline, cash value and treatment response. This bridge cannot establish causal lift. The experiment's primary metric remains treatment-control 30-day net settled cash per randomised consumer, with non-responders and later suppressed accounts retained. Exposure, reply rate and support use are diagnostics.
+
+The full-reach +3-point result of $147,888 annual contribution before other costs remains an original sensitivity. It does not pass through this response-rate funnel and is not the conversational forecast. Production investment should use verified reach and costs, mature randomised cash evidence and a comparison with the lower-complexity alternative.
+
+## Reproduce the original model
 
 Python 3.9 or later, standard library only. From the repository root:
 
@@ -29,7 +82,7 @@ All five cohorts collected $1,780,000, giving $231,400 at the 13% fee-minus-paym
 
 The three cohorts are mutually exclusive at t0. Do not add them as funnel steps or migrate people between them when later events arrive. Interviews cover eight incomplete-plan consumers only. The scenario JSON is illustrative and is never used to infer rates.
 
-## Formulas and definitions
+## Original model formulas and definitions
 
 For cohort i, let N be the assumed recurring engaged population, w its mix share, r its effective reach, L the absolute paid-conversion lift among reached consumers, and P the source cash divided by source payers.
 
@@ -60,7 +113,7 @@ Each annual period is an equivalent 30-day intake, and twelve periods form a 360
 
 Persistence weights apply to the lift for each successive intake. Recurring support and contact costs continue for all twelve intakes. `payback_within_modelled_year_months` follows this contribution sequence and is blank when the build is not recovered. `simple_run_rate_payback_months` extends the full-effect run rate indefinitely and can exceed twelve months. It is misleading if lift later vanishes. Payback is measured in equivalent 30-day periods and assumes costs and cash accrue evenly within each period. It excludes build time, ramp and reporting delays, so is not a calendar cash-flow promise. A real pilot pays build costs while measuring only its assigned treatment arm; these scenarios describe full treatment deployment at the assumed scale, not pilot-year realised income.
 
-## Reference scenarios, never forecasts
+## Original model reference scenarios
 
 Hypothetical +1 to +5-point lifts span $14,025.60 to $132,336 annual contribution before build and 4.53 to 42.78-month simple payback. First-year net after the $50,000 build spans -$35,974.40 to $82,336. This is a scenario range, not a confidence interval or forecast. The +3-point case is an arithmetic reference, not a definitive estimate. The +10-point case is speculative, and no lift loses $15,552 annually before build at reference support costs.
 
@@ -75,7 +128,7 @@ All rows assume 18,000 engaged consumers per intake, 10,800 effectively reached,
 
 At full reach, each one-point lift implies $31,600 extra settled cash. Three points imply $94,800 cash, $14,220 retained fees, $1,896 payment cost and $12,324 contribution per intake before other costs. Twelve intakes yield $147,888 before other costs. Ten points imply $492,960 annual contribution before other costs. Those figures do not use 60% reach or deduct support, and must not be presented as net returns.
 
-## Downside and investment hurdles
+## Original model downside and investment hurdles
 
 Each case below changes one reference input at a hypothetical +3-point lift.
 
@@ -98,7 +151,7 @@ Under the reference assumptions, operating break-even requires about +0.53 point
 
 Randomise at t0 by consumer and stratify C2-C4. Analyse treatment-control 30-day net settled cash per assigned consumer, subtract actual incremental costs and retain later suppressed consumers in their original arm. Report exposure separately. Do not estimate a causal effect by comparing reached consumers with people who did not engage.
 
-The planning calculation uses a two-proportion normal approximation, 80% power, two-sided 5% alpha, equal allocation, source paid baseline 25.56% and a 1.8-point assigned effect. It returns 18,852 total consumers for the illustrative +3-point reached lift at 60% reach. This is a paid-outcome planning proxy for the reference mix, not proof the cash outcome is powered. It does not account for operational loss, sequential monitoring or multiple segment claims. The source lacks cash variance. Obtain individual-level pilot outcomes and estimate cash uncertainty before committing to an efficacy sample size. Four weeks gets the pilot launched; final 30-day outcomes mature later. Follow 60/90-day cash and adherence before treating acceleration as durable value.
+The planning calculation uses a two-proportion normal approximation, 80% power, two-sided 5% alpha, equal allocation, source paid baseline 25.56% and a 1.8-point assigned effect. It returns 18,852 total consumers for the illustrative +3-point reached lift at 60% reach. This is a paid-outcome planning proxy for the reference mix, not proof the cash outcome is powered. It does not account for operational loss, sequential monitoring or multiple segment claims. This 1.8-point assigned effect belongs to the original reach model. The V2 reply funnel implies a different effect and needs new sizing. The source lacks cash variance. Obtain individual-level pilot outcomes and estimate cash uncertainty before committing to an efficacy sample size. Four weeks gets the pilot launched; final 30-day outcomes mature later. Follow 60/90-day cash and adherence before treating acceleration as durable value.
 
 Historical reconciliation and scenario arithmetic are checked by the script, including zero reach, zero lift, payment ceilings, fading lift, non-finite input rejection and saved-output freshness. This is the complete financial-model validation scope. Real scale, causal lift, consumer safety and technical operation require separate verification.
 

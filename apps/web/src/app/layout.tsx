@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Adaptive Resolution | InDebted",
   description:
-    "A synthetic demonstration of consumer-led next steps and adaptive journey coordination.",
+    "A simulated two-way SMS assistant, secure task interfaces and an evidence-based financial model for consumer-led resolution.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

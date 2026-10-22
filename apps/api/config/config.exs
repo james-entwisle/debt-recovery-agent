@@ -4,6 +4,7 @@ config :indebted_api, ash_domains: [IndebtedApi.CaseStudy, IndebtedApi.AdaptiveR
 config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
 config :tzdata, :autoupdate, :disabled
 config :phoenix, :json_library, Jason
+config :phoenix, :filter_parameters, ["token", "authorization", "cookie"]
 
 config :indebted_api, IndebtedApi.Endpoint,
   adapter: Bandit.PhoenixAdapter,

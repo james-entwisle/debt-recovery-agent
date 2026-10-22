@@ -20,9 +20,17 @@ The service binds to `127.0.0.1:4000`. Set `API_PORT=4001` to change it. `GET /h
 
 Resource attributes include enum-constrained atoms, dates, timestamps, amounts, proposal maps and reason lists. Custom Ash changes call the pure policy and matching functions. Callers cannot supply decision fields or replacement plan terms as accepted attributes. Both resources use `Ash.DataLayer.Simple`; they produce validated resource structs while each session owns the audit history. There is no database to install.
 
-Ash policies require a simulated journey-engine actor for evaluation and a simulated portal actor for matching. Domain authorization is always enabled, including when a caller tries `authorize?: false`. These are internal operation boundaries for the local demonstration. HTTP authentication and production identity management are not implemented.
+Ash policies require a simulated journey-engine actor for evaluation and a simulated portal actor for matching. Domain authorization is always enabled, including when a caller tries `authorize?: false`. These are internal operation boundaries for the local demonstration. Separate JIT endpoints implement scoped demo-token authentication. Production identity verification remains unimplemented; unauthenticated operator endpoints are local synthetic controls. See the [architecture](../../docs/architecture.md) for the trust boundary.
 
 `IndebtedApi.CaseStudy` groups the demonstration harness. Its `Demonstration` resource validates HTTP operation arguments and calls the session service. Contact eligibility remains a deterministic decision rule, so restricted accounts receive an explained `SUPPRESS` decision rather than losing access to an explanation through an authorization error.
+
+## Conversation, drafts and access
+
+`Conversation` recognises bounded explicit intents, merges stated preferences and proposes fixed synthetic replies or task descriptors. Escalation pauses collection prompts and plan mutations without applying an authoritative account hold. STOP changes synthetic source permissions immediately. Incoming replies create no extra proactive contact or permission.
+
+`Session` owns opaque link hashes and scoped grants alongside conversation state. `JitAuth` defines random tokens, real-time expiry and per-task command allowlists. Links are single-use for one account/action; successful exchange sets an HTTP-only, SameSite Strict cookie. The browser identity checkbox is a simulation, not proof of identity. Local cookies intentionally omit Secure for HTTP.
+
+Draft save/resume lives in `Replay`: preserve an unconfirmed approved selection, then revalidate current account, preferences, exact terms and expiry before return. Draft expiry uses fixture time; access expiry uses real server time. A plan-start event is never treated as saved form data. The [HTTP/data contract](../../docs/integration-contract.md) owns envelopes and status codes, and the [demo guide](../../docs/demo-guide.md) explains the return path.
 
 ## Replay and safety
 
@@ -36,7 +44,7 @@ Audit entries include ordered sequence numbers, evaluated inputs, decisions, tem
 
 ## Modifying the demonstration
 
-Change engagement ranking, the 45-minute waiting interval, eligibility, timing and shared budgets in `lib/indebted_api/policy.ex`. A contextual replacement moves the same queued contact to the next permitted time after that interval, keeping its original schedule visible for comparison. Change preference matching in `lib/indebted_api/portal.ex` and action authorization in the two Ash resources. Change simulated effects and replay transitions in `lib/indebted_api/replay.ex`.
+Change engagement ranking, the 45-minute waiting interval, eligibility, timing and shared budgets in `lib/indebted_api/policy.ex`. A contextual replacement moves the same queued contact to the next permitted time after that interval, keeping its original schedule visible for comparison. Change preference matching in `lib/indebted_api/portal.ex` and action authorization in the two Ash resources. Change simulated effects and replay transitions in `lib/indebted_api/replay.ex`. Conversation routing and fixed replies live in `lib/indebted_api/conversation.ex`; scoped command permissions live in `lib/indebted_api/jit_auth.ex`.
 
 The supplied files under `brief/` are read without modification. Additional plan terms live in `priv/fixtures/approved_plan_options.json`, labelled as invented demonstration fixtures. Plan confirmation requires a matching option, explicit confirmation and a current review token. Payment commands only set a synthetic pending state. All contacts, payment actions and template previews are simulated; no messaging, payment or model provider is connected.
 

@@ -99,7 +99,7 @@ defmodule IndebtedApi.PortalTest do
     assert {:error, _} = Replay.command(confirmed, command)
   end
 
-  test "help requests for affordability set a hold without a payment or promise of immediate response" do
+  test "help requests route affordability review without fabricating authoritative holds or payments" do
     initial = Replay.new("help", Fixtures.scenario("S04"))
 
     {:ok, intent} =
@@ -107,10 +107,10 @@ defmodule IndebtedApi.PortalTest do
 
     assert intent.decision["outcome"] == "ROUTE_TO_SUPPORT"
     {:ok, helped} = Replay.command(intent, %{"type" => "request_help"})
-    assert Replay.account(helped)["holds"] == ["hardship_review"]
+    assert Replay.account(helped)["holds"] == []
     assert hd(helped.support_requests)["status"] == "logged"
     assert helped.confirmed_plan == nil
     assert helped.payment == nil
-    assert helped.decision["outcome"] == "SUPPRESS"
+    assert helped.decision["outcome"] == "ROUTE_TO_SUPPORT"
   end
 end

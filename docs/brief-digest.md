@@ -1,8 +1,8 @@
 # Brief digest
 
-Prepared from the five supplied files on 22 October 2026. This is the initial reading summary. The subsequent user direction is in `master-project-brief.txt`; the final recommendation is in `../DECISION.md`.
+Prepared from the five supplied files on 22 October 2026. This is the initial reading summary. The [V2 request](v2-project-brief.txt) supersedes the [V1 direction](master-project-brief.txt). Read the [README](../README.md) for the current product and [decision note](../DECISION.md) for the recommendation.
 
-## Current user request
+## Request at initialization
 
 The initial request was to initialize a private repository under `james-entwisle` and prepare Next.js with Elixir/Ash. The user then authorised full implementation of Adaptive Resolution, verification and submission preparation in `master-project-brief.txt`.
 

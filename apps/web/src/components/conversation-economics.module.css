@@ -1,0 +1,30 @@
+.panel { margin-top: 32px; border: 1px solid #dce0ef; border-radius: 16px; padding: 24px; background: #fff; color: #000244; }
+.heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.heading h2 { margin: 5px 0 0; font-size: 21px; letter-spacing: -.5px; }
+.eyebrow { color: #626888; font-size: 12px; font-weight: 700; }
+.badge { background: #eef0ff; color: #474cde; padding: 6px 10px; border-radius: 20px; font-size: 12px; white-space: nowrap; }
+.intro, .note { color: #626888; line-height: 1.6; font-size: 13px; }
+.summary { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 20px 0; }
+.summary div { display: flex; flex-direction: column; gap: 8px; }
+.summary span, .bridge span { color: #626888; font-size: 12px; }
+.summary strong { font-size: 25px; letter-spacing: -.8px; }
+.summary small { color: #626888; font-size: 11px; }
+.inputs { border-top: 1px solid #eceef6; border-bottom: 1px solid #eceef6; padding: 15px 0; }
+.inputs summary { cursor: pointer; font-size: 13px; font-weight: 700; }
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-top: 20px; }
+.grid label { display: flex; flex-direction: column; gap: 8px; font-size: 12px; font-weight: 600; }
+.grid input { width: 100%; border: 1px solid #dce0ef; background: #fff; border-radius: 7px; padding: 9px; color: #000244; font: inherit; }
+.grid input:focus-visible { outline: 2px solid #474cde; outline-offset: 2px; }
+.grid small { font-weight: 400; color: #626888; font-size: 11px; line-height: 1.5; }
+.bridge { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 22px 0; }
+.bridge div { display: flex; flex-direction: column; gap: 6px; }
+.bridge strong { font-size: 17px; }
+.ledger { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px 24px; margin: 0; padding: 18px; background: #f7f8fc; border-radius: 10px; }
+.ledger div { display: flex; flex-direction: column; gap: 6px; }
+.ledger dt { color: #626888; font-size: 12px; }
+.ledger dd { margin: 0; font-size: 15px; font-weight: 700; }
+.total { grid-column: 1 / -1; border-top: 1px solid #dce0ef; padding-top: 12px; }
+.total dd { color: #474cde; font-size: 20px; }
+.note { font-size: 11px; margin-bottom: 0; }
+@media (max-width: 760px) { .panel { padding: 18px; }.heading { align-items: flex-start; }.badge { white-space: normal; }.summary { grid-template-columns: 1fr; }.summary strong { font-size: 22px; }.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.bridge { flex-wrap: wrap; justify-content: flex-start; gap: 16px; }.ledger { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .heading { flex-direction: column; }.grid { grid-template-columns: 1fr; } }

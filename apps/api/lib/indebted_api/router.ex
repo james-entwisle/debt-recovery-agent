@@ -12,6 +12,10 @@ defmodule IndebtedApi.Router do
     post("/sessions", ApiController, :open)
     get("/sessions/:id", ApiController, :view)
     post("/sessions/:id/commands", ApiController, :command)
+    post("/sessions/:id/jit-links", ApiController, :jit_link)
+    post("/jit/verify", ApiController, :jit_verify)
+    get("/jit/:id/:action_id", ApiController, :jit_view)
+    post("/jit/:id/:action_id/commands", ApiController, :jit_command)
     get("/economics", ApiController, :economics)
     post("/economics", ApiController, :economics)
   end

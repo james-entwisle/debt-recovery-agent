@@ -6,18 +6,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Spinner } from "@heroui/react";
 import { ArrowRight, CircleHelp, RotateCcw, ShieldCheck } from "lucide-react";
 import { api, type Command, type Scenario, type SessionView } from "@/lib/api";
-import { ConsumerPortal } from "./consumer-portal";
+import { SmsSimulator } from "./sms-simulator";
+import { JitPortal } from "./jit-portal";
 import { CommercialModel } from "./commercial-model";
-import { JourneySimulator } from "./journey-simulator";
-
-const demoScenarioIds = new Set(["S04", "S05", "S06"]);
 
 export type Act = (command: Command, success?: string) => Promise<boolean>;
 
 export function ResolutionApp() {
-  const [tab, setTab] = useState<"portal" | "simulator" | "investment">(
-    "portal",
-  );
+  const [tab, setTab] = useState<"sms" | "portal" | "investment">("sms");
+  const [jitActionId, setJitActionId] = useState<string | null>(null);
   const [view, setView] = useState<SessionView | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [busy, setBusy] = useState(true);
@@ -37,7 +34,8 @@ export function ResolutionApp() {
         api.open(id, arm),
         api.scenarios(),
       ]);
-      setScenarios(options.filter((option) => demoScenarioIds.has(option.id)));
+      setScenarios(options);
+      setJitActionId(null);
       setView(next);
       sessionStorage.setItem("resolution-session", next.session_id);
     } catch (e) {
@@ -57,21 +55,14 @@ export function ResolutionApp() {
     initialised.current = true;
     async function load() {
       try {
-        setScenarios(
-          (await api.scenarios()).filter((option) =>
-            demoScenarioIds.has(option.id),
-          ),
-        );
+        setScenarios(await api.scenarios());
         const id = sessionStorage.getItem("resolution-session");
         if (id) {
           try {
             const restored = await api.view(id);
-            if (demoScenarioIds.has(restored.scenario_id)) {
-              setView(restored);
-              setBusy(false);
-              return;
-            }
-            sessionStorage.removeItem("resolution-session");
+            setView(restored);
+            setBusy(false);
+            return;
           } catch {
             sessionStorage.removeItem("resolution-session");
           }
@@ -158,19 +149,19 @@ export function ResolutionApp() {
         <nav className="view-switch" aria-label="Experience">
           <Button
             variant="ghost"
+            className={tab === "sms" ? "selected" : ""}
+            aria-pressed={tab === "sms"}
+            onPress={() => setTab("sms")}
+          >
+            SMS Simulator
+          </Button>
+          <Button
+            variant="ghost"
             className={tab === "portal" ? "selected" : ""}
             aria-pressed={tab === "portal"}
             onPress={() => setTab("portal")}
           >
-            Your account
-          </Button>
-          <Button
-            variant="ghost"
-            className={tab === "simulator" ? "selected" : ""}
-            aria-pressed={tab === "simulator"}
-            onPress={() => setTab("simulator")}
-          >
-            Journey simulator
+            JIT Portal
           </Button>
           <Button
             variant="ghost"
@@ -178,19 +169,19 @@ export function ResolutionApp() {
             aria-pressed={tab === "investment"}
             onPress={() => setTab("investment")}
           >
-            Investment
+            Financial Model
           </Button>
         </nav>
       </header>
       <main
         id="main-content"
-        className={tab === "investment" ? "investment-main" : ""}
+        className={tab === "investment" ? "investment-main" : tab === "sms" ? "sms-main" : "jit-main"}
       >
-        {tab !== "investment" && (
+        {tab === "portal" && (
           <div className="demo-toolbar">
             <div className="demo-context">
               <span className="demo-pill">Demo</span>
-              <span>Adaptive Resolution</span>
+              <span>Operator controls · Synthetic account</span>
             </div>
             <div className="scenario-controls">
               <label className="sr-only" htmlFor="scenario">
@@ -248,19 +239,29 @@ export function ResolutionApp() {
           <CommercialModel />
         ) : view ? (
           tab === "portal" ? (
-            <ConsumerPortal
+            <JitPortal
               key={view.session_id}
               view={view}
-              act={act}
+              actionId={jitActionId}
               busy={busy}
+              act={act}
+              onView={(next) => setView((current) =>
+                current?.session_id === next.session_id && current.revision <= next.revision
+                  ? next : current)}
+              onAction={setJitActionId}
+              onLeave={() => setTab("sms")}
             />
           ) : (
-            <JourneySimulator
+            <SmsSimulator
               view={view}
               act={act}
               busy={busy}
+              scenarios={scenarios}
               open={open}
-              onPortal={() => setTab("portal")}
+              onOpenJit={(actionId) => {
+                setJitActionId(actionId);
+                setTab("portal");
+              }}
             />
           )
         ) : (
@@ -268,14 +269,14 @@ export function ResolutionApp() {
             {busy ? (
               <>
                 <Spinner size="md" />
-                <h1>Opening your demo account</h1>
-                <p>Loading the shared consumer journey.</p>
+                <h1>Opening the conversation</h1>
+                <p>Loading the synthetic account and conversation session.</p>
               </>
             ) : (
               <>
                 <h1>Connect to the demonstration</h1>
                 <p>
-                  Run the API and retry to explore the portal and simulator.
+                  Run the API and retry to explore SMS and JIT tasks.
                 </p>
                 <Button onPress={() => void open("S04")}>
                   Open S04 <ArrowRight size={16} />
@@ -287,7 +288,7 @@ export function ResolutionApp() {
       </main>
       <footer className="app-footer">
         <span>Case study · Synthetic account</span>
-        <span>Payments and messages are simulated.</span>
+        <span>Messages, verification and payments are simulated.</span>
       </footer>
     </div>
   );

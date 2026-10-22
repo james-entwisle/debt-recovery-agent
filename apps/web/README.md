@@ -1,27 +1,21 @@
 # Adaptive Resolution frontend
 
-Next.js App Router, HeroUI 3 and TypeScript. Start the Elixir API separately, then run `npm run dev` from the repository root and open http://localhost:3000. Full setup and verification commands are in the root [README](../../README.md).
+Next.js App Router, HeroUI 3 and TypeScript render V2's SMS Simulator, JIT Portal and Financial Model. Start the Elixir API separately, then run `npm run dev` from the repository root. The root [README](../../README.md#run-locally) owns setup and verification commands; the [demo guide](../../docs/demo-guide.md) owns walkthroughs and expected outcomes.
 
-The consumer portal, journey simulator and investment sensitivity calculator share one application. The portal and simulator use the same backend session, retained across tabs and page reloads in this browser tab. Reset opens a new isolated session. Backend restarts clear session state.
+## Shared session and focused tasks
 
-## Demonstrate
+`src/components/resolution-app.tsx` owns tab selection, scenario/reset controls and the shared operator session. SMS opens by default and exposes all twelve supplied scenarios. Only the opaque operator session ID is retained in browser session storage. A backend restart or idle expiry loses conversation and draft state.
 
-- **S04:** finish setting up a plan, optionally adjust payday/frequency/amount preferences within plan selection, review dates and explicitly confirm a simulated plan. The account then shows its scheduled payment, completion date, full schedule and a working support route. Use a maximum below $80 to show no-match assistance. Neither browsing nor reviewing activates a plan.
-- **S05:** reset, open Journey simulator, apply the contact proposal, then advance 15 minutes. Current permissions are denied before the opt-out event is received. Advance another 15 minutes to show the delayed event.
-- **S06:** repeat the simulator replay to see the pending payment suppress contact before its event arrives. Advance to the queued contact to inspect the final source-state check.
+`src/components/sms-simulator.tsx` displays the conversation, source controls, policy decision and audit. `src/components/jit-portal.tsx` opens a descriptor from SMS or creates one through its independent task selector. It uses a separate verified view for account details and purpose-scoped requests. Switching account or task requires matching access; a simulated identity checkbox is not real identity proof. Outcomes refresh the shared view so SMS reflects the consumer's action.
 
-The simulator exposes original/current schedules, policy reasons, shared contact-budget checks, visible events, audit details, a stop control and a labelled message preview. Treatment/control selection creates a counterfactual preview; it does not change experimental assignment.
+`src/lib/api.ts` owns typed commands, Zod response validation and both operator/JIT requests through `/api/*`. Next.js forwards these to `API_URL`, defaulting to `http://127.0.0.1:4000`. Product eligibility, matching, terms, authentication checks and state transitions live in Elixir/Ash. The [HTTP/data contract](../../docs/integration-contract.md) describes envelopes and errors.
 
-## Integration
+## Financial calculations
 
-`src/lib/api.ts` is the single HTTP adapter. It validates responses with Zod, exports the derived view types and sends typed commands to `/api/*`. Next.js forwards requests to `API_URL`, defaulting to `http://127.0.0.1:4000`. There are no frontend scenario decisions or live model/provider calls. Product rules and matching live in Elixir/Ash. See [the shared contract](../../docs/integration-contract.md).
+`commercial-model.tsx` presents the preserved backend reach/lift calculation. `conversation-economics.tsx` adds a separate responder calculation from `conversation-economics-calculation.ts`. It inherits population, mix, payer cash multiplier and investment while keeping SMS reach, response and conversational costs distinct. The independent Python companion checks saved reference cases against the actual UI calculation. See [commercial reasoning](../../docs/commercial/README.md).
 
-All account data, plan terms, messages and effects are synthetic. This is a local demonstration without production authentication. Plan confirmation and payment controls affect only simulated state. The fixed disclosure is labelled as an exercise placeholder, not legal copy.
+## Presentation and limits
 
-Run `npm run lint`, `npm run typecheck` and `npm run build` at the repository root. To smoke-test the production frontend, use `npm run start --workspace apps/web` after building.
+[brand.md](brand.md) contains palette, typography and copy guidance. The official InDebted SVG is bundled unchanged; Manrope is bundled locally with its OFL licence. The SMS, JIT and financial views share the white, navy and purple system.
 
-## Visual guidelines
-
-See [brand.md](brand.md) for the website-derived palette, typography, component and copy rules. The official InDebted SVG is bundled unchanged; Manrope is bundled locally with its OFL licence. Consumer, simulator and financial views use the same white, navy and purple system.
-
-The demo selector intentionally exposes only S04, S05 and S06. Additional policy exceptions remain backend checks. Schedule dates come from the API and represent planned payments, not settlement history or a guaranteed payoff date. Payment-method editing is outside this local demonstration; support remains available after plan confirmation.
+All account data, approved options and effects are synthetic. Schedule dates come from the backend and represent planned payments, not settlement history or a guaranteed payoff date. Messages and payments are simulated; payment-method editing and production authentication are outside this demonstration. The fixed disclosure is an exercise placeholder, not approved legal copy.

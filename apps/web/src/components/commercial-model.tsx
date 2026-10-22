@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { ConversationEconomics } from "./conversation-economics";
 import { Button } from "@heroui/react";
 import { ArrowRight, ArrowUpRight, Check, Info, RefreshCw } from "lucide-react";
 import {
@@ -565,6 +566,7 @@ export function CommercialModel() {
           constant effect.
         </p>
       </section>
+      <ConversationEconomics data={data} />
       <details className="historical-context">
         <summary>Historical baseline and model limits</summary>
         <div className="details-body">

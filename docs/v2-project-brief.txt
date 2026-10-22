@@ -1,0 +1,996 @@
+# Adaptive Resolution V2: Conversational Agent and Just-in-Time Resolution UI
+
+## Your mission
+
+We are pivoting the product experience for the InDebted Product Lead case study.
+
+**Preserve our existing Adaptive Resolution investment thesis, core decision engine, compliance rules, cohort analysis and commercial model. Replace the confusing journey simulator with a compelling two-way SMS conversation simulator, and reposition the portal as a set of just-in-time (JIT) interfaces surfaced when consumers need to complete specific actions.**
+
+This is an evolution of our existing implementation, not a greenfield rebuild.
+
+We want to demonstrate what a competent, persistent AI-powered debt-resolution assistant could look like if InDebted evolved Composer from a one-way outbound message generator into a two-way, context-aware consumer-resolution experience.
+
+The product should feel like an ongoing conversation with an assistant that understands the consumer's needs, remembers relevant context and helps them progress towards appropriate voluntary resolution.
+
+It must not resemble an aggressive autonomous debt collector.
+
+**Inspect the current repository before modifying anything. Reuse existing working code and infrastructure wherever possible.**
+
+We are under a strict three-hour take-home timebox. Implement a coherent working vertical slice quickly.
+
+---
+
+# 1. Revised product thesis
+
+## Current state
+
+InDebted's Composer personalises outbound collection messages but operates within a fixed schedule.
+
+It doesn't currently respond to consumer engagement events such as clicks, authenticated portal visits or incomplete repayment-plan flows.
+
+The supporting pack also describes a portal where consumers can review accounts, make payments, choose existing approved plans and ask for help.
+
+However:
+
+- Existing links open the generic account landing page after authentication.
+- The journey is not responsive to consumer engagement.
+- Incomplete repayment plans cannot be saved and resumed.
+- The event stream records a plan start but not why someone leaves.
+- The US market uses templated messages, and Composer lacks US production approval.
+
+The pack does not establish that inbound SMS conversations, magic-link authentication or persistent conversational sessions already exist.
+
+Treat those as proposed product capabilities.
+
+## Revised opportunity
+
+**Transform collections from a series of scheduled one-way communications into an ongoing, contextual resolution conversation.**
+
+A consumer should be able to reply to a collections SMS with something natural, such as:
+
+"I want to pay but I don't get paid until next Friday."
+
+The assistant should understand the expressed need, identify what it can safely help with, and offer a meaningful next action.
+
+For example:
+
+- Capture a payday preference.
+- Explain the options available for the authenticated account.
+- Surface a focused payment-plan interface.
+- Save an unfinished draft for later where permitted.
+- Offer a secure return link.
+- Route an account question or affordability concern to support.
+- Reconsider subsequent contact based on current account state and prior interactions.
+
+The assistant should not force the consumer through a comprehensive portal experience unless they specifically want to access it.
+
+## Product hypothesis
+
+For engaged US consumers without an active repayment arrangement, a two-way contextual assistant with task-specific resolution interfaces will improve consumers' ability to progress and increase incremental settled collections compared with the existing fixed journey.
+
+## Commercial hypothesis
+
+Retain our existing 18,000-consumer engaged opportunity:
+
+| Cohort | Consumers | 30-day settled cash |
+|---|---:|---:|
+| Click only | 10,000 | $306,000 |
+| Authenticated portal visit | 6,000 | $324,000 |
+| Incomplete plan | 2,000 | $190,000 |
+| Total | 18,000 | $820,000 |
+
+Our earlier full-reach three-percentage-point uplift scenario represented approximately $148k annual contribution before new communications and support costs.
+
+This remains a useful sensitivity scenario, not a forecast.
+
+The conversational model introduces additional assumptions around SMS availability, response rate, AI interaction costs, escalations and conversion among responders.
+
+Do not change the commercial baseline unnecessarily. Extend the existing model to reflect the new delivery mechanism.
+
+---
+
+# 2. Revised information architecture
+
+Make the application have exactly three primary tabs, in this order:
+
+1. **SMS Simulator**
+2. **JIT Portal**
+3. **Financial Model**
+
+The SMS Simulator is the default landing page and main demonstration experience.
+
+Remove the existing journey simulator as a primary navigation destination. Refactor and reuse its event/state evaluation capabilities in the new interface.
+
+Keep the application visually polished but restrained.
+
+Prefer a simple, understandable interface over a complicated internal workflow dashboard.
+
+---
+
+# 3. Tab 1: SMS Simulator
+
+## Objective
+
+Demonstrate a realistic two-way SMS conversation between an InDebted resolution assistant and a consumer, driven by account state, conversational intent and existing journey orchestration.
+
+This should be the centrepiece of the interview demonstration.
+
+## Layout
+
+Use a three-column desktop layout.
+
+### Left: Consumer and scenario controls
+
+Display a compact consumer-state inspector:
+
+- Selected scenario.
+- Consumer/account identifier.
+- Current balance.
+- Payment status.
+- Plan status.
+- Pilot scope.
+- Channel permissions.
+- Account holds.
+- Consumer timezone.
+- Existing queued contact.
+- Most recent detected intent.
+- Conversation/session status.
+
+Provide a scenario selector using the supplied synthetic scenarios.
+
+Include state controls that allow us to simulate changes, for example:
+
+- Payment becomes pending.
+- Payment settles.
+- Plan becomes active.
+- Consumer opts out.
+- Hardship or dispute hold appears.
+- Consumer becomes ineligible for contact.
+- Contact window/budget is exhausted.
+
+State changes should trigger actual re-evaluation by the decision engine.
+
+Do not merely swap hard-coded visual outcomes.
+
+Add a reset action that restores the selected scenario to its original fixture state.
+
+### Centre: SMS conversation
+
+Create a credible phone-style SMS interface with:
+
+- InDebted assistant identity.
+- Chat bubbles for inbound and outbound messages.
+- Message timestamps.
+- Message status, clearly identifying simulated sending.
+- Scrollable conversation history.
+- Text input for custom consumer replies.
+- Send button.
+- Typing/loading state where useful.
+- Suggested example consumer responses for fast demonstration.
+- Secure links or contextual action cards when the assistant proposes an authenticated task.
+- Fixed disclosure/opt-out component placeholders where required.
+
+The conversation must be interactive.
+
+A consumer message should go through a real intent-processing and next-action flow, not simply append text or select a hard-coded response.
+
+Example inbound messages:
+
+"I want to pay but I don't get paid until next Friday."
+
+"Can I pay $50 every fortnight?"
+
+"Who is this creditor?"
+
+"I don't recognise this debt."
+
+"I'm struggling with money at the moment."
+
+"I started setting up a plan yesterday but got interrupted."
+
+"I've already paid."
+
+"STOP"
+
+Each should produce a demonstrably different outcome.
+
+Use short, credible and non-coercive responses.
+
+Do not place debt details in unverified message previews.
+
+The message history should clearly distinguish:
+
+- Previously scheduled outbound message.
+- Inbound consumer response.
+- Assistant's proposed reply.
+- Approved simulated reply.
+- Suppressed or blocked reply where relevant.
+
+### Right: Agent decisions and next action
+
+Show the intelligence behind the conversation without making it the primary visual experience.
+
+Include:
+
+- Detected intent.
+- Relevant consumer context.
+- Authoritative account checks.
+- Allowed actions.
+- Chosen next action.
+- Decision reasoning.
+- Approved template or response reference.
+- Escalation requirement.
+- Future scheduled contact changes.
+- Just-in-time portal action, if applicable.
+
+For example:
+
+**Detected intent:** Payday alignment  
+**Account:** Eligible  
+**Known preference:** Fortnightly income  
+**Next action:** Review approved arrangements  
+**UI:** Secure plan-matching interface  
+**Outbound schedule:** Existing queued contact retained or replaced according to policy
+
+The right panel should update as the conversation progresses.
+
+Keep the audit trace expandable rather than overwhelming the page.
+
+## Scenario presets
+
+Provide at least these demonstration scenarios:
+
+### A. Payday alignment
+
+Consumer has an outstanding account and no active repayment plan.
+
+They respond to outreach:
+
+"I get paid fortnightly. Can I start after next Friday?"
+
+The assistant:
+
+1. Recognises an explicit payday preference.
+2. Captures the declared timing and frequency.
+3. Offers to review existing creditor-approved arrangements.
+4. Opens a focused, authenticated plan-matching interface.
+5. If no arrangement fits, offers a structured help request.
+6. Does not invent a new date or promise approval.
+
+### B. Interrupted plan
+
+Consumer started but did not confirm a repayment arrangement.
+
+They ask to continue where they left off.
+
+Demonstrate the distinction between:
+
+- Today's unsupported save/resume behaviour.
+- The proposed resumable draft capability.
+
+If a draft was saved in the demonstration, offer a secure return link and restore that draft after authentication.
+
+If no draft exists, explain that the consumer must start a new selection and provide a useful entry point.
+
+Do not imply a past `plan_started` event contains saved form data.
+
+### C. Account question or dispute
+
+Consumer asks who the creditor is or questions their balance.
+
+The assistant should offer verified account information through a secure authenticated surface or route the issue to support.
+
+For a dispute, avoid continuing payment persuasion and demonstrate the appropriate hold/escalation route.
+
+Do not let the model arbitrarily set authoritative account holds. Use the source-state workflow and explicitly simulate any hold that a human or account service would apply.
+
+### D. Payment initiated
+
+Using supplied S06 or equivalent, the consumer initiates payment after the assistant has proposed a follow-up.
+
+The authoritative account state updates before the delayed event arrives.
+
+The system should recheck state and suppress inappropriate follow-up.
+
+### E. Opt-out
+
+Using supplied S05 or equivalent, the consumer opts out after an action has been queued.
+
+The source-state update immediately prevents later promotional/collections outreach despite delayed event delivery.
+
+### F. Hardship
+
+Consumer indicates financial hardship.
+
+Show appropriate acknowledgement and assistance routing, with no pressure to commit.
+
+Any formal hardship hold must be represented as an authoritative state change, not an unsupported model decision.
+
+## Original scenario compatibility
+
+Preserve the supplied S01 to S12 fixtures and relevant regression tests.
+
+The supplied scenarios are about contact/event decisions, not fully populated conversational histories.
+
+Extend them using separate, clearly labelled synthetic inbound SMS fixtures.
+
+Do not mutate the original files or claim the invented messages came from InDebted's dataset.
+
+---
+
+# 4. Two-way conversational agent
+
+## Core flow
+
+Implement a demonstrable pipeline:
+
+1. Receive simulated inbound SMS.
+2. Associate it with the correct conversation and consumer.
+3. Identify explicit intent using a deterministic classifier or optional AI sandbox.
+4. Retrieve relevant permitted context.
+5. Evaluate available next actions.
+6. Apply policy and account-state constraints.
+7. Select an approved response or proposed escalation.
+8. Update conversation state and scheduled actions.
+9. Generate a secure JIT interface link where appropriate.
+10. Log the decision and outcome.
+
+The conversation should retain useful context across turns.
+
+Example:
+
+Consumer: "I get paid every second Friday."
+
+Assistant: "Would you like to review repayment options that might fit your pay cycle?"
+
+Consumer: "Yes, around $50."
+
+The assistant should remember the fortnightly timing and evaluate the amount preference without asking the consumer to repeat everything.
+
+Conversation state should include:
+
+- Session ID.
+- Consumer/account ID.
+- Conversation history.
+- Last detected intent.
+- Explicit consumer preferences.
+- Proposed next action.
+- Related JIT action.
+- Current account status reference.
+- Last evaluated contact decision.
+- Simulated timestamps.
+
+## Optional LLM mode
+
+Add a toggle:
+
+- **Deterministic simulation**
+- **AI sandbox**, if feasible
+
+The deterministic mode must work fully without any API key or external network dependency.
+
+If an AI sandbox is implemented, allow an optional key through a server-side development configuration or session-scoped secure input.
+
+Never embed an API key in frontend source, commit it, persist it in local storage, or include it in logs.
+
+The model should only interpret intent and propose response content using permitted context.
+
+Do not give the model autonomous authority to:
+
+- Approve repayment terms.
+- Confirm plans.
+- Authorise payments.
+- Decide communication eligibility.
+- Override contact budgets.
+- Determine legal outcomes.
+- Release account holds.
+
+If a model proposes something unsupported, the policy/action layer must reject it.
+
+Do not make real provider integrations a dependency for the demonstration.
+
+## Response quality
+
+Create a handful of explicit evaluations:
+
+- Correct intent extraction.
+- Correct handling of multi-turn payday preferences.
+- No invented approved repayment terms.
+- Appropriate assistance for questions and hardship.
+- Opt-out handling.
+- Correct suppression after a pending payment.
+- No assumed permission based on inbound engagement.
+- Appropriate human escalation.
+
+For the initial US pilot proposal, treat generated outbound content as sandbox-only unless a human-approved production pathway exists.
+
+All new material journey or message behaviours require compliance review.
+
+---
+
+# 5. Tab 2: Just-in-Time Portal
+
+## Objective
+
+The portal becomes a collection of **focused task interfaces**, selected based on the consumer's context and next useful action.
+
+Instead of displaying a comprehensive dashboard by default, the assistant can open a purpose-built authenticated interaction.
+
+This tab should also function independently so the interviewer can explore the different JIT states.
+
+## Layout
+
+At the top, include a **JIT UI state selector**.
+
+Suggested states:
+
+1. Account overview / verification.
+2. View repayment options.
+3. Payday-aware plan matching.
+4. Draft plan setup.
+5. Resume saved draft.
+6. Review and confirm plan.
+7. Make one-off payment.
+8. Account/balance clarification.
+9. Request assistance.
+10. Payment pending / confirmation state.
+
+Each selection should render a realistic, focused consumer interface.
+
+Do not implement ten completely separate applications. Reuse components and state where possible.
+
+## Connection to SMS Simulator
+
+When the assistant generates a JIT action:
+
+- Create a JIT action descriptor referencing the consumer, intent and permitted action.
+- Display the relevant secure link or action card in the SMS thread.
+- Allow the demo operator to open the corresponding JIT UI.
+- Preselect the correct JIT state.
+- Carry forward permitted context from the conversation.
+- Load current authoritative account information after authentication.
+- Update session and conversation state when the action is completed.
+
+For example:
+
+Consumer states they are paid fortnightly.
+
+The assistant proposes plan matching.
+
+Opening the secure JIT action should display the plan-matching interface with fortnightly frequency preselected, without pre-authorising any payment.
+
+Avoid making the two tabs independent mock-ups.
+
+**A conversation-generated action should directly influence the JIT interface.**
+
+---
+
+# 6. Session management and resumable plan drafts
+
+This is an important proposed improvement to the existing experience.
+
+The supporting pack says unfinished plans cannot currently be saved and resumed, meaning a consumer who leaves the flow has to start over.
+
+We want to demonstrate a solution, while clearly identifying it as new functionality that would need to be built.
+
+## Session model
+
+Implement a lightweight session-management system supporting:
+
+- A persistent simulated conversation session.
+- A consumer identity/account association.
+- A JIT action reference.
+- A saved repayment-plan draft.
+- Last updated timestamp.
+- Session status.
+- Session expiry.
+- Explicit confirmed versus unconfirmed plan status.
+
+Prefer server-side state. Avoid storing account details or sensitive draft data in browser local storage.
+
+For the demo, a lightweight repository or SQLite store is acceptable if one is already available or easy to add. Otherwise use a clean session abstraction with a clearly disclosed persistence limitation.
+
+## Saving plan progress
+
+A consumer should be able to:
+
+1. Open approved repayment options.
+2. Select preferences or an existing approved arrangement.
+3. Start completing the arrangement.
+4. Save their draft without committing.
+5. Leave the flow.
+6. Return through a secure simulated link.
+7. Authenticate.
+8. Resume the draft.
+9. Revalidate the approved terms and account state.
+10. Explicitly confirm the arrangement.
+
+A saved draft is not an active plan or repayment agreement.
+
+Saving or resuming a draft must never automatically create a repayment obligation or trigger a debit.
+
+If the account state or creditor-approved options have changed, the system must invalidate or re-evaluate the draft rather than blindly restore outdated terms.
+
+If a draft has expired, show an appropriate recovery experience.
+
+Add an explicit "Save and return later" action if technically feasible.
+
+## Implementation priority
+
+Demonstrate at least one real save/leave/resume interaction with server-side state if feasible within the existing architecture.
+
+If full draft persistence threatens the core demonstration, implement the session contract and a bounded prototype, document the remaining production dependency and keep the main SMS and JIT flows working.
+
+Do not build a complete production-grade payment-plan persistence system under the take-home timebox.
+
+---
+
+# 7. Magic-link authentication and low-friction return
+
+This should reinforce the product thesis: a consumer should not have to repeatedly navigate the account portal or re-enter information just to continue a useful interaction.
+
+However, the case only establishes authentication before account access. It does not establish an existing magic-link mechanism.
+
+Treat magic links as a **proposed new authentication capability**.
+
+## Desired experience
+
+SMS conversation:
+
+"I can help you review your available arrangements."
+
+Consumer selects the secure action link.
+
+They authenticate through a short-lived, purpose-bound link or a similarly low-friction approved mechanism.
+
+They reach the relevant JIT interface.
+
+If the link refers to a saved draft, the draft is restored after identity and account association are verified.
+
+## Demo implementation
+
+Implement a simulated magic-link flow that is meaningfully more than an unconditional "authenticated=true" flag.
+
+Where practical:
+
+- Generate a cryptographically random opaque token.
+- Associate the token server-side with a consumer/account and action.
+- Give it a short expiry.
+- Make it single-use.
+- Validate it server-side.
+- Exchange it for an appropriately scoped authenticated demo session.
+- Use an HTTP-only session cookie.
+- Prevent a token from granting access to unrelated accounts or actions.
+- Reject expired or reused links.
+- Never log raw tokens.
+- Avoid exposing account-sensitive information before successful verification.
+
+Show the generated link inside the local simulator.
+
+Do not send real SMS or emails.
+
+Add a way to test expired links and invalid sessions.
+
+Label this clearly as **simulated authentication infrastructure, not production-ready identity verification**.
+
+Production authentication would require a separate security review covering identity verification, phone-number reassignment, shared devices, link leakage, throttling, abuse prevention, auditability and privacy.
+
+A link delivered to a phone number is not, by itself, sufficient proof of identity.
+
+## Friction reduction
+
+Use session state to avoid asking the consumer to repeat already captured non-sensitive preferences.
+
+Where appropriate, preserve a saved draft across authenticated sessions.
+
+Require explicit review and confirmation before any plan or payment is committed.
+
+This creates a direct answer to the interview finding that some consumers were interrupted and couldn't resume.
+
+---
+
+# 8. Decision orchestration and existing schedule
+
+Preserve our existing Elixir/Ash decision engine.
+
+Do not rewrite a functioning implementation unnecessarily.
+
+Extend it to accept conversational intent and JIT outcomes as additional context.
+
+## Important distinction
+
+There are two different classes of action:
+
+**Consumer-initiated service interaction**
+
+A consumer messages the assistant, asks a question or opens a secure interface.
+
+**Proactive collections outreach**
+
+InDebted decides to initiate another communication.
+
+Do not treat them as interchangeable.
+
+The supporting pack excludes requested service replies from the example scheduled contact budget, but that does not constitute unrestricted authorisation for arbitrary outbound conversation.
+
+Implement separate action classifications and document the assumptions requiring compliance confirmation.
+
+## Scheduled outreach
+
+The existing schedule remains the baseline and control journey.
+
+The adaptive system can propose:
+
+- Keep existing contact.
+- Replace with approved contextual template.
+- Reschedule within permitted windows.
+- Defer.
+- Suppress.
+
+Never blindly add follow-up messages simply because a consumer replied.
+
+Before any proactive send, re-read authoritative eligibility, permissions, payment/plan state, timezone and contact history.
+
+Preserve the supplied rolling contact limits:
+
+- One attempt per rolling 24 hours.
+- Three attempts per rolling seven days.
+- Monday to Friday, 9 am inclusive to 6 pm exclusive, in verified local time.
+- Cross-channel limits.
+- Account holds and consumer opt-outs.
+
+Preserve the existing regression scenarios, particularly delayed opt-outs, pending payments, unknown timezones, active plans, hardship holds and duplicate events.
+
+The conversational interface must not bypass the existing safety engine.
+
+---
+
+# 9. Financial Model tab
+
+**Keep the existing financial model largely intact.**
+
+Do not spend a large amount of time redesigning it.
+
+Maintain the current:
+
+- Cohort selector or population assumptions.
+- Baseline cash and contribution.
+- Incremental conversion lift.
+- Effective reach.
+- Investment cost.
+- Incremental revenue and contribution.
+- Payback period.
+- Conservative/base/upside sensitivity.
+
+Extend it with a small conversational-economics section.
+
+## Additional variables
+
+Add, where practical:
+
+- SMS-reachable share.
+- Percentage of consumers who respond.
+- Number of AI turns per conversation.
+- AI cost per turn or draft.
+- Extra support escalation rate.
+- Additional SMS sends per consumer.
+- Conversion uplift among reached/responding consumers.
+- Possible reduction in support conversations, defaulting to zero unless supported by evidence.
+
+The calculation should separate:
+
+1. Reach.
+2. Conversational participation.
+3. Incremental paid conversion.
+4. Additional settled cash.
+5. InDebted's retained 15% revenue.
+6. 2% payment cost.
+7. Incremental messaging, AI and support costs.
+8. Annualised contribution.
+9. Investment payback.
+
+The supplied Composer cost is $0.012 per draft/review attempt. Do not misrepresent that as a validated cost for an arbitrary inbound multi-turn conversational model.
+
+If modelling multi-turn LLM costs, use an editable assumption clearly labelled as hypothetical.
+
+## Attribution
+
+The primary metric remains incremental 30-day settled cash per randomised consumer.
+
+Do not calculate the commercial experiment's success using only people who replied, because responders are self-selected.
+
+The existing $148k full-reach scenario should remain available as a sensitivity case, not as the expected return.
+
+Do not force a $500k headline or assume all engaged consumers are SMS-reachable.
+
+---
+
+# 10. UI and implementation priorities
+
+## Priority 0: Essential
+
+- SMS Simulator becomes the main tab.
+- Existing simulator UI is replaced or substantially refactored.
+- Consumer/scenario/state selector works.
+- Two-way chat simulation works.
+- Inbound intent changes actual decision behaviour.
+- Existing safety engine remains authoritative.
+- JIT Portal becomes the second tab.
+- JIT state selector works.
+- SMS-to-JIT action handoff works.
+- Financial Model remains functional.
+- S04, S05 and S06 remain demonstrable.
+- At least one payday conversation and one suppression scenario work.
+- Application builds and runs cleanly.
+
+## Priority 1: Strong differentiation
+
+- Multi-turn conversation memory.
+- Server-side simulated session state.
+- Save and resume a draft plan.
+- Simulated secure magic link.
+- Contextual JIT prepopulation.
+- Before/after scheduled contact comparison.
+- Account question or hardship escalation.
+- Expandable agent decision trace.
+
+## Priority 2: Optional
+
+- Live LLM sandbox with a developer-provided API key.
+- More natural message generation.
+- Additional scenario permutations.
+- Message quality evaluations.
+- More polished conversation transitions.
+
+Do not let Priority 2 block Priority 0 or Priority 1.
+
+---
+
+# 11. Update the documentation
+
+Documentation must reflect the new product thesis and actual implementation.
+
+Do not leave the repository describing a generic journey simulator when the product is now a conversational assistant.
+
+## Update `README.md`
+
+Explain:
+
+- What Adaptive Resolution is.
+- The new two-way conversational thesis.
+- The three primary tabs.
+- What the working demonstration does.
+- How to run frontend and backend.
+- How scenario selection works.
+- How SMS input is simulated.
+- How JIT links and sessions work.
+- How to demonstrate the normal and exception cases.
+- What is simulated versus implemented.
+- AI tools and models used during development.
+- Important limitations.
+
+Lead with a very concise description of the product so a reviewer immediately understands it.
+
+## Update `DECISION.md`
+
+Preserve the strict two-page limit.
+
+Update the recommendation from generic event-driven messaging to:
+
+**A limited investment in two-way conversational resolution, supported by contextual orchestration and task-specific authenticated interfaces.**
+
+The note should include:
+
+1. Problem and target consumer segment.
+2. Evidence from cohorts, interviews and operational observations.
+3. Why two-way conversation may solve more of the problem than one-way contextual reminders.
+4. A realistic first pilot and deliberate exclusions.
+5. Commercial sensitivity and costs.
+6. Biggest product and technical assumptions.
+7. US AI approval, inbound SMS and authentication dependencies.
+8. Consumer safety and AI autonomy boundaries.
+9. Four-week plan, measurement and investment gates.
+10. Credible alternative considered, namely improving outbound orchestration or the portal alone.
+
+Do not pretend the four-week pilot includes a fully autonomous conversational collections agent.
+
+Distinguish the ambitious demonstration from the smaller pilot scope.
+
+The production pilot requires explicit compliance approval, and the brief does not guarantee that inbound SMS infrastructure exists.
+
+## Update `docs/discovery.md`
+
+Capture the progression in our thinking:
+
+1. Composer personalises outbound content, not journeys.
+2. Initial consideration of abandoned-plan follow-ups.
+3. Broader 18,000-consumer engaged opportunity.
+4. Interest in payday-aware plan assistance.
+5. Recognition that portal-only solutions fail to address re-engagement.
+6. Recognition that outbound-only orchestration remains one-way.
+7. Revised thesis: persistent two-way conversations with JIT action surfaces.
+
+Explain why this is an evolution, not a complete abandonment of the original product reasoning.
+
+Retain rejected alternatives and their trade-offs.
+
+## Update `docs/architecture.md`
+
+Show the revised architecture:
+
+```text
+Existing scheduled outreach
+           |
+           v
+    SMS conversation
+           |
+    Inbound message
+           |
+           v
+   Intent extraction
+           |
+           v
+   Account + session state
+           |
+           v
+ Elixir / Ash decision layer
+           |
+    Policy + safety rules
+           |
+    +------+------+------+
+    |             |      |
+    v             v      v
+ SMS response   JIT UI  Human help
+    |             |
+    |          Auth/session
+    |             |
+    +------+------+
+           |
+       Outcomes
+           |
+       Analytics
+           |
+ Future contact orchestration
+```
+
+Explain which components are implemented, mocked or proposed.
+
+Include data contracts for conversation sessions, intent records, JIT action descriptors, saved drafts and magic-link verification.
+
+## Update `docs/assumptions.md`
+
+Explicitly track:
+
+- SMS reply capability not guaranteed by the source pack.
+- Unknown SMS-reachable population.
+- Unknown consumer willingness to converse with an AI assistant.
+- Unknown causal lift.
+- Missing real approved-plan option data in the scenario JSON.
+- Magic-link authentication is a proposed capability.
+- Saved draft plans are not supported in the described current portal.
+- US Composer production approval does not exist.
+- Potential privacy/security implications of persistent conversation state.
+- Unvalidated conversation and support costs.
+
+For each, include how we would validate it.
+
+## Update `docs/build-log.md`
+
+Record:
+
+- The pivot from journey simulator to conversational interface.
+- Components reused.
+- Components refactored.
+- New code added.
+- Tests and known limitations.
+- AI involvement.
+- Work deliberately deferred.
+
+Be factual about what works.
+
+Do not describe an unfinished feature as production-ready.
+
+## Four-week pilot changes
+
+Update the pilot to reflect realistic dependencies:
+
+Week 1: Confirm inbound SMS feasibility, identity/security approach, compliance constraints, intents and content.
+
+Week 2: Implement a limited inbound interaction and policy-safe action routing.
+
+Week 3: Add focused authenticated UI, instrumentation and the smallest viable session-resume capability if feasible.
+
+Week 4: Integration testing, human compliance approval and a limited controlled launch, if prerequisites are met.
+
+If inbound infrastructure, security or US content approval cannot be established in time, recommend a constrained experiment or defer production rather than claiming the launch is feasible.
+
+Maintain a randomised control against the existing journey.
+
+---
+
+# 12. Parallel execution
+
+If sub-agents or multiple Codex threads are available, split the work without overlapping file ownership.
+
+**Frontend agent**
+
+Own SMS Simulator and JIT Portal UI.
+
+Replace the old simulator, build chat interaction, scenario/state controls and JIT state selector.
+
+Preserve or reuse existing components where practical.
+
+**Backend agent**
+
+Own conversation sessions, intent extraction, JIT action contracts, saved drafts and simulated magic-link authentication.
+
+Preserve the existing Elixir/Ash decision and compliance engine.
+
+**Commercial/documentation agent**
+
+Own commercial model assumptions and documentation updates.
+
+Do not modify application code unless a separate commercial-analysis module is explicitly assigned.
+
+**Lead integration agent**
+
+Own shared contracts, navigation integration, frontend-to-backend connections, root configuration, end-to-end testing and final README verification.
+
+Establish shared contracts first. Do not permit parallel agents to overwrite one another's work.
+
+If working in one shared tree, coordinate file ownership strictly. Prefer isolated worktrees where supported.
+
+---
+
+# 13. Definition of done
+
+The new demonstration is complete when:
+
+- [ ] SMS Simulator is the default main tab.
+- [ ] JIT Portal is the second tab.
+- [ ] Financial Model is the third tab.
+- [ ] The old confusing journey simulator has been replaced.
+- [ ] Selecting scenarios changes the consumer/account state.
+- [ ] Typing an inbound SMS produces a meaningful evaluated response.
+- [ ] Conversation state survives subsequent turns.
+- [ ] Payday-related intent generates a relevant JIT action.
+- [ ] JIT state selection works independently.
+- [ ] SMS-generated JIT actions open the appropriate UI.
+- [ ] Existing creditor-approved terms are respected.
+- [ ] At least one partial-plan save/resume path is demonstrated, or explicitly documented as incomplete.
+- [ ] Magic-link authentication is simulated with meaningful validation, or clearly documented as an unimplemented proposal.
+- [ ] Pending payment and opt-out suppress inappropriate follow-ups.
+- [ ] Existing compliance regression cases still pass.
+- [ ] Financial Model calculations remain correct.
+- [ ] Conversational economics are represented honestly.
+- [ ] README and decision note reflect the pivot.
+- [ ] The decision note stays within two pages.
+- [ ] The application runs locally with simple instructions.
+- [ ] The demo can be explained and modified during the interview.
+
+---
+
+# 14. Execute now
+
+Start by inspecting the existing implementation.
+
+Give me a concise summary of:
+
+- What can be reused.
+- What must be replaced.
+- What new session/authentication infrastructure is necessary.
+- Which workstreams can run in parallel.
+- Any conflicts with the original supporting pack.
+- The shortest viable path to a working demo.
+
+Then implement immediately.
+
+**Do not rebuild the entire app. Do not stop after creating a plan. Do not spend time inventing production infrastructure that the case doesn't require.**
+
+Prioritise the coherent, demonstrable experience:
+
+**Consumer receives SMS → replies naturally → assistant understands intent → policy and state are evaluated → relevant response or secure JIT action appears → consumer can act or return later → subsequent contact adapts appropriately.**
+
+That is the product we want the interviewer to see.
+
+Make the SMS conversation the star of the demonstration, and make the existing decision engine visibly power it.

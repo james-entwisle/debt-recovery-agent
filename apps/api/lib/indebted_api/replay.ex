@@ -1,6 +1,6 @@
 defmodule IndebtedApi.Replay do
   @moduledoc "Pure simulated account, event and contact transitions. No provider or payment integration."
-  alias IndebtedApi.{AdaptiveResolution, Fixtures, Policy, Portal}
+  alias IndebtedApi.{AdaptiveResolution, Conversation, Fixtures, Policy, Portal}
   alias IndebtedApi.AdaptiveResolution.{ApprovedPlanOption, JourneyDecision}
 
   @patch_keys ~w(balance_usd pilot_scope_allowed language timezone email_allowed sms_allowed payment_status plan_status holds contact_window_override)
@@ -30,7 +30,8 @@ defmodule IndebtedApi.Replay do
       support_requests: [],
       confirmed_plan: nil,
       payment: nil,
-      decision: nil
+      decision: nil,
+      conversation: Conversation.new(now)
     }
 
     run |> ingest() |> evaluate("session_opened")
@@ -125,7 +126,12 @@ defmodule IndebtedApi.Replay do
   def command(run, %{"type" => "match_preferences", "preferences" => preferences}) do
     with :ok <- Portal.validate_preferences(preferences) do
       {:ok,
-       %{run | preferences: preferences, intent: "payday_preference"}
+       %{
+         run
+         | preferences: preferences,
+           intent: "payday_preference",
+           conversation: Map.put(run.conversation, "preferences", preferences)
+       }
        |> audit("preferences_recorded", %{
          "preferences" => preferences,
          "source" => "explicit_consumer_choice"
@@ -145,26 +151,14 @@ defmodule IndebtedApi.Replay do
         "Request logged for weekday business hours. An immediate reply is not promised."
     }
 
-    account = account(run)
-
-    hold =
-      case run.intent do
-        "affordability_concern" -> "hardship_review"
-        "balance_question" -> "account_question_review"
-        _ -> nil
-      end
-
-    run =
-      if hold,
-        do: put_patch(run, %{"holds" => Enum.uniq((account["holds"] || []) ++ [hold])}),
-        else: run
-
     {:ok,
      %{
        run
        | support_requests: run.support_requests ++ [request],
-         intent: run.intent || "request_help"
+         intent: "request_help",
+         conversation: Map.put(run.conversation, "escalation_pending", true)
      }
+     |> Conversation.outcome("request_help")
      |> audit("help_request_logged", request)
      |> evaluate("assistance_route_checked")}
   end
@@ -180,6 +174,15 @@ defmodule IndebtedApi.Replay do
     option = Enum.find(portal["options"], &(&1["id"] == id && &1["matches"]))
 
     cond do
+      run.conversation["draft"] && run.conversation["draft"]["option_id"] == id &&
+          (run.conversation["draft"]["status"] == "invalid" ||
+             DateTime.compare(Policy.dt(run.conversation["draft"]["expires_at_utc"]), run.now) !=
+               :gt) ->
+        {:error, "draft_expired_or_invalid_select_and_save_again"}
+
+      run.conversation["escalation_pending"] ->
+        {:error, "human_review_required_before_plan"}
+
       !Portal.available?(current) ->
         {:error, "account_not_available_for_plan"}
 
@@ -200,6 +203,7 @@ defmodule IndebtedApi.Replay do
 
         {:ok,
          %{put_patch(run, %{"plan_status" => "active"}) | confirmed_plan: plan}
+         |> Conversation.outcome("confirm_plan")
          |> audit("plan_explicitly_confirmed", %{"option" => plan, "no_debit" => true})
          |> evaluate("plan_status_checked")}
     end
@@ -212,7 +216,8 @@ defmodule IndebtedApi.Replay do
       when is_number(amount) do
     current = account(run)
 
-    if Portal.available?(current) && amount > 0 && amount <= current["balance_usd"] do
+    if !run.conversation["escalation_pending"] && Portal.available?(current) && amount > 0 &&
+         amount <= current["balance_usd"] do
       payment = %{
         "amount_usd" => amount,
         "status" => "pending",
@@ -222,6 +227,7 @@ defmodule IndebtedApi.Replay do
 
       {:ok,
        %{put_patch(run, %{"payment_status" => "pending"}) | payment: payment}
+       |> Conversation.outcome("simulate_payment")
        |> audit("payment_initiated_simulation", payment)
        |> evaluate("payment_status_checked")}
     else
@@ -229,7 +235,160 @@ defmodule IndebtedApi.Replay do
     end
   end
 
+  def command(run, %{"type" => "resolve_support_review"}) do
+    {:ok,
+     %{run | intent: nil, conversation: Map.put(run.conversation, "escalation_pending", false)}
+     |> audit("human_review_resolution_simulated", %{
+       "operator_control" => true,
+       "account_holds_unchanged" => true
+     })
+     |> evaluate("human_review_resolution_checked")}
+  end
+
+  def command(run, %{"type" => "exhaust_contact_budget"}) do
+    attempt = %{
+      "attempt_id" => "operator-budget-#{run.revision}",
+      "channel" => "email",
+      "attempted_at_utc" => Policy.iso(DateTime.add(run.now, -60)),
+      "delivery_result" => "simulated_success"
+    }
+
+    {:ok,
+     %{run | history: run.history ++ [attempt]}
+     |> audit("contact_budget_exhausted_simulation", %{
+       "attempt" => attempt,
+       "operator_control" => true
+     })
+     |> evaluate("synthetic_recent_attempt_checked")}
+  end
+
+  def command(run, %{"type" => "receive_sms", "text" => text}) do
+    with {:ok, next} <- Conversation.receive(run, text) do
+      {:ok,
+       next
+       |> audit("inbound_sms_evaluated", %{"decision" => next.conversation["decision"]})
+       |> evaluate("conversation_policy_checked")}
+    end
+  end
+
+  def command(run, %{"type" => "create_jit", "state" => state}) do
+    with {:ok, next, action} <- Conversation.create_jit(run, state) do
+      {:ok, audit(next, "jit_action_created", %{"action_id" => action["id"], "state" => state})}
+    end
+  end
+
+  def command(run, %{"type" => "save_draft", "option_id" => id}) do
+    current_portal = portal(run)
+    option = Enum.find(current_portal["options"], &(&1["id"] == id && &1["matches"]))
+
+    if !run.conversation["escalation_pending"] && Portal.available?(account(run)) && option &&
+         option["total_usd"] == account(run)["balance_usd"] do
+      draft = %{
+        "id" => "draft-" <> Base.url_encode64(:crypto.strong_rand_bytes(12), padding: false),
+        "option_id" => id,
+        "status" => "saved",
+        "saved_at_utc" => Policy.iso(run.now),
+        "expires_at_utc" => Policy.iso(DateTime.add(run.now, 86400)),
+        "preferences" => run.preferences,
+        "approved_terms" => Map.drop(option, ["matches", "reason_codes"])
+      }
+
+      {:ok,
+       %{run | conversation: Map.put(run.conversation, "draft", draft)}
+       |> Conversation.outcome("save_draft")
+       |> audit("draft_saved", %{"draft_id" => draft["id"], "no_agreement_or_debit" => true})}
+    else
+      {:error, "approved_matching_option_and_available_account_required"}
+    end
+  end
+
+  def command(run, %{"type" => "resume_draft"}) do
+    draft = run.conversation["draft"]
+
+    cond do
+      is_nil(draft) ->
+        {:error, "no_saved_draft"}
+
+      draft["status"] not in ["saved", "resumed"] ->
+        {:error, "draft_not_resumable"}
+
+      DateTime.compare(Policy.dt(draft["expires_at_utc"]), run.now) != :gt ->
+        {:ok, invalidate_draft(run, "expired")}
+
+      run.conversation["escalation_pending"] ->
+        {:ok, invalidate_draft(run, "human_review_required")}
+
+      !Portal.available?(account(run)) ->
+        {:ok, invalidate_draft(run, "account_changed")}
+
+      true ->
+        restored = %{run | preferences: draft["preferences"]}
+
+        option =
+          Enum.find(
+            portal(restored)["options"],
+            &(&1["id"] == draft["option_id"] && &1["matches"])
+          )
+
+        if option && Map.drop(option, ["matches", "reason_codes"]) == draft["approved_terms"] &&
+             option["total_usd"] == account(run)["balance_usd"] do
+          {:ok,
+           %{
+             restored
+             | conversation:
+                 Map.put(restored.conversation, "draft", Map.put(draft, "status", "resumed"))
+           }
+           |> Conversation.outcome("resume_draft")
+           |> audit("draft_resumed", %{
+             "draft_id" => draft["id"],
+             "fresh_account_and_terms_checked" => true
+           })}
+        else
+          {:ok, invalidate_draft(run, "approved_terms_changed")}
+        end
+    end
+  end
+
+  def command(run, %{"type" => "expire_draft"}) do
+    case run.conversation["draft"] do
+      nil ->
+        {:error, "no_saved_draft"}
+
+      draft ->
+        {:ok,
+         %{
+           run
+           | conversation:
+               Map.put(
+                 run.conversation,
+                 "draft",
+                 Map.put(draft, "expires_at_utc", Policy.iso(DateTime.add(run.now, -1)))
+               )
+         }
+         |> audit("draft_expiry_simulated", %{"operator_control" => true})}
+    end
+  end
+
   def command(_, _), do: {:error, "unknown_or_invalid_command"}
+
+  defp invalidate_draft(run, reason),
+    do:
+      %{
+        run
+        | conversation:
+            Map.put(
+              run.conversation,
+              "draft",
+              Map.merge(run.conversation["draft"], %{
+                "status" => "invalid",
+                "invalid_reason" => reason
+              })
+            )
+      }
+      |> audit("draft_invalidated", %{
+        "reason" => reason,
+        "recovery" => "select_current_approved_options"
+      })
 
   def advance(run, target) do
     milestones =
@@ -297,6 +456,7 @@ defmodule IndebtedApi.Replay do
 
   def view(run) do
     %{
+      "conversation" => run.conversation,
       "session_id" => run.id,
       "scenario_id" => run.scenario["scenario_id"],
       "consumer_id" => run.scenario["consumer_id"],
@@ -354,7 +514,9 @@ defmodule IndebtedApi.Replay do
       "creditor_display_name" => plans["creditor_display_name"],
       "fixture_source" => plans["source"],
       "options" => options,
-      "can_confirm" => Portal.available?(account) && Enum.any?(options, & &1["matches"]),
+      "can_confirm" =>
+        !run.conversation["escalation_pending"] && Portal.available?(account) &&
+          Enum.any?(options, & &1["matches"]),
       "review_token" => token,
       "matching_rule" =>
         "Same selected frequency, first payment on or within six days after stated payday, and instalment at or below the stated amount. Preferences are optional; these checks do not establish affordability."
@@ -403,6 +565,11 @@ defmodule IndebtedApi.Replay do
       Policy.handoff_reasons(current, contact["channel"], run.history, run.now, %{
         "stopped" => run.stopped && contact["pilot"] == true
       })
+
+    reasons =
+      if run.conversation["escalation_pending"],
+        do: reasons ++ ["consumer_requested_pause"],
+        else: reasons
 
     reasons =
       if contact["pilot"] == true &&

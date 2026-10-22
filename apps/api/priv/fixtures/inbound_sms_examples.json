@@ -1,0 +1,13 @@
+{
+  "source": "Invented candidate V2 conversation examples; not supplied InDebted data",
+  "examples": [
+    {"intent": "payday_alignment", "text": "I get paid every second Friday."},
+    {"intent": "plan_preference", "text": "Yes, around $50."},
+    {"intent": "interrupted_plan", "text": "I started setting up a plan yesterday but got interrupted."},
+    {"intent": "account_question", "text": "Who is this creditor?"},
+    {"intent": "dispute", "text": "I don't recognise this debt."},
+    {"intent": "hardship", "text": "I'm struggling with money at the moment."},
+    {"intent": "already_paid", "text": "I've already paid."},
+    {"intent": "opt_out", "text": "STOP"}
+  ]
+}

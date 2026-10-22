@@ -1,6 +1,6 @@
 defmodule IndebtedApi.ApiController do
   use Phoenix.Controller, formats: [:json]
-  alias IndebtedApi.{Demonstration, Fixtures}
+  alias IndebtedApi.{Demonstration, Fixtures, Session}
 
   def health(conn, _), do: json(conn, %{status: "ok", service: "indebted_api"})
 
@@ -45,6 +45,64 @@ defmodule IndebtedApi.ApiController do
         command_id: params["command_id"],
         command: params["command"]
       })
+
+  def jit_link(conn, %{"id" => id} = params),
+    do: result(conn, Session.issue_link(id, params["action_id"]))
+
+  def jit_verify(conn, params) do
+    response = Session.verify_link(params["session_id"], params["action_id"], params["token"])
+
+    case Map.pop(response, "auth_cookie") do
+      {nil, response} ->
+        result(conn, response)
+
+      {auth, response} ->
+        conn
+        |> put_resp_cookie("indebted_jit", auth,
+          http_only: true,
+          same_site: "Strict",
+          secure: false,
+          max_age: 600,
+          path: "/"
+        )
+        |> result(response)
+    end
+  end
+
+  def jit_view(conn, %{"id" => id, "action_id" => action}) do
+    conn = fetch_cookies(conn)
+    result(conn, Session.authorized_view(id, action, conn.req_cookies["indebted_jit"]))
+  end
+
+  def jit_command(conn, %{"id" => id, "action_id" => action} = params) do
+    conn = fetch_cookies(conn)
+
+    result(
+      conn,
+      Session.authorized_act(
+        id,
+        action,
+        conn.req_cookies["indebted_jit"],
+        params["command_id"],
+        params["command"]
+      )
+    )
+  end
+
+  defp result(conn, %{"ok" => false, "error" => reason} = response) do
+    status =
+      cond do
+        reason in ~w(session_not_found session_expired jit_action_not_found) -> 404
+        reason == "jit_action_not_permitted_for_task" -> 403
+        String.starts_with?(reason, "jit_") || reason == "invalid_jit_link" -> 401
+        reason == "command_id_conflict" -> 409
+        true -> 422
+      end
+
+    conn |> put_status(status) |> json(response)
+  end
+
+  defp result(conn, response), do: json(conn, response)
 
   def economics(conn, params),
     do: action(conn, :economics, %{assumptions: Map.drop(params, ["id"])})

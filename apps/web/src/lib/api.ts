@@ -23,6 +23,40 @@ const optionSchema = z.object({
   matches: z.boolean(),
   reason_codes: z.array(z.string()),
 });
+export const jitStateSchema = z.enum([
+  "account", "options", "payday", "draft", "resume", "review", "payment",
+  "clarification", "help", "pending",
+]);
+export type JitState = z.infer<typeof jitStateSchema>;
+const preferencesSchema = z.object({
+  payday: z.string().optional(),
+  frequency: z.string().optional(),
+  max_instalment_usd: z.number().optional(),
+});
+const conversationSchema = z.object({
+  status: z.string(),
+  mode: z.literal("deterministic"),
+  last_intent: z.string().nullable(),
+  declared_timing: z.string().nullable().optional(),
+  messages: z.array(z.object({
+    id: z.string(), direction: z.enum(["inbound", "outbound"]), kind: z.string(),
+    text: z.string(), at_utc: z.string(), status: z.string(),
+    template_id: z.string().nullable(), jit_action_id: z.string().nullable(),
+  })),
+  decision: z.object({
+    intent: z.string(), classification: z.string(), allowed_actions: z.array(z.string()),
+    chosen_action: z.string(), reasons: z.array(z.string()), escalation_required: z.boolean(),
+    template_id: z.string().nullable(),
+  }).nullable(),
+  jit_actions: z.array(z.object({
+    id: z.string(), consumer_id: z.string(), intent: z.string(), state: jitStateSchema,
+    status: z.string(), created_at_utc: z.string(),
+  })),
+  draft: z.object({
+    id: z.string(), option_id: z.string(), status: z.string(), saved_at_utc: z.string(),
+    expires_at_utc: z.string(), preferences: preferencesSchema, invalid_reason: z.string().nullable().optional(),
+  }).nullable(),
+});
 export const viewSchema = z.object({
   session_id: z.string(),
   scenario_id: z.string(),
@@ -42,11 +76,8 @@ export const viewSchema = z.object({
     holds: z.array(z.string()).nullable(),
   }),
   intent: z.string().nullable(),
-  preferences: z.object({
-    payday: z.string().optional(),
-    frequency: z.string().optional(),
-    max_instalment_usd: z.number().optional(),
-  }),
+  preferences: preferencesSchema,
+  conversation: conversationSchema,
   events: z.array(
     z.object({
       event_id: z.string(),
@@ -165,7 +196,17 @@ export type Command =
     }
   | { type: "simulate_payment"; amount_usd: number; confirmed: true }
   | { type: "set_stop"; stopped: boolean }
-  | { type: "handoff"; contact_id: string };
+  | { type: "handoff"; contact_id: string }
+  | { type: "receive_sms"; text: string }
+  | { type: "create_jit"; state: JitState }
+  | { type: "save_draft"; option_id: string }
+  | { type: "resume_draft" | "expire_draft" | "expire_jit_links" | "expire_jit_session" | "exhaust_contact_budget" | "resolve_support_review" }
+  | { type: "patch_account"; patch: {
+      balance_usd?: number; pilot_scope_allowed?: boolean; language?: string;
+      timezone?: string; email_allowed?: boolean; sms_allowed?: boolean;
+      payment_status?: string; plan_status?: string; holds?: string[];
+      contact_window_override?: { start_hour: number; end_hour: number; weekdays: number[] };
+    } };
 export type Scenario = { id: string; label: string };
 const responseSchema = z.discriminatedUnion("ok", [
   z.object({ ok: z.literal(true), view: viewSchema }),
@@ -221,6 +262,17 @@ export const api = {
     session(`/sessions/${encodeURIComponent(id)}/commands`, {
       command_id: crypto.randomUUID(),
       command,
+    }),
+  jitLink: async (sessionId: string, actionId: string) =>
+    z.object({ ok: z.literal(true), token: z.string(), action_id: z.string(), expires_at_utc: z.string() })
+      .parse(await requestRaw(`/sessions/${encodeURIComponent(sessionId)}/jit-links`, { action_id: actionId })),
+  jitVerify: (sessionId: string, actionId: string, token: string) =>
+    session("/jit/verify", { session_id: sessionId, action_id: actionId, token }),
+  jitView: (sessionId: string, actionId: string) =>
+    session(`/jit/${encodeURIComponent(sessionId)}/${encodeURIComponent(actionId)}`),
+  jitCommand: (sessionId: string, actionId: string, command: Command) =>
+    session(`/jit/${encodeURIComponent(sessionId)}/${encodeURIComponent(actionId)}/commands`, {
+      command_id: crypto.randomUUID(), command,
     }),
 };
 export function money(amount: number) {

@@ -1,6 +1,6 @@
 # Local demonstration contract
 
-The current Phoenix routes and `IndebtedApi.Replay.view/1` are the source of truth for this contract. Next.js proxies `/api/*` to `API_URL`, default `http://127.0.0.1:4000`. All records and effects are synthetic. No authentication or external provider is implemented.
+The current Phoenix routes and `IndebtedApi.Replay.view/1` are the source of truth for this contract. Next.js proxies `/api/*` to `API_URL`, default `http://127.0.0.1:4000`. All records and effects are synthetic. Scoped, expiring demo-token authentication is implemented for JIT tasks. Identity verification and external providers remain simulated. The operator session routes intentionally expose synthetic data locally and are not production consumer endpoints.
 
 ## HTTP
 
@@ -54,3 +54,27 @@ Experiment `assigned_arm` is a deterministic synthetic consumer assignment. `pre
 ## Plan schedule presentation
 
 Each synthetic approved option and any confirmed plan includes `last_payment_date` and `payment_schedule: [{date, amount_usd}]`. The backend derives these only from fixed fixture dates, frequency, amount and instalment count. Monthly dates preserve the original calendar day with end-of-month clamping. Weekly and fortnightly fixtures end on 6 November 2026; the monthly fixture ends on 2 January 2027. These are scheduled dates, not settlement records or a guaranteed payoff date. No payment-method management is implemented.
+
+
+## V2 conversation and focused tasks
+
+This section describes the implemented additive contract. The [V2 development agreement](v2-contract.md) records the original integration plan and ownership. `conversation` is part of each complete view. It contains deterministic mode, status, last intent, declared timing, explicit preferences, proposed/approved/suppressed message records, current decision, JIT descriptors and one unconfirmed server-side draft. Messages carry direction, kind, timestamp, status, template reference and optional action ID. The original contact policy result remains separate from the requested-service-reply decision.
+
+New operator commands are `receive_sms {text}`, `create_jit {state}`, `expire_draft`, `expire_jit_links`, `expire_jit_session` and `exhaust_contact_budget`. Source changes still use `patch_account`. Formal hardship/dispute holds require these explicit operator/account-service controls. Intent recognition alone cannot apply one.
+
+JIT states are `account`, `options`, `payday`, `draft`, `resume`, `review`, `payment`, `clarification`, `help` and `pending`. `save_draft {option_id}` stores the currently matching fixed terms and preferences, with no agreement or debit. `resume_draft` rechecks expiry, current account and exact approved terms. An invalid draft returns a recovery state; a successful HTTP status alone does not establish a restored draft. `confirm_plan` retains explicit confirmation and the current review token.
+
+| Route | Purpose |
+| --- | --- |
+| `POST /sessions/:id/jit-links {action_id}` | Local operator issues a random opaque link token for one account/action. Returns token once and wall-clock expiry; no account financial detail. |
+| `POST /jit/verify {session_id, action_id, token}` | Validate and consume token; return current view and an HTTP-only SameSite Strict cookie scoped server-side to the account/action. |
+| `GET /jit/:id/:action_id` | Load a fresh view only with a valid scoped cookie. |
+| `POST /jit/:id/:action_id/commands {command_id, command}` | Validate cookie, task-purpose command allowlist, idempotency and current domain rules. |
+
+Tokens use cryptographic randomness; only hashes remain in server state. Link expiry is 120 seconds and scoped session expiry is 600 seconds on the real server clock. Draft expiry is 24 hours on the simulated scenario clock, bounded further by session inactivity/restart. Raw tokens are excluded from views/audit and filtered from Phoenix parameters. UI links use a fragment rather than a token in the HTTP URL path/query. The checkbox explicitly simulates an identity check; it is not proof of identity.
+
+Missing/expired/incorrect cookies and invalid/reused/expired/wrong-purpose tokens return 401. A command outside the task allowlist returns 403. Missing session/action returns 404, conflicting command ID returns 409, and a rejected domain command returns 422. Cookies intentionally omit Secure for local HTTP, so these routes and operator endpoints must not be exposed as production infrastructure.
+
+Conversation outcomes append a labelled service outcome to the same SMS session. Incoming replies neither create proactive contacts nor reset rolling budgets. A persistent assistance route pauses payment prompts without inventing a formal account hold. Human compliance must validate permitted service-reply classification before a real US pilot.
+
+The conversational financial section calculates independently in a typed local module and has a Python reproducibility companion. It inherits the selected population, cohort mix, cash multiplier and investment while keeping SMS reach, response, responder lift and new costs separate from the preserved backend economics endpoint. No responder-only causal result is implied.
