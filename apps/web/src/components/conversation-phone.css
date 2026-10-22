@@ -97,7 +97,7 @@
   .app-shell:has(.imsg-page) .app-header { height: auto; min-height: 0; }
 }
 @media (max-width: 620px) {
-  .app-shell:has(.imsg-page) .app-header { height: auto; min-height: 108px; padding-top: 16px; padding-bottom: 0; }
+  .app-shell:has(.imsg-page) .app-header { height: auto; min-height: 0; padding: 16px 20px 12px; }
 }
 /* phone-only is more specific than the stacked layout above, so small screens must opt out here. */
 @media (max-width: 860px) {
