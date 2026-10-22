@@ -18,3 +18,6 @@ __pycache__/
 
 # Local rendering previews
 tmp/
+
+# Local dependency symlink for the video project
+output/video/adaptive-resolution/node_modules
