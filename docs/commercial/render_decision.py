@@ -80,7 +80,7 @@ def build():
     def footer(canvas, document):
         canvas.setFont("Helvetica", 9)
         canvas.setFillColor(colors.HexColor("#586573"))
-        canvas.drawString(50, 29, "InDebted case study | Synthetic exercise | 22 October 2026")
+        canvas.drawString(50, 29, "Case study | Synthetic exercise | 22 October 2026")
         canvas.drawRightString(A4[0] - 50, 29, str(document.page))
 
     doc = SimpleDocTemplate(str(OUTPUT), pagesize=A4, leftMargin=50, rightMargin=50,

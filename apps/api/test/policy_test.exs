@@ -1,6 +1,6 @@
-defmodule IndebtedApi.PolicyTest do
+defmodule RecoveryApi.PolicyTest do
   use ExUnit.Case, async: true
-  alias IndebtedApi.{Fixtures, Policy}
+  alias RecoveryApi.{Fixtures, Policy}
   @now ~U[2026-09-16 14:00:00Z]
 
   defp account, do: Fixtures.scenario("S04")["state_at_decision"]

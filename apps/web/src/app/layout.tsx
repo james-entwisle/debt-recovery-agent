@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Adaptive Resolution | InDebted",
+  title: "Adaptive Resolution",
   description:
     "A simulated two-way SMS assistant, secure task interfaces and an evidence-based financial model for consumer-led resolution.",
 };

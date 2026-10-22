@@ -1,13 +1,58 @@
 {
-  "sms_reachable_pct": 60,
-  "response_pct": 30,
-  "responder_lift_pp": 3,
-  "ai_turns_per_responder": 4,
-  "hypothetical_ai_turn_cost_usd": 0.01,
-  "net_extra_sms_per_responder": 4,
-  "extra_support_conversations_per_100_responders": 2,
-  "avoided_support_conversations_per_100_responders": 0,
-  "investment_usd": 50000,
-  "payer_cash_multiplier": 1,
-  "new_equivalent_intakes": 12
+  "audience": "engaged",
+  "population": 18000,
+  "reach": 60,
+  "investment": 50000,
+  "support": 2,
+  "sms": 0,
+  "turns": 0,
+  "turnCost": 0.01,
+  "ongoing": 0,
+  "cashMultiplier": 1,
+  "incrementality": 100,
+  "months": 12,
+  "rates": {
+    "C2": {
+      "current": {
+        "portal": 50,
+        "start": 40,
+        "confirm": 50,
+        "pay": 70
+      },
+      "adaptive": {
+        "portal": 71.42857142857143,
+        "start": 40,
+        "confirm": 50,
+        "pay": 70
+      }
+    },
+    "C3": {
+      "current": {
+        "portal": 100,
+        "start": 50,
+        "confirm": 30,
+        "pay": 70
+      },
+      "adaptive": {
+        "portal": 100,
+        "start": 64.28571428571429,
+        "confirm": 30,
+        "pay": 70
+      }
+    },
+    "C4": {
+      "current": {
+        "portal": 100,
+        "start": 100,
+        "confirm": 30,
+        "pay": 70
+      },
+      "adaptive": {
+        "portal": 100,
+        "start": 100,
+        "confirm": 34.285714285714285,
+        "pay": 70
+      }
+    }
+  }
 }

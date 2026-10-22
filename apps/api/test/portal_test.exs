@@ -1,6 +1,6 @@
-defmodule IndebtedApi.PortalTest do
+defmodule RecoveryApi.PortalTest do
   use ExUnit.Case, async: true
-  alias IndebtedApi.{Fixtures, Portal, Replay}
+  alias RecoveryApi.{Fixtures, Portal, Replay}
   @now ~U[2026-09-16 14:00:00Z]
 
   test "matching explains each fixed option without creating terms" do

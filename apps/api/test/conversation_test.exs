@@ -1,6 +1,6 @@
-defmodule IndebtedApi.ConversationTest do
+defmodule RecoveryApi.ConversationTest do
   use ExUnit.Case, async: true
-  alias IndebtedApi.{Fixtures, Replay, Session}
+  alias RecoveryApi.{Fixtures, Replay, Session}
   defp run, do: Replay.new("conversation", Fixtures.scenario("S04"))
 
   defp act(run, type, fields \\ %{}) do
@@ -12,7 +12,7 @@ defmodule IndebtedApi.ConversationTest do
 
   test "synthetic SMS fixtures produce distinct intents and preserve private details" do
     fixture =
-      File.read!(Path.join(:code.priv_dir(:indebted_api), "fixtures/inbound_sms_examples.json"))
+      File.read!(Path.join(:code.priv_dir(:recovery_api), "fixtures/inbound_sms_examples.json"))
       |> Jason.decode!()
 
     for example <- fixture["examples"] do

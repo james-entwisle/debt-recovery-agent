@@ -156,6 +156,42 @@ def main():
     assert any(message["kind"] == "jit_outcome" for message in review["conversation"]["messages"])
     print("PASS authenticated review: explicit confirmation activates only approved terms and updates SMS")
 
+    managed = command(open_session(), {"type": "setup_demo_active_plan"})
+    original_plan = managed["confirmed_plan"]
+    for message, task in [
+        ("Can I move my next payment to Friday?", "change_date"),
+        ("Can I pay fortnightly instead?", "change_frequency"),
+        ("I want to clear my debt", "early_payoff"),
+    ]:
+        managed = command(managed, {"type": "receive_sms", "text": message})
+        assert managed["conversation"]["jit_actions"][-1]["state"] == task
+    for task, payload in [
+        ("change_date", {"type": "request_plan_change", "change_type": "date", "requested_date": "2026-10-09"}),
+        ("change_frequency", {"type": "request_plan_change", "change_type": "frequency", "requested_frequency": "fortnightly"}),
+    ]:
+        managed, task_id = create_action(managed, task)
+        account_client = Client()
+        managed = verify(account_client, managed, task_id, issue(managed, task_id))["view"]
+        command(managed, {"type": "setup_demo_active_plan"}, client=account_client, action_id=task_id, expected=403)
+        managed = command(managed, payload, client=account_client, action_id=task_id)
+        assert managed["confirmed_plan"] == original_plan
+        assert managed["plan_change_requests"][-1]["status"] == "requested"
+    managed, payoff_id = create_action(managed, "early_payoff")
+    payer = Client()
+    managed = verify(payer, managed, payoff_id, issue(managed, payoff_id))["view"]
+    managed = command(managed, {"type": "add_demo_payment_method"}, client=payer, action_id=payoff_id)
+    assert len(managed["portal"]["payment_methods"]) == 2
+    payoff = {"type": "simulate_early_payoff", "confirmed": True,
+              "reviewed_balance_usd": managed["account"]["balance_usd"], "payment_method_id": "demo_card_1881"}
+    managed = command(managed, payoff, client=payer, action_id=payoff_id)
+    assert managed["payment"]["status"] == "pending"
+    assert managed["payment"]["amount_usd"] == 640
+    assert managed["account"]["balance_usd"] == 640
+    assert managed["account"]["plan_status"] == "active"
+    assert managed["confirmed_plan"] == original_plan
+    command(managed, payoff, client=payer, action_id=payoff_id, expected=422)
+    print("PASS focused actions: source-aware SMS routing, reviewed change requests, full-balance pending and unchanged active schedule")
+
     view, action_id = create_action(open_session(), "account")
     expired = issue(view, action_id)
     view = command(view, {"type": "expire_jit_links"})

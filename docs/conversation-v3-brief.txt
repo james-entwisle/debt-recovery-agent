@@ -1,0 +1,1124 @@
+# Adaptive Resolution: Conversational Experience V3
+
+## Mission
+
+You are the lead frontend and conversational-product engineer working on the Adaptive Resolution case study.
+
+We have an existing Next.js application, an Elixir/Ash decision engine, a JIT Portal and a Financial Model.
+
+Your mission is to transform the **SMS Simulator into a polished, stateful, two-way conversational experience**, inspired by the simplicity and elegance of Apple's Messages interface, while demonstrating the intelligence of a modern AI-powered financial assistant.
+
+**This is the main product demonstration. It should be immediately understandable, interactive, visually excellent and technically credible.**
+
+Do not build a generic ChatGPT clone, a technical event viewer or a conventional customer-support inbox.
+
+The interface should resemble an ongoing SMS conversation between a consumer and a competent resolution assistant.
+
+The assistant should:
+
+- Understand what the consumer is trying to achieve.
+- Remember relevant context across multiple messages.
+- Maintain conversation and session continuity.
+- Offer helpful, concise responses.
+- Surface secure just-in-time (JIT) interfaces for financial actions.
+- Recognise when a consumer isn't ready to proceed.
+- Coordinate appropriate later follow-ups with the existing contact schedule.
+- React to changing account circumstances.
+- Respect consumer autonomy and compliance restrictions.
+
+**The defining interaction is a consumer expressing a need through SMS, the assistant providing an appropriate next step, and the conversation continuing naturally over time.**
+
+Inspect and reuse the existing implementation wherever practical. Do not start again.
+
+---
+
+# 1. Core product philosophy
+
+The product should feel like a persistent personal resolution assistant, not a debt-collection bot sending endless reminders.
+
+The assistant has a narrow, legitimate objective:
+
+**Help a consumer understand and resolve an outstanding account through appropriate, voluntary actions.**
+
+It should not optimise for payments at any cost.
+
+We are evolving the existing Composer concept from one-way outbound message personalisation towards two-way conversational resolution.
+
+The system combines three capabilities:
+
+**Conversational intelligence**
+
+Understand the consumer's message, intent and relevant history.
+
+**Journey intelligence**
+
+Determine the next permitted and useful action, including whether future contact should change.
+
+**Action intelligence**
+
+Open a focused, secure JIT interface when an action requires structured input, verified account information or explicit financial authorisation.
+
+Do not conflate AI-generated content with the deterministic eligibility and compliance decision engine.
+
+---
+
+# 2. Overall interface and navigation
+
+Preserve the three application tabs:
+
+1. SMS Simulator
+2. JIT Portal
+3. Financial Model
+
+The SMS Simulator is the default landing view.
+
+## Main desktop layout
+
+Build a restrained three-panel workbench:
+
+### Left panel: Consumer and scenario state
+
+Approximately 240–280px wide.
+
+Contains:
+
+- Consumer scenario selector.
+- Current account summary.
+- Payment status.
+- Plan status.
+- Contact eligibility.
+- Detected consumer intent.
+- Conversation session status.
+- Simulation controls.
+
+### Centre panel: iMessage-style conversation
+
+This is the dominant visual element, ideally a centred phone-sized conversation surface with plenty of breathing room.
+
+Contains:
+
+- Conversation header.
+- Message history.
+- Inbound and outbound bubbles.
+- Rich JIT link previews.
+- Contextual action responses.
+- Simulated timestamps.
+- Message input.
+- Suggested replies.
+- Persistent scroll position and session history.
+
+### Right panel: Assistant intelligence
+
+Approximately 280–320px wide.
+
+Contains:
+
+- Current detected intent.
+- Known conversation preferences.
+- Proposed next action.
+- Follow-up scheduler.
+- Current schedule.
+- Last decision and reason codes.
+- Compliance status.
+- Expandable technical trace.
+
+Do not allow the two side panels to visually dominate the conversation.
+
+On mobile or narrow displays, show the conversation as the primary view and make the inspector panels collapsible.
+
+## Design direction
+
+Minimalist, premium, Apple Messages-inspired.
+
+Use:
+
+- System-style typography with excellent legibility.
+- Soft neutral surfaces.
+- Delicate dividers.
+- Rounded message bubbles.
+- Generous but controlled whitespace.
+- A restrained blue accent for consumer messages.
+- Neutral incoming bubbles.
+- Subtle status text.
+- Polished hover and focus states.
+- Light and dark theme support if already straightforward.
+- Small, purposeful transitions.
+
+Avoid:
+
+- Excessive cards and borders.
+- Giant dashboard headers.
+- Emoji-heavy assistant messages.
+- Colourful AI gradients.
+- Generic chatbot avatars.
+- Dense event-log tables in the conversation.
+- Multiple primary buttons.
+- Fake Apple branding.
+
+The interaction should feel calm and trustworthy.
+
+---
+
+# 3. Build a convincing SMS conversation
+
+## Message bubbles
+
+Support distinct message types:
+
+- `outbound_initial`
+- `consumer_inbound`
+- `assistant_service_reply`
+- `scheduled_followup`
+- `message_suppressed`
+- `system_event`
+- `jit_action_card`
+
+Consumer messages appear aligned right.
+
+Assistant messages appear aligned left.
+
+Use visually subtle timestamps and message status indicators.
+
+Do not display internal system events as ordinary SMS bubbles.
+
+Events such as account-state changes should appear in the internal inspector or a compact simulation marker, not as messages the consumer supposedly received.
+
+## Conversation header
+
+Show:
+
+**Debt Recovery Agent**
+
+A concise subtitle such as "Account assistance".
+
+Optionally use a small, restrained brand mark.
+
+Avoid displaying the consumer's debt balance or sensitive account details in an unverified message header.
+
+Include a small simulation indicator outside the consumer conversation, so the interviewer knows messages aren't being sent.
+
+## Message composer
+
+At the bottom of the conversation, implement:
+
+- Rounded message input.
+- Send button.
+- Enter to send.
+- Shift+Enter for line breaks if multiline input is supported.
+- Disabled/loading state while processing.
+- Clear response feedback.
+- Optional suggested-message chips.
+
+Example suggested replies:
+
+- "I get paid next Friday."
+- "Can I pay $50 fortnightly?"
+- "I want to change my payment date."
+- "I started setting up a plan yesterday."
+- "I've already paid."
+- "I don't recognise this account."
+- "I'm struggling financially."
+- "STOP"
+
+These should populate or submit the actual message-processing pipeline.
+
+Do not hard-code a complete scripted conversation as the only interaction mechanism.
+
+## Response interaction
+
+When a consumer sends a message:
+
+1. Append the inbound message.
+2. Process it through the intent and decision pipeline.
+3. Update the conversation state.
+4. Show a restrained typing/loading indicator if appropriate.
+5. Display the appropriate proposed or approved response.
+6. Surface a JIT action card when relevant.
+7. Update the right-side inspector.
+8. Update any future scheduled follow-up decisions.
+
+The conversation should feel responsive but must not fake backend completion.
+
+If the backend action fails, display an appropriate failure or assistance response.
+
+---
+
+# 4. Strong conversational guidelines
+
+Implement these guidelines in the deterministic response layer and any optional LLM system instructions.
+
+## Tone
+
+The assistant should sound like a competent, concise financial-services representative.
+
+It should be:
+
+- Clear.
+- Helpful.
+- Calm.
+- Direct.
+- Non-judgemental.
+- Respectful of financial difficulties.
+- Transparent about what it can and cannot do.
+
+It should not sound like a sales agent.
+
+Avoid repetitive empathy, unnecessary apologies, generic encouragement, urgency tactics or excessive conversational filler.
+
+## Message structure
+
+Use the following pattern as guidance, not a rigid template:
+
+**Acknowledge → Address → Next useful action**
+
+Example:
+
+Consumer: "I don't get paid until next Friday."
+
+Assistant: "You can review repayment options that fit your circumstances. I can show the dates currently available for your account."
+
+Then surface the appropriate secure plan-selection action.
+
+Do not provide paragraphs of information when a short response and a focused action would suffice.
+
+## One question at a time
+
+Avoid asking consumers to provide five pieces of information in SMS.
+
+Prefer:
+
+Consumer: "Can I set up a payment plan?"
+
+Assistant: "I can help you review the available arrangements. Are you paid weekly, fortnightly or monthly?"
+
+Consumer: "Fortnightly."
+
+Assistant: "Got it. You can compare the approved arrangements in this secure view."
+
+Then show the JIT card.
+
+Do not repeatedly ask for details already provided.
+
+## Preserve conversational context
+
+If the consumer previously said:
+
+"I'm paid fortnightly on Fridays."
+
+And later says:
+
+"What about $50?"
+
+The assistant should understand that this likely refers to an instalment preference in the current discussion, while asking for clarification where necessary.
+
+Store explicit preferences as structured conversation context.
+
+Never treat an inferred preference as a confirmed financial commitment.
+
+## Be honest about uncertainty
+
+If the assistant cannot verify whether an option is available, it must not imply approval.
+
+If a consumer asks for a payment date outside their creditor's authorised options, explain that they can request assistance.
+
+Do not invent discounts, payment deadlines, consequences, or repayment terms.
+
+## Respect autonomy
+
+The assistant should make it easy to:
+
+- Review information.
+- Make a payment voluntarily.
+- Explore arrangements.
+- Ask questions.
+- Request assistance.
+- Return later.
+- Stop electronic messages.
+
+No guilt, pressure or repeated attempts to change the consumer's mind.
+
+## Safe escalation
+
+When the consumer raises a dispute, hardship, identity uncertainty or complex account issue:
+
+- Acknowledge the request.
+- Capture the relevant reason.
+- Route to an appropriate support workflow.
+- Avoid continuing to push for payment.
+- Respect any authoritative hold applied by the account service.
+
+Do not allow the model to set or release a legal/compliance hold independently.
+
+---
+
+# 5. Conversation must persist across sessions
+
+**Do not treat every message or portal visit as a fresh conversation.**
+
+The product should behave like an ongoing thread.
+
+Implement or reuse a lightweight server-side conversation/session model.
+
+Suggested fields:
+
+```typescript
+type ConversationSession = {
+  id: string;
+  consumerId: string;
+  accountId: string;
+  status:
+    | "active"
+    | "awaiting_consumer"
+    | "awaiting_support"
+    | "paused"
+    | "resolved"
+    | "restricted";
+  messages: ConversationMessage[];
+  statedIntent?: string;
+  preferences?: {
+    payFrequency?: "weekly" | "fortnightly" | "monthly";
+    nextPayday?: string;
+    preferredAmount?: number;
+  };
+  pendingQuestion?: string;
+  pendingJitActionId?: string;
+  followup?: FollowupState;
+  lastActivityAt: string;
+};
+```
+
+Adapt this to existing backend models instead of duplicating them.
+
+## Continuity rules
+
+When a consumer returns:
+
+- Load the existing conversation.
+- Preserve previous relevant messages.
+- Restore explicitly provided preferences where still appropriate.
+- Revalidate authoritative account information.
+- Continue the previous topic when relevant.
+- Ask for clarification if the context is ambiguous or outdated.
+
+Avoid arbitrary "conversation complete" states after every JIT action.
+
+Completing one action doesn't necessarily mean the consumer no longer has questions.
+
+However, maintain explicit resolved, paused and restricted states.
+
+**Conversation continuity does not mean perpetual proactive messaging.**
+
+An opted-out consumer, a resolved account, an active payment plan or an account on hold must not receive inappropriate outreach merely because a session still exists.
+
+The conversation can remain accessible for permitted consumer-initiated service interactions.
+
+---
+
+# 6. Contextual follow-up scheduler
+
+This is a critical differentiator.
+
+The assistant must understand that a conversation can go quiet without necessarily being resolved.
+
+We want to demonstrate how the service can offer a useful follow-up at an appropriate later time, coordinated with the existing contact schedule.
+
+## Core principle
+
+**Silence creates an opportunity to evaluate a next action, not automatic permission to send another message.**
+
+Do not implement a recurring loop that messages consumers until they respond.
+
+## Follow-up lifecycle
+
+Support these states:
+
+```typescript
+type FollowupStatus =
+  | "none"
+  | "candidate"
+  | "scheduled"
+  | "deferred"
+  | "cancelled"
+  | "suppressed"
+  | "sent";
+```
+
+Suggested follow-up record:
+
+```typescript
+type FollowupState = {
+  id: string;
+  consumerId: string;
+  conversationId: string;
+  reason: string;
+  triggerEventId: string;
+  candidateAt: string;
+  scheduledAt?: string;
+  status: FollowupStatus;
+  templateId?: string;
+  replacedContactId?: string;
+  decisionReasons: string[];
+};
+```
+
+## Example: Consumer goes quiet
+
+Day 3:
+
+Consumer: "I want to pay but I get paid next Friday."
+
+Assistant: "I can help you review the dates available for your account."
+
+The assistant surfaces a secure JIT plan-options card.
+
+The consumer doesn't open it or respond.
+
+After a configurable waiting period, the system evaluates whether a later follow-up is appropriate.
+
+For example, the candidate could be evaluated after 48 hours, but this is a demonstration parameter, not a mandated contact time.
+
+Possible action:
+
+"You can still review your available repayment options through your secure link. If you need assistance, you can ask here."
+
+This should be a compliance-approved template in a production pilot, not independently invented US production messaging.
+
+The system should prefer replacing a suitable existing scheduled contact, rather than automatically sending an additional SMS.
+
+## Demonstrate elapsed time
+
+Add a compact simulation clock in the right-side inspector.
+
+Controls:
+
+- Advance 1 hour.
+- Advance 24 hours.
+- Advance 48 hours.
+- Advance to next eligible contact.
+- Reset time.
+
+Advancing time should actually invoke the scheduling and policy evaluation logic.
+
+The interviewer should see:
+
+1. Consumer conversation pauses.
+2. A follow-up candidate is created.
+3. The next scheduled contact is considered.
+4. Eligibility and timing are checked.
+5. The contextual follow-up is scheduled, deferred or suppressed.
+6. Time advances.
+7. Authoritative account state is checked immediately before simulated provider handoff.
+8. The approved message appears in the SMS conversation if sending is permitted.
+
+The right-side panel should explain why the decision was made.
+
+## Cancellation and suppression
+
+A follow-up must be re-evaluated when:
+
+- The consumer resumes the conversation.
+- A payment is initiated.
+- A payment settles.
+- A plan is confirmed.
+- The consumer opts out.
+- An account hold appears.
+- Channel permissions change.
+- The contact budget becomes exhausted.
+- The permitted sending window changes.
+- The account is no longer in pilot scope.
+
+Deduplicate events so repeated notifications do not create multiple follow-ups.
+
+Treat delayed events and authoritative account state correctly.
+
+A follow-up already handed to a provider cannot reliably be recalled, so prevention must happen before handoff.
+
+## No infinite chasing
+
+For the demonstration, support at most one proactive contextual follow-up per unresolved intent episode unless there is a new qualifying event and the policy explicitly permits reconsideration.
+
+If the consumer remains silent, return to the existing policy-controlled journey or no further action.
+
+Do not continuously generate reminders.
+
+## Contact rules
+
+Preserve the supplied pilot constraints:
+
+- Pilot-scope eligibility.
+- English-language scope.
+- Channel permission.
+- Verified timezone.
+- Monday–Friday, 9 am inclusive to 6 pm exclusive.
+- One non-transactional contact attempt per rolling 24 hours.
+- Three per rolling seven days.
+- All-channel contact coordination.
+- Suppression for pending payments, active plans, zero balances and account holds.
+- Fixed disclosure and opt-out components.
+- Human compliance review before a real pilot.
+
+Requested service replies are distinguished from proactive collections outreach in the supporting pack, but do not interpret this as unrestricted permission for arbitrary conversational messages.
+
+Implement explicit action classifications and maintain the applicable safeguards.
+
+---
+
+# 7. Beautiful JIT action previews inside SMS
+
+This is a major visual requirement.
+
+**JIT actions must appear as polished, rich message previews, not naked URLs.**
+
+When the assistant proposes an action, show an iMessage-style link preview card as part of the conversation.
+
+## Card anatomy
+
+Each JIT card should contain:
+
+- A compact preview image or illustration.
+- Clear action title.
+- One-line description.
+- Safe domain label.
+- Subtle secure-link indicator.
+- Clear clickable area.
+
+Example:
+
+**Review your repayment options**
+
+Compare the arrangements currently available for your account.
+
+Secure account
+
+The card should look like a native, high-quality rich link preview.
+
+Use a tasteful static image or branded graphic with a neutral background and simple visual elements.
+
+Do not display account balance, creditor-sensitive information, personal information, payment method details or a uniquely identifying token in the public preview.
+
+## JIT preview types
+
+Create distinct cards for:
+
+- Review repayment options.
+- Set up a plan.
+- Resume plan draft.
+- Change payment date.
+- Change frequency.
+- Make a payment.
+- Pay off balance.
+- Understand account.
+- Request assistance.
+- Review payment or plan confirmation.
+
+Avoid ten completely different layouts.
+
+Use one consistent component with a small library of purpose-specific metadata and illustrations.
+
+## Open Graph metadata
+
+Create proper public-safe Open Graph metadata for the generic JIT action route, including:
+
+- `og:title`
+- `og:description`
+- `og:image`
+- `og:type`
+- `twitter:card` where useful.
+
+Use stable image assets or generated static preview assets.
+
+Important security boundary:
+
+**Do not expose personalised financial information or bearer tokens through Open Graph metadata.**
+
+Link-preview crawlers may request URLs before the consumer opens them.
+
+They must not redeem single-use authentication tokens, trigger financial actions or consume magic-link sessions.
+
+Keep preview routes public-safe and generic.
+
+Actual account-specific data should only load after authorised authentication.
+
+Real SMS link-unfurl behaviour depends on the receiving device and messaging application. The simulator should render rich previews reliably, but do not imply every SMS client will display them identically.
+
+## JIT handoff
+
+Clicking the preview should:
+
+1. Invoke or simulate the appropriate secure action link.
+2. Open the corresponding JIT Portal tab or action panel.
+3. Use the current consumer session.
+4. Preserve relevant conversation context.
+5. Revalidate account state.
+6. Render the correct micro-interface.
+
+For example:
+
+"I want to pay the whole balance."
+
+The assistant surfaces a rich **Pay Off Balance** preview.
+
+Clicking it opens the early-payoff JIT UI, not the generic account dashboard.
+
+After a successful simulated action, the conversation state should update.
+
+If the payment is only initiated, show pending rather than settled.
+
+---
+
+# 8. Strong scenario demonstrations
+
+Implement at least these scenarios.
+
+## A. Payday conversation
+
+Consumer:
+
+"I get paid every second Friday. Can I set something up?"
+
+Assistant:
+
+Recognises payday alignment.
+
+Asks one relevant clarifying question if required.
+
+Retains the consumer's frequency preference.
+
+Surfaces the plan-matching JIT preview.
+
+Does not invent terms.
+
+Demonstrates conversation continuity.
+
+## B. Consumer goes silent
+
+Consumer begins discussing repayment options but stops responding.
+
+The system creates a follow-up candidate.
+
+Advance the simulated clock.
+
+Show the proposed contextual message being evaluated against the existing schedule.
+
+Demonstrate a permitted send or a decision to defer.
+
+This is one of the most important demonstrations.
+
+## C. Interrupted plan
+
+Consumer says:
+
+"I started this yesterday but got interrupted."
+
+If a saved draft exists, offer a secure Resume Plan card.
+
+If no saved draft exists, explain that a new selection is required.
+
+Do not reconstruct a draft from the `plan_started` event alone.
+
+Demonstrate how the proposed new session-management feature improves the experience described in the interviews.
+
+## D. Pending payment
+
+Before a scheduled follow-up is sent, the authoritative account state changes to payment pending.
+
+Show the follow-up being suppressed despite event delivery lag.
+
+Use S06 where practical.
+
+## E. Opt-out
+
+Consumer replies STOP or a later authoritative opt-out takes effect.
+
+Suppress future prohibited outreach.
+
+Demonstrate the delayed-event case using S05.
+
+Do not generate a persuasive response to an opt-out.
+
+## F. Account dispute or hardship
+
+Consumer questions the debt or discloses hardship.
+
+The assistant handles the conversation respectfully and routes to support or the correct account-review workflow.
+
+Do not continue aggressive repayment prompting.
+
+Do not falsely claim that a formal hold has been created unless the simulated account service actually applies it.
+
+---
+
+# 9. Assistant intelligence panel
+
+The right panel should explain the behaviour without exposing a wall of internal JSON.
+
+Use compact sections.
+
+## Current intent
+
+For example:
+
+**Payday alignment**
+
+Consumer explicitly stated fortnightly pay cycle.
+
+Show confidence or ambiguity only if meaningful.
+
+## Conversation memory
+
+Show relevant explicitly captured context:
+
+- Preferred frequency.
+- Next payday.
+- Preferred amount.
+- Outstanding question.
+- Pending JIT action.
+
+Avoid presenting guesses as verified facts.
+
+## Next action
+
+For example:
+
+**Offer plan-selection interface**
+
+Approved action, requires authentication.
+
+## Follow-up status
+
+Show:
+
+- No follow-up.
+- Candidate.
+- Scheduled.
+- Deferred.
+- Suppressed.
+- Sent.
+
+Include the relevant simulated time.
+
+## Contact schedule
+
+Show the existing scheduled message and proposed adaptation.
+
+For example:
+
+Existing: Day 7 generic email.
+
+Proposed: Approved contextual email replacing that contact.
+
+Where the channel or timing can't be changed under policy, explain why.
+
+## Decision trace
+
+Use a collapsible technical detail section:
+
+- Event received.
+- Session context loaded.
+- Intent classified.
+- Current state retrieved.
+- Policy evaluated.
+- Proposed action selected.
+- Contact schedule coordinated.
+- Decision logged.
+
+Expose raw JSON only as an optional developer detail.
+
+The main experience should be intelligible without opening it.
+
+---
+
+# 10. Implementation architecture
+
+Preserve the existing Elixir/Ash and Next.js architecture.
+
+Suggested conceptual flow:
+
+```text
+Simulated outbound SMS
+          |
+          v
+Consumer SMS reply
+          |
+          v
+Inbound message adapter
+          |
+          v
+Conversation session
+          |
+          v
+Intent extraction
+          |
+          v
+Elixir / Ash decision engine
+          |
+     Policy checks
+          |
+     +----+----------------+
+     |                     |
+     v                     v
+Service reply          JIT action
+     |                     |
+     |                Secure link
+     |                     |
+     +----------+----------+
+                |
+         Conversation state
+                |
+         Follow-up evaluator
+                |
+         Existing contact schedule
+                |
+         Future approved action
+```
+
+## Backend integration
+
+Reuse the existing:
+
+- Account state handling.
+- Eligibility evaluation.
+- Contact budget enforcement.
+- Event deduplication.
+- Contact coordination.
+- Audit logging.
+- Scenario replay.
+
+Extend the backend only where required for conversation and follow-up state.
+
+Implement clean contracts for:
+
+- Inbound message submission.
+- Intent classification.
+- Conversation session retrieval.
+- Assistant action evaluation.
+- JIT action creation.
+- Follow-up scheduling and cancellation.
+- Simulation-clock advancement.
+- Simulated send execution.
+
+Avoid duplicating policy logic in React components.
+
+## Deterministic mode
+
+The entire demonstration must work without an LLM API key.
+
+Implement reliable deterministic intent handling for the example messages and reasonable variations.
+
+Support multi-turn context.
+
+Use real state transitions and reusable decision functions, not scenario-ID-specific hard-coded answers.
+
+## Optional AI sandbox
+
+If practical, support an optional server-side LLM mode.
+
+Keep API credentials server-side and out of browser storage, committed files, URLs and logs.
+
+The model may classify intent and draft candidate replies using verified context.
+
+It may not decide legal eligibility, invent terms, execute payments, confirm plans or bypass compliance constraints.
+
+If the model fails, use a safe deterministic fallback.
+
+Do not sacrifice the core demo for an LLM integration.
+
+---
+
+# 11. User experience details
+
+Pay attention to small things that make the simulator credible.
+
+## Conversation timeline
+
+Messages should appear in chronological order, including simulated delayed follow-ups.
+
+Insert tasteful time separators.
+
+Don't show messages arriving at impossible times.
+
+Use the consumer's verified timezone when demonstrating scheduled contact windows.
+
+## Loading
+
+Show a subtle assistant typing indicator or progress state.
+
+Do not use long artificial delays.
+
+## Scroll
+
+Automatically scroll to the newest message when appropriate.
+
+Avoid forcing the scroll position if the operator is inspecting earlier messages.
+
+## Sending
+
+Distinguish:
+
+- Draft.
+- Proposed.
+- Queued.
+- Simulated sent.
+- Suppressed.
+- Failed.
+
+Do not visually present a blocked message as if it was successfully delivered.
+
+## Conversation memory
+
+Display previous messages after a simulated session return.
+
+Do not reset the entire conversation whenever the user opens or closes a JIT interface.
+
+## Empty states
+
+A newly selected scenario should show an appropriate initial conversation or a clear opportunity to begin.
+
+Avoid generic "How can I help you today?" messages that ignore the account and outreach context.
+
+## Responsive design
+
+On desktop, emphasise the conversation workbench.
+
+On smaller screens, prioritise the chat experience and collapse technical controls.
+
+## Accessibility
+
+Use keyboard-accessible controls, readable contrast, visible focus states and sensible status announcements.
+
+Avoid communicating compliance state solely through colour.
+
+---
+
+# 12. Documentation updates
+
+Update relevant documentation to reflect the conversational interface.
+
+## README
+
+Explain the SMS simulator, scenario controls, simulated messaging, JIT previews, follow-up scheduling and run instructions.
+
+## Architecture
+
+Document:
+
+- Inbound message processing.
+- Conversation/session state.
+- Intent classification.
+- JIT action creation.
+- Outbound contact orchestration.
+- Source-state rechecks.
+- Audit behaviour.
+
+## Decision note
+
+Keep the two-page recommendation coherent with the current product thesis.
+
+The investment is a constrained pilot of two-way Adaptive Resolution, not an unrestricted autonomous debt-collection agent.
+
+Preserve the existing historical cohorts and commercial assumptions.
+
+Identify inbound SMS and US AI approval as dependencies, not available production capabilities.
+
+## Build log
+
+Record:
+
+- Interface redesign.
+- Features reused.
+- New conversation behaviour.
+- Follow-up scheduler.
+- Link-preview implementation.
+- Tests.
+- Known limitations.
+- Simulated versus implemented capabilities.
+
+Do not claim the simulator sends real SMS.
+
+---
+
+# 13. Priorities
+
+## P0: Must work
+
+- Polished Messages-style simulator.
+- Scenario selector.
+- Two-way interactive conversation.
+- Persistent context across turns.
+- Real decision-engine integration.
+- Rich JIT preview cards.
+- SMS-to-JIT action handoff.
+- Simulated follow-up candidate and time controls.
+- Policy re-evaluation before simulated sends.
+- Payment and opt-out suppression.
+- No regression in existing backend safety tests.
+
+## P1: Strong differentiation
+
+- Multi-turn preference memory.
+- Follow-up replacement of the original scheduled message.
+- Saved conversation across simulated sessions.
+- JIT completion events reflected in chat.
+- Visible conversation/decision trace.
+- Rich static Open Graph preview assets.
+- Polished loading and message states.
+
+## P2: Optional
+
+- Live LLM sandbox.
+- More advanced intent recognition.
+- Additional scenario variants.
+- Further animations and cosmetic polish.
+
+Do not implement unnecessary features before the essential end-to-end experience works.
+
+---
+
+# 14. Definition of done
+
+The conversation simulator is complete when an interviewer can:
+
+1. Open the SMS Simulator as the main view.
+2. Select a consumer scenario.
+3. See a believable initial SMS conversation.
+4. Type a natural consumer message.
+5. Receive a contextually appropriate response.
+6. See the assistant remember relevant information across messages.
+7. Open a polished JIT action preview.
+8. Complete or abandon the focused JIT interaction.
+9. Return to the same conversation with preserved context.
+10. Advance simulated time.
+11. See a contextual follow-up candidate evaluated against the existing contact schedule.
+12. Demonstrate a permitted send, deferral or suppression.
+13. Simulate a pending payment or opt-out.
+14. Verify that inappropriate future contact is blocked.
+15. Inspect the decision trace and understand why the system behaved as it did.
+
+The interface should look polished, but the behaviour must be real.
+
+The financial model and existing architecture must remain functional.
+
+---
+
+# 15. Execute immediately
+
+Inspect the existing repository and identify what can be preserved.
+
+Then implement the redesigned SMS Simulator.
+
+If multiple agents are available, delegate:
+
+- Conversation UI and rich previews.
+- Backend conversation/follow-up integration.
+- Scenario tests and policy verification.
+- Documentation updates.
+
+Keep shared contracts stable and prevent agents from overwriting each other's files.
+
+**Do not stop after producing a plan. Implement, integrate and test.**
+
+The final experience should demonstrate this complete story:
+
+**The agent reaches out → consumer replies → assistant understands their need → useful JIT action is offered → consumer acts or pauses → conversation context persists → the system intelligently evaluates future contact → account changes or consumer preferences prevent inappropriate outreach.**
+
+Make that flow the defining experience of the product.

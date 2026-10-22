@@ -123,7 +123,7 @@ export function SmsSimulator({ view, act, busy, scenarios, open, onOpenJit }: {
         <section className="sms-conversation-column" aria-label="SMS conversation simulator">
           <div className="phone-frame">
             <div className="phone-status"><span>SMS preview</span><span>Simulated · no messages sent</span></div>
-            <div className="phone-contact"><span className="assistant-avatar"><MessageCircle size={22} /></span><div><strong>InDebted assistant</strong><span>Here to help with your next step</span></div><ShieldCheck size={19} /></div>
+            <div className="phone-contact"><span className="assistant-avatar"><MessageCircle size={22} /></span><div><strong>Debt Recovery Agent</strong><span>Here to help with your next step</span></div><ShieldCheck size={19} /></div>
             <div className="sms-thread" ref={thread} aria-live="polite" aria-label="Conversation history">
               <div className="thread-date">{dateTime(view.now_utc, account.timezone)}</div>
               {conversation.messages.map((message) => (

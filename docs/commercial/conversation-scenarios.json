@@ -1,102 +1,1844 @@
 {
   "assumptions": {
-    "sms_reachable_pct": 60,
-    "response_pct": 30,
-    "responder_lift_pp": 3,
-    "ai_turns_per_responder": 4,
-    "hypothetical_ai_turn_cost_usd": 0.01,
-    "net_extra_sms_per_responder": 4,
-    "extra_support_conversations_per_100_responders": 2,
-    "avoided_support_conversations_per_100_responders": 0,
-    "investment_usd": 50000,
-    "payer_cash_multiplier": 1,
-    "new_equivalent_intakes": 12
+    "audience": "engaged",
+    "population": 18000,
+    "reach": 60,
+    "investment": 50000,
+    "support": 2,
+    "sms": 0,
+    "turns": 0,
+    "turnCost": 0.01,
+    "ongoing": 0,
+    "cashMultiplier": 1,
+    "incrementality": 100,
+    "months": 12,
+    "rates": {
+      "C2": {
+        "current": {
+          "portal": 50,
+          "start": 40,
+          "confirm": 50,
+          "pay": 70
+        },
+        "adaptive": {
+          "portal": 71.42857142857143,
+          "start": 40,
+          "confirm": 50,
+          "pay": 70
+        }
+      },
+      "C3": {
+        "current": {
+          "portal": 100,
+          "start": 50,
+          "confirm": 30,
+          "pay": 70
+        },
+        "adaptive": {
+          "portal": 100,
+          "start": 64.28571428571429,
+          "confirm": 30,
+          "pay": 70
+        }
+      },
+      "C4": {
+        "current": {
+          "portal": 100,
+          "start": 100,
+          "confirm": 30,
+          "pay": 70
+        },
+        "adaptive": {
+          "portal": 100,
+          "start": 100,
+          "confirm": 34.285714285714285,
+          "pay": 70
+        }
+      }
+    }
   },
-  "scenarios": [
+  "cases": [
     {
-      "lift_pp": 0,
-      "engaged": 18000,
-      "reachable": 10800.0,
-      "responders": 3240.0,
-      "additional_payers": 0.0,
-      "additional_cash_usd": 0.0,
-      "fees_usd": 0.0,
-      "payment_cost_usd": 0.0,
-      "sms_cost_usd": 453.6,
-      "ai_cost_usd": 129.6,
-      "extra_support_cost_usd": 388.79999999999995,
-      "support_savings_usd": 0.0,
-      "contribution_per_intake_usd": -972.0,
-      "annual_contribution_usd": -11664.0,
-      "payback_monthly_intakes": null
+      "name": "reference",
+      "inputs": {
+        "audience": "engaged",
+        "population": 18000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 18000.0,
+        "reached": 10800.0,
+        "payers": 324.0000000000001,
+        "cash": 56880.00000000003,
+        "fees": 8532.000000000004,
+        "payment": 1137.6000000000006,
+        "support": 1296.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": 6098.400000000004,
+        "annual": 73180.80000000005,
+        "horizon": 73180.80000000005,
+        "netAfterBuild": 23180.800000000047,
+        "payback": 8.198871835235465,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 7800.0,
+            "adaptive": 9085.714285714286
+          },
+          {
+            "stage": "start",
+            "current": 4200.0,
+            "adaptive": 5228.571428571429
+          },
+          {
+            "stage": "confirm",
+            "current": 1500.0,
+            "adaptive": 1962.8571428571431
+          },
+          {
+            "stage": "pay",
+            "current": 1050.0,
+            "adaptive": 1374.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 6000.0,
+            "current": {
+              "portal": 3000.0,
+              "start": 1200.0,
+              "confirm": 600.0,
+              "pay": 420.0
+            },
+            "adaptive": {
+              "portal": 4285.714285714286,
+              "start": 1714.2857142857147,
+              "confirm": 857.1428571428573,
+              "pay": 600.0000000000001
+            },
+            "payers": 180.0000000000001,
+            "cash": 30600.000000000022
+          },
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 3600.0,
+            "current": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "adaptive": {
+              "portal": 3600.0,
+              "start": 2314.2857142857147,
+              "confirm": 694.2857142857143,
+              "pay": 486.0
+            },
+            "payers": 108.0,
+            "cash": 19440.0
+          },
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 1200.0,
+            "current": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "adaptive": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 411.42857142857144,
+              "pay": 288.0
+            },
+            "payers": 36.00000000000003,
+            "cash": 6840.0000000000055
+          }
+        ]
+      }
     },
     {
-      "lift_pp": 1,
-      "engaged": 18000,
-      "reachable": 10800.0,
-      "responders": 3240.0,
-      "additional_payers": 32.4,
-      "additional_cash_usd": 5688.0,
-      "fees_usd": 853.1999999999999,
-      "payment_cost_usd": 113.76,
-      "sms_cost_usd": 453.6,
-      "ai_cost_usd": 129.6,
-      "extra_support_cost_usd": 388.79999999999995,
-      "support_savings_usd": 0.0,
-      "contribution_per_intake_usd": -232.56000000000003,
-      "annual_contribution_usd": -2790.7200000000003,
-      "payback_monthly_intakes": null
+      "name": "click_only",
+      "inputs": {
+        "audience": "C2",
+        "population": 10000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 10000.0,
+        "reached": 6000.0,
+        "payers": 180.0000000000001,
+        "cash": 30600.000000000022,
+        "fees": 4590.000000000003,
+        "payment": 612.0000000000005,
+        "support": 720.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": 3258.000000000003,
+        "annual": 39096.00000000004,
+        "horizon": 39096.00000000004,
+        "netAfterBuild": -10903.999999999964,
+        "payback": 15.346838551258426,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 3000.0,
+            "adaptive": 4285.714285714286
+          },
+          {
+            "stage": "start",
+            "current": 1200.0,
+            "adaptive": 1714.2857142857147
+          },
+          {
+            "stage": "confirm",
+            "current": 600.0,
+            "adaptive": 857.1428571428573
+          },
+          {
+            "stage": "pay",
+            "current": 420.0,
+            "adaptive": 600.0000000000001
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 6000.0,
+            "current": {
+              "portal": 3000.0,
+              "start": 1200.0,
+              "confirm": 600.0,
+              "pay": 420.0
+            },
+            "adaptive": {
+              "portal": 4285.714285714286,
+              "start": 1714.2857142857147,
+              "confirm": 857.1428571428573,
+              "pay": 600.0000000000001
+            },
+            "payers": 180.0000000000001,
+            "cash": 30600.000000000022
+          }
+        ]
+      }
     },
     {
-      "lift_pp": 3,
-      "engaged": 18000,
-      "reachable": 10800.0,
-      "responders": 3240.0,
-      "additional_payers": 97.2,
-      "additional_cash_usd": 17064.0,
-      "fees_usd": 2559.6,
-      "payment_cost_usd": 341.28000000000003,
-      "sms_cost_usd": 453.6,
-      "ai_cost_usd": 129.6,
-      "extra_support_cost_usd": 388.79999999999995,
-      "support_savings_usd": 0.0,
-      "contribution_per_intake_usd": 1246.32,
-      "annual_contribution_usd": 14955.84,
-      "payback_monthly_intakes": 40.11810770909558
+      "name": "portal_no_start",
+      "inputs": {
+        "audience": "C3",
+        "population": 6000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 6000.0,
+        "reached": 3600.0,
+        "payers": 108.0,
+        "cash": 19440.0,
+        "fees": 2916.0,
+        "payment": 388.8,
+        "support": 432.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": 2095.2000000000003,
+        "annual": 25142.4,
+        "horizon": 25142.4,
+        "netAfterBuild": -24857.6,
+        "payback": 23.86407025582283,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 3600.0,
+            "adaptive": 3600.0
+          },
+          {
+            "stage": "start",
+            "current": 1800.0,
+            "adaptive": 2314.2857142857147
+          },
+          {
+            "stage": "confirm",
+            "current": 540.0,
+            "adaptive": 694.2857142857143
+          },
+          {
+            "stage": "pay",
+            "current": 378.0,
+            "adaptive": 486.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 3600.0,
+            "current": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "adaptive": {
+              "portal": 3600.0,
+              "start": 2314.2857142857147,
+              "confirm": 694.2857142857143,
+              "pay": 486.0
+            },
+            "payers": 108.0,
+            "cash": 19440.0
+          }
+        ]
+      }
     },
     {
-      "lift_pp": 5,
-      "engaged": 18000,
-      "reachable": 10800.0,
-      "responders": 3240.0,
-      "additional_payers": 162.0,
-      "additional_cash_usd": 28440.0,
-      "fees_usd": 4266.0,
-      "payment_cost_usd": 568.8000000000001,
-      "sms_cost_usd": 453.6,
-      "ai_cost_usd": 129.6,
-      "extra_support_cost_usd": 388.79999999999995,
-      "support_savings_usd": 0.0,
-      "contribution_per_intake_usd": 2725.2,
-      "annual_contribution_usd": 32702.399999999998,
-      "payback_monthly_intakes": 18.347277264054014
+      "name": "incomplete_plan",
+      "inputs": {
+        "audience": "C4",
+        "population": 2000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 2000.0,
+        "reached": 1200.0,
+        "payers": 36.00000000000003,
+        "cash": 6840.0000000000055,
+        "fees": 1026.0000000000007,
+        "payment": 136.80000000000013,
+        "support": 144.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": 745.2000000000007,
+        "annual": 8942.400000000009,
+        "horizon": 8942.400000000009,
+        "netAfterBuild": -41057.59999999999,
+        "payback": 67.09608158883515,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 1200.0,
+            "adaptive": 1200.0
+          },
+          {
+            "stage": "start",
+            "current": 1200.0,
+            "adaptive": 1200.0
+          },
+          {
+            "stage": "confirm",
+            "current": 360.0,
+            "adaptive": 411.42857142857144
+          },
+          {
+            "stage": "pay",
+            "current": 251.99999999999997,
+            "adaptive": 288.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 1200.0,
+            "current": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "adaptive": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 411.42857142857144,
+              "pay": 288.0
+            },
+            "payers": 36.00000000000003,
+            "cash": 6840.0000000000055
+          }
+        ]
+      }
     },
     {
-      "lift_pp": 10,
-      "engaged": 18000,
-      "reachable": 10800.0,
-      "responders": 3240.0,
-      "additional_payers": 324.0,
-      "additional_cash_usd": 56880.0,
-      "fees_usd": 8532.0,
-      "payment_cost_usd": 1137.6000000000001,
-      "sms_cost_usd": 453.6,
-      "ai_cost_usd": 129.6,
-      "extra_support_cost_usd": 388.79999999999995,
-      "support_savings_usd": 0.0,
-      "contribution_per_intake_usd": 6422.399999999999,
-      "annual_contribution_usd": 77068.79999999999,
-      "payback_monthly_intakes": 7.785251619332338
+      "name": "half_incrementality",
+      "inputs": {
+        "audience": "engaged",
+        "population": 18000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 50,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 18000.0,
+        "reached": 10800.0,
+        "payers": 162.00000000000006,
+        "cash": 28440.000000000015,
+        "fees": 4266.000000000002,
+        "payment": 568.8000000000003,
+        "support": 1296.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": 2401.200000000002,
+        "annual": 28814.400000000023,
+        "horizon": 28814.400000000023,
+        "netAfterBuild": -21185.599999999977,
+        "payback": 20.822921872397117,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 7800.0,
+            "adaptive": 9085.714285714286
+          },
+          {
+            "stage": "start",
+            "current": 4200.0,
+            "adaptive": 5228.571428571429
+          },
+          {
+            "stage": "confirm",
+            "current": 1500.0,
+            "adaptive": 1962.8571428571431
+          },
+          {
+            "stage": "pay",
+            "current": 1050.0,
+            "adaptive": 1374.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 6000.0,
+            "current": {
+              "portal": 3000.0,
+              "start": 1200.0,
+              "confirm": 600.0,
+              "pay": 420.0
+            },
+            "adaptive": {
+              "portal": 4285.714285714286,
+              "start": 1714.2857142857147,
+              "confirm": 857.1428571428573,
+              "pay": 600.0000000000001
+            },
+            "payers": 90.00000000000006,
+            "cash": 15300.000000000011
+          },
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 3600.0,
+            "current": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "adaptive": {
+              "portal": 3600.0,
+              "start": 2314.2857142857147,
+              "confirm": 694.2857142857143,
+              "pay": 486.0
+            },
+            "payers": 54.0,
+            "cash": 9720.0
+          },
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 1200.0,
+            "current": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "adaptive": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 411.42857142857144,
+              "pay": 288.0
+            },
+            "payers": 18.000000000000014,
+            "cash": 3420.0000000000027
+          }
+        ]
+      }
+    },
+    {
+      "name": "half_cash",
+      "inputs": {
+        "audience": "engaged",
+        "population": 18000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 0.5,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 18000.0,
+        "reached": 10800.0,
+        "payers": 324.0000000000001,
+        "cash": 28440.000000000015,
+        "fees": 4266.000000000002,
+        "payment": 568.8000000000003,
+        "support": 1296.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": 2401.200000000002,
+        "annual": 28814.400000000023,
+        "horizon": 28814.400000000023,
+        "netAfterBuild": -21185.599999999977,
+        "payback": 20.822921872397117,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 7800.0,
+            "adaptive": 9085.714285714286
+          },
+          {
+            "stage": "start",
+            "current": 4200.0,
+            "adaptive": 5228.571428571429
+          },
+          {
+            "stage": "confirm",
+            "current": 1500.0,
+            "adaptive": 1962.8571428571431
+          },
+          {
+            "stage": "pay",
+            "current": 1050.0,
+            "adaptive": 1374.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 6000.0,
+            "current": {
+              "portal": 3000.0,
+              "start": 1200.0,
+              "confirm": 600.0,
+              "pay": 420.0
+            },
+            "adaptive": {
+              "portal": 4285.714285714286,
+              "start": 1714.2857142857147,
+              "confirm": 857.1428571428573,
+              "pay": 600.0000000000001
+            },
+            "payers": 180.0000000000001,
+            "cash": 15300.000000000011
+          },
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 3600.0,
+            "current": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "adaptive": {
+              "portal": 3600.0,
+              "start": 2314.2857142857147,
+              "confirm": 694.2857142857143,
+              "pay": 486.0
+            },
+            "payers": 108.0,
+            "cash": 9720.0
+          },
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 1200.0,
+            "current": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "adaptive": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 411.42857142857144,
+              "pay": 288.0
+            },
+            "payers": 36.00000000000003,
+            "cash": 3420.0000000000027
+          }
+        ]
+      }
+    },
+    {
+      "name": "zero_reach",
+      "inputs": {
+        "audience": "engaged",
+        "population": 18000,
+        "reach": 0,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 18000.0,
+        "reached": 0.0,
+        "payers": 0.0,
+        "cash": 0.0,
+        "fees": 0.0,
+        "payment": 0.0,
+        "support": 0.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": 0.0,
+        "annual": 0.0,
+        "horizon": 0.0,
+        "netAfterBuild": -50000.0,
+        "payback": null,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 0.0,
+            "adaptive": 0.0
+          },
+          {
+            "stage": "start",
+            "current": 0.0,
+            "adaptive": 0.0
+          },
+          {
+            "stage": "confirm",
+            "current": 0.0,
+            "adaptive": 0.0
+          },
+          {
+            "stage": "pay",
+            "current": 0.0,
+            "adaptive": 0.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 0.0,
+            "current": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "adaptive": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "payers": -0.0,
+            "cash": -0.0
+          },
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 0.0,
+            "current": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "adaptive": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "payers": -0.0,
+            "cash": -0.0
+          },
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 0.0,
+            "current": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "adaptive": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "payers": -0.0,
+            "cash": -0.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "ongoing_cost_without_reach",
+      "inputs": {
+        "audience": "engaged",
+        "population": 18000,
+        "reach": 0,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 2000,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 18000.0,
+        "reached": 0.0,
+        "payers": 0.0,
+        "cash": 0.0,
+        "fees": 0.0,
+        "payment": 0.0,
+        "support": 0.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": -2000.0,
+        "annual": -24000.0,
+        "horizon": -24000.0,
+        "netAfterBuild": -74000.0,
+        "payback": null,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 0.0,
+            "adaptive": 0.0
+          },
+          {
+            "stage": "start",
+            "current": 0.0,
+            "adaptive": 0.0
+          },
+          {
+            "stage": "confirm",
+            "current": 0.0,
+            "adaptive": 0.0
+          },
+          {
+            "stage": "pay",
+            "current": 0.0,
+            "adaptive": 0.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 0.0,
+            "current": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "adaptive": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "payers": -0.0,
+            "cash": -0.0
+          },
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 0.0,
+            "current": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "adaptive": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "payers": -0.0,
+            "cash": -0.0
+          },
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 0.0,
+            "current": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "adaptive": {
+              "portal": 0.0,
+              "start": 0.0,
+              "confirm": 0.0,
+              "pay": 0.0
+            },
+            "payers": -0.0,
+            "cash": -0.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "conversation_costs",
+      "inputs": {
+        "audience": "engaged",
+        "population": 18000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 1.2,
+        "turns": 1.2,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 18000.0,
+        "reached": 10800.0,
+        "payers": 324.0000000000001,
+        "cash": 56880.00000000003,
+        "fees": 8532.000000000004,
+        "payment": 1137.6000000000006,
+        "support": 1296.0,
+        "sms": 453.6,
+        "ai": 129.6,
+        "contribution": 5515.2000000000035,
+        "annual": 66182.40000000004,
+        "horizon": 66182.40000000004,
+        "netAfterBuild": 16182.400000000038,
+        "payback": 9.065854366115458,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 7800.0,
+            "adaptive": 9085.714285714286
+          },
+          {
+            "stage": "start",
+            "current": 4200.0,
+            "adaptive": 5228.571428571429
+          },
+          {
+            "stage": "confirm",
+            "current": 1500.0,
+            "adaptive": 1962.8571428571431
+          },
+          {
+            "stage": "pay",
+            "current": 1050.0,
+            "adaptive": 1374.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 6000.0,
+            "current": {
+              "portal": 3000.0,
+              "start": 1200.0,
+              "confirm": 600.0,
+              "pay": 420.0
+            },
+            "adaptive": {
+              "portal": 4285.714285714286,
+              "start": 1714.2857142857147,
+              "confirm": 857.1428571428573,
+              "pay": 600.0000000000001
+            },
+            "payers": 180.0000000000001,
+            "cash": 30600.000000000022
+          },
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 3600.0,
+            "current": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "adaptive": {
+              "portal": 3600.0,
+              "start": 2314.2857142857147,
+              "confirm": 694.2857142857143,
+              "pay": 486.0
+            },
+            "payers": 108.0,
+            "cash": 19440.0
+          },
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 1200.0,
+            "current": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "adaptive": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 411.42857142857144,
+              "pay": 288.0
+            },
+            "payers": 36.00000000000003,
+            "cash": 6840.0000000000055
+          }
+        ]
+      }
+    },
+    {
+      "name": "short_horizon",
+      "inputs": {
+        "audience": "engaged",
+        "population": 18000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 3,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 71.42857142857143,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 64.28571428571429,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 34.285714285714285,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 18000.0,
+        "reached": 10800.0,
+        "payers": 324.0000000000001,
+        "cash": 56880.00000000003,
+        "fees": 8532.000000000004,
+        "payment": 1137.6000000000006,
+        "support": 1296.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": 6098.400000000004,
+        "annual": 73180.80000000005,
+        "horizon": 18295.20000000001,
+        "netAfterBuild": -31704.79999999999,
+        "payback": 8.198871835235465,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 7800.0,
+            "adaptive": 9085.714285714286
+          },
+          {
+            "stage": "start",
+            "current": 4200.0,
+            "adaptive": 5228.571428571429
+          },
+          {
+            "stage": "confirm",
+            "current": 1500.0,
+            "adaptive": 1962.8571428571431
+          },
+          {
+            "stage": "pay",
+            "current": 1050.0,
+            "adaptive": 1374.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 6000.0,
+            "current": {
+              "portal": 3000.0,
+              "start": 1200.0,
+              "confirm": 600.0,
+              "pay": 420.0
+            },
+            "adaptive": {
+              "portal": 4285.714285714286,
+              "start": 1714.2857142857147,
+              "confirm": 857.1428571428573,
+              "pay": 600.0000000000001
+            },
+            "payers": 180.0000000000001,
+            "cash": 30600.000000000022
+          },
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 3600.0,
+            "current": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "adaptive": {
+              "portal": 3600.0,
+              "start": 2314.2857142857147,
+              "confirm": 694.2857142857143,
+              "pay": 486.0
+            },
+            "payers": 108.0,
+            "cash": 19440.0
+          },
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 1200.0,
+            "current": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "adaptive": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 411.42857142857144,
+              "pay": 288.0
+            },
+            "payers": 36.00000000000003,
+            "cash": 6840.0000000000055
+          }
+        ]
+      }
+    },
+    {
+      "name": "no_improvement",
+      "inputs": {
+        "audience": "engaged",
+        "population": 18000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 18000.0,
+        "reached": 10800.0,
+        "payers": 0.0,
+        "cash": 0.0,
+        "fees": 0.0,
+        "payment": 0.0,
+        "support": 1296.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": -1296.0,
+        "annual": -15552.0,
+        "horizon": -15552.0,
+        "netAfterBuild": -65552.0,
+        "payback": null,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 7800.0,
+            "adaptive": 7800.0
+          },
+          {
+            "stage": "start",
+            "current": 4200.0,
+            "adaptive": 4200.0
+          },
+          {
+            "stage": "confirm",
+            "current": 1500.0,
+            "adaptive": 1500.0
+          },
+          {
+            "stage": "pay",
+            "current": 1050.0,
+            "adaptive": 1050.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 6000.0,
+            "current": {
+              "portal": 3000.0,
+              "start": 1200.0,
+              "confirm": 600.0,
+              "pay": 420.0
+            },
+            "adaptive": {
+              "portal": 3000.0,
+              "start": 1200.0,
+              "confirm": 600.0,
+              "pay": 420.0
+            },
+            "payers": 0.0,
+            "cash": 0.0
+          },
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 3600.0,
+            "current": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "adaptive": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "payers": 0.0,
+            "cash": 0.0
+          },
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 1200.0,
+            "current": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "adaptive": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "payers": 0.0,
+            "cash": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "name": "worse_progression",
+      "inputs": {
+        "audience": "engaged",
+        "population": 18000,
+        "reach": 60,
+        "investment": 50000,
+        "support": 2,
+        "sms": 0,
+        "turns": 0,
+        "turnCost": 0.01,
+        "ongoing": 0,
+        "cashMultiplier": 1,
+        "incrementality": 100,
+        "months": 12,
+        "rates": {
+          "C2": {
+            "current": {
+              "portal": 50,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 30,
+              "start": 40,
+              "confirm": 50,
+              "pay": 70
+            }
+          },
+          "C3": {
+            "current": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 50,
+              "confirm": 30,
+              "pay": 70
+            }
+          },
+          "C4": {
+            "current": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            },
+            "adaptive": {
+              "portal": 100,
+              "start": 100,
+              "confirm": 30,
+              "pay": 70
+            }
+          }
+        }
+      },
+      "result": {
+        "population": 18000.0,
+        "reached": 10800.0,
+        "payers": -168.00000000000003,
+        "cash": -28560.000000000004,
+        "fees": -4284.0,
+        "payment": -571.2,
+        "support": 1296.0,
+        "sms": 0.0,
+        "ai": 0.0,
+        "contribution": -5008.800000000001,
+        "annual": -60105.60000000001,
+        "horizon": -60105.60000000001,
+        "netAfterBuild": -110105.6,
+        "payback": null,
+        "progression": [
+          {
+            "stage": "portal",
+            "current": 7800.0,
+            "adaptive": 6600.0
+          },
+          {
+            "stage": "start",
+            "current": 4200.0,
+            "adaptive": 3720.0
+          },
+          {
+            "stage": "confirm",
+            "current": 1500.0,
+            "adaptive": 1260.0
+          },
+          {
+            "stage": "pay",
+            "current": 1050.0,
+            "adaptive": 882.0
+          }
+        ],
+        "rows": [
+          {
+            "id": "C2",
+            "population": 10000.0,
+            "reached": 6000.0,
+            "current": {
+              "portal": 3000.0,
+              "start": 1200.0,
+              "confirm": 600.0,
+              "pay": 420.0
+            },
+            "adaptive": {
+              "portal": 1800.0,
+              "start": 720.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "payers": -168.00000000000003,
+            "cash": -28560.000000000004
+          },
+          {
+            "id": "C3",
+            "population": 6000.0,
+            "reached": 3600.0,
+            "current": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "adaptive": {
+              "portal": 3600.0,
+              "start": 1800.0,
+              "confirm": 540.0,
+              "pay": 378.0
+            },
+            "payers": 0.0,
+            "cash": 0.0
+          },
+          {
+            "id": "C4",
+            "population": 2000.0,
+            "reached": 1200.0,
+            "current": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "adaptive": {
+              "portal": 1200.0,
+              "start": 1200.0,
+              "confirm": 360.0,
+              "pay": 251.99999999999997
+            },
+            "payers": 0.0,
+            "cash": 0.0
+          }
+        ]
+      }
     }
   ]
 }

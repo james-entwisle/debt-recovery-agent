@@ -1,4 +1,4 @@
-# InDebted Product Lead case study
+# Product Lead case study
 
 Read `01_candidate_brief`, then `02_supporting_pack`. PDF and Markdown versions contain the same material; choose either.
 

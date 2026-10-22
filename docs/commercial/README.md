@@ -1,13 +1,70 @@
 # Commercial reasoning and reproducible models
 
-The investment question is whether resolving stated consumer needs creates enough additional settled cash to cover conversation, support and delivery costs. V2 recommends staged learning, capped at $50,000 with a week-one checkpoint. The current illustrative range does not justify broad rollout. [DECISION.md](../../DECISION.md) owns the recommendation and decision gates; this guide owns the calculations and their limits. All amounts are USD and all evidence is synthetic.
+The business hypothesis is unchanged by the move to a two-way assistant. Improving the 30-day settled-payment conversion of the engaged consumers can produce incremental retained contribution against the existing fixed journey. A controlled pilot has to show whether it does. The assistant and the just-in-time tasks are the way we would try to move people onto a confirmed plan and a settled payment. They are not a new commercial model. [DECISION.md](../../DECISION.md) owns the recommendation. This guide owns the cohorts, the unit costs, and both calculations. All amounts are USD. All evidence is synthetic.
+
+## The 100,000 and the 18,000
+
+One synthetic intake is 100,000 people. The five cohorts are mutually exclusive. They are not steps in a funnel. Counts and cash are from [03_historical_cohorts.csv](../../brief/03_historical_cohorts.csv).
+
+| Cohort | Consumers | Paid by 30 days | Settled cash by 30 days |
+| --- | ---: | ---: | ---: |
+| No observed engagement | 60,000 | 4,200 | $630,000 |
+| Tracked open only | 22,000 | 2,200 | $330,000 |
+| Tracked click only | 10,000 | 1,800 | $306,000 |
+| Portal visit, no plan start | 6,000 | 1,800 | $324,000 |
+| Plan started, incomplete | 2,000 | 1,000 | $190,000 |
+| **Total** | **100,000** | **11,000** | **$1,780,000** |
+
+The base target is the last three rows.
+
+| Engaged cohort | Consumers | Payers | Paid conversion | Settled cash |
+| --- | ---: | ---: | ---: | ---: |
+| Click only | 10,000 | 1,800 | 18% | $306,000 |
+| Portal visit, no plan start | 6,000 | 1,800 | 30% | $324,000 |
+| Plan started, incomplete | 2,000 | 1,000 | 50% | $190,000 |
+| **Combined** | **18,000** | **4,600** | **25.56%** | **$820,000** |
+
+At 13% of settled cash, that baseline is **$106,600** of contribution before messaging and support. It is cash the current journey already collects.
+
+We use the 18,000 rather than only the 2,000 who left a plan unfinished because a click or a visit is already a signal the fixed schedule does not use, and 2,000 people is too small to be the whole opportunity. Half of those 2,000 already pay within 30 days. Engagement is a reason to offer a next step. It does not prove what the person needs, and it does not prove that a better step will cause more cash. The other 82,000 are a later expansion, not this case.
+
+## Unit economics
+
+From [02_supporting_pack.md](../../brief/02_supporting_pack.md).
+
+| Input | Value |
+| --- | --- |
+| Retained collections fee | 15% of settled cash |
+| Variable payment cost | 2% of settled cash |
+| Contribution margin | 13% of incremental settled cash |
+| Email | $0.003 per send |
+| SMS | $0.035 per send |
+| Composer draft and review | $0.012 per attempt, including rejections |
+| Extra support conversation | $6 |
+| Build cap | $50,000: 40 engineer-days at $1,000, plus $10,000 design and compliance |
+
+A confirmed plan earns no fee. The fee starts when cash settles. The investment case below is a higher paid-conversion rate among people who encounter the intervention, priced at the historical cash per payer: $170 after a click, $180 after a visit, $190 after an unfinished plan.
+
+## Original investment case
+
+Assume 18,000 engaged consumers each intake and 60% of them encounter the intervention. Lift is an absolute increase in paid conversion among those people. The reference deducts two extra support conversations per 100 reached consumers and treats the new message as a replacement for a scheduled one, so the send cost nets to zero. Twelve new intakes make a year. The +3-point row is the arithmetic reference, not a forecast.
+
+| Hypothetical reached lift | Extra cash per intake | Annual contribution before build | First-year net after $50,000 | Simple payback |
+| --- | ---: | ---: | ---: | ---: |
+| +1 point | $18,960 | $14,026 | -$35,974 | 42.8 months |
+| +3 points | $56,880 | $73,181 | $23,181 | 8.2 months |
+| +5 points | $94,800 | $132,336 | $82,336 | 4.5 months |
+
+No lift, with the reference support cost, loses $15,552 a year before the build. The formulas, the full-reach sensitivity, and the one-change downside cases are in [Original model reference scenarios](#original-model-reference-scenarios).
+
+The two-way assistant adds a reply funnel and its own message and model costs. That extension is below. It does not replace this case, and the two results are not added together.
 
 | Model | Question and denominator | Implementation and inputs |
 | --- | --- | --- |
-| V2 conversational sensitivity | What happens after eligible SMS reach and a consumer reply? Lift is among responders. | UI calculation checked against [conversation_model.py](conversation_model.py), [inputs](conversation-assumptions.json) and [saved cases](conversation-scenarios.json). |
-| Original reach/lift model | What if a fraction encounters the broader contextual intervention? Lift is among reached consumers. | Backend Economics and independent [model.py](model.py), [inputs](assumptions.json) and [saved cases](scenarios.csv). |
+| Original reach/lift model | What if a fraction of the 18,000 encounter the intervention? Lift is among those reached. | Backend Economics and independent [model.py](model.py), [inputs](assumptions.json) and [saved cases](scenarios.csv). |
+| Conversational extension | What if only the people who can receive SMS, and then reply, are affected? Lift is among replies. | UI calculation checked against [conversation_model.py](conversation_model.py), [inputs](conversation-assumptions.json) and [saved cases](conversation-scenarios.json). |
 
-Read V2 first. The original model remains useful for comparison and sensitivity; its returns are not conversational returns. The [historical CSV](../../brief/03_historical_cohorts.csv) and [supporting pack](../../brief/02_supporting_pack.md) supply baselines and unit costs. The [V1 request](../master-project-brief.txt) and [V2 request](../v2-project-brief.txt) supply proposed directions and modelling assumptions, not measured effects.
+The [historical CSV](../../brief/03_historical_cohorts.csv) and [supporting pack](../../brief/02_supporting_pack.md) supply the baselines and the unit costs. The [V1 request](../master-project-brief.txt) and [V2 request](../v2-project-brief.txt) supply proposed directions, not measured effects.
 
 ## V2 conversational extension
 

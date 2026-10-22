@@ -1,7 +1,7 @@
-defmodule IndebtedApi.AshDomainTest do
+defmodule RecoveryApi.AshDomainTest do
   use ExUnit.Case, async: true
-  alias IndebtedApi.{AdaptiveResolution, Fixtures}
-  alias IndebtedApi.AdaptiveResolution.{ApprovedPlanOption, JourneyDecision}
+  alias RecoveryApi.{AdaptiveResolution, Fixtures}
+  alias RecoveryApi.AdaptiveResolution.{ApprovedPlanOption, JourneyDecision}
   @now ~U[2026-09-16 14:00:00Z]
   @engine %{role: :journey_engine, simulation: true}
   @portal %{role: :portal, simulation: true}

@@ -1,8 +1,8 @@
-defmodule IndebtedApi.JitAuthTest do
+defmodule RecoveryApi.JitAuthTest do
   use ExUnit.Case, async: true
   import Plug.Test
   import ExUnit.CaptureLog
-  alias IndebtedApi.Session
+  alias RecoveryApi.Session
 
   defp setup_task(state \\ "payday") do
     %{"view" => view} = Session.open("S04", "treatment")
@@ -149,12 +149,12 @@ defmodule IndebtedApi.JitAuthTest do
             "action_id" => action,
             "token" => token
           })
-          |> IndebtedApi.Router.call(IndebtedApi.Router.init([]))
+          |> RecoveryApi.Router.call(RecoveryApi.Router.init([]))
 
         assert conn.status == 200
-        assert conn.resp_cookies["indebted_jit"].http_only
-        assert conn.resp_cookies["indebted_jit"].same_site == "Strict"
-        assert conn.resp_cookies["indebted_jit"].max_age == 600
+        assert conn.resp_cookies["recovery_jit"].http_only
+        assert conn.resp_cookies["recovery_jit"].same_site == "Strict"
+        assert conn.resp_cookies["recovery_jit"].max_age == 600
         refute Map.has_key?(Jason.decode!(conn.resp_body), "auth_cookie")
       end)
 

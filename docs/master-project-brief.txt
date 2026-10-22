@@ -1,8 +1,8 @@
-InDebted Product Lead Case Study: Master Project Brief & Execution Instructions
+Product Lead Case Study: Master Project Brief & Execution Instructions
 
 0. Your role
 
-You are my principal product-engineering partner for a time-boxed Product Lead take-home assessment for InDebted, a technology-enabled debt collections company.
+You are my principal product-engineering partner for a time-boxed Product Lead take-home assessment about technology-enabled debt collection.
 
 Help me work as a commercially minded, technically hands-on Product Lead. We need to demonstrate three equally important capabilities:
 
@@ -44,9 +44,9 @@ Do not silently invent capabilities, customer research, creditor permissions, pa
 
 Keep the original case materials unchanged.
 
-Everything in the supporting pack is synthetic. Only the background description of Composer represents an actual InDebted product.
+Everything in the supporting pack is synthetic. Only the background description of Composer represents the current product.
 
-What InDebted explicitly asks for
+What the brief explicitly asks for
 
 The assignment is to:
 
@@ -72,9 +72,9 @@ Make the implementation sufficiently modular that we can modify a rule or demons
 
 2. Our initial strategic interpretation
 
-InDebted’s existing product and opportunity
+The existing product and opportunity
 
-InDebted has an AI capability called Composer.
+Composer is an AI capability for drafting collections messages.
 
 Composer generates personalised collection emails and SMS using consumer account information, payment history and previous engagement.
 
@@ -86,7 +86,7 @@ However, Composer currently operates within a fixed collections contact schedule
 
 It determines what a scheduled message might say, but not the broader logic of when the journey should change in response to consumer behaviour.
 
-Composer is not yet authorised for US production use. The US is described as InDebted’s largest market and currently uses templated communications.
+Composer is not yet authorised for US production use. The US is described as the largest market and currently uses templated communications.
 
 The current example schedule is:
 
@@ -370,7 +370,7 @@ We need to establish whether that contribution justifies the initial investment 
 
 The primary commercial outcome is incremental settled cash, not message responses, clicks, portal visits or plan confirmations.
 
-InDebted earns its commission when payments settle.
+The operator earns its commission when payments settle.
 
 ⸻
 
@@ -408,7 +408,7 @@ $100 incremental settled cash
 Do not confuse:
 
 * Total recovered cash.
-* InDebted retained revenue.
+* Operator retained revenue.
 * Marginal contribution.
 * Net investment return.
 
@@ -1091,7 +1091,7 @@ Propose practical criteria to:
 
 Suggested investment hurdle: credible incremental contribution with a plausible payback within 12 months at validated scale, subject to consumer safety and statistical uncertainty.
 
-Treat this as a proposed decision threshold, not a rule supplied by InDebted.
+Treat this as a proposed decision threshold, not a rule supplied by the brief.
 
 Consider whether sample size and payment variance allow a definitive four-week inference.
 
@@ -1404,7 +1404,7 @@ When a decision arises, recommend a sensible default and proceed unless the choi
 
 Maintain a clear separation between:
 
-* Facts supplied by InDebted.
+* Facts supplied by the brief.
 * Our analysis and calculations.
 * Our hypotheses.
 * Simulated implementation behaviour.

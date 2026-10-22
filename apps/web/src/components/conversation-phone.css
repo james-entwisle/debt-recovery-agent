@@ -1,0 +1,145 @@
+.imsg-page { grid-template-columns: minmax(190px, 240px) minmax(0, 390px) minmax(210px, 250px); column-gap: clamp(28px, 4vw, 64px); max-width: 1180px; margin: 0 auto; }
+.imsg-stage { flex-direction: column; align-items: center; min-width: 0; }
+.imsg-phone { height: min(760px, calc(100dvh - 128px)); min-height: 630px; }
+.imsg-nav { padding-top: 14px; padding-bottom: 10px; background: #f9f9fa; }
+.imsg-status { padding-bottom: 3px; background: #f9f9fa; min-height: 42px; }
+.imsg-thread { min-height: 0; overscroll-behavior: contain; scrollbar-width: none; }
+.imsg-thread::-webkit-scrollbar { display: none; }
+.imsg-who { gap: 2px; }
+.imsg-who small { font-size: 9px; }
+.imsg-who strong { font-size: 13px; }
+.imsg-avatar { width: 30px; height: 30px; }
+.imsg-bubble { max-width: 86%; font-size: 15px; line-height: 1.4; }
+.imsg-message-time { display: block; font-size: 9px; color: #8a8a91; margin: -5px 3px 3px; }
+.imsg-message-time.user { align-self: flex-end; }
+.imsg-message-time.agent { align-self: flex-start; }
+.imsg-sample-marker { margin: 0 0 1px; text-align: center; font-size: 9px; color: #8a8a91; }
+.imsg-section { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 14px 18px 8px; text-align: center; }
+.imsg-section span { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #8a8a91; }
+.imsg-section strong { font-size: 13px; font-weight: 650; color: #1c1c1e; }
+.imsg-disclosure { color: #86868d; font-size: 8px; text-align: center; padding: 6px 8px 3px; border-top: 1px solid #f2f2f7; }
+.imsg-compose { border: 0; align-items: flex-end; padding-top: 5px; }
+.imsg-compose textarea { resize: none; max-height: 90px; width: 100%; min-width: 0; border: 1px solid #d9d9de; background: #fcfcfd; border-radius: 20px; padding: 9px 13px; font-size: 15px; color: #25252a; line-height: 1.35; }
+.imsg-compose textarea:focus-visible { outline: 2px solid #007aff; outline-offset: 1px; }
+.imsg-compose button { flex: 0 0 32px; margin-bottom: 3px; }
+.imsg-compose button:focus-visible, .imsg-suggestions button:focus-visible { outline: 2px solid #007aff; outline-offset: 3px; }
+.imsg-rail-note { margin: 8px 4px 0; font-size: 11px; color: #85899b; line-height: 1.65; }
+.imsg-simulation { display: flex; align-items: center; gap: 7px; font-size: 10px; color: #85899b; margin: 26px 4px 0; }
+.imsg-simulation > span { width: 5px; height: 5px; background: #85899b; border-radius: 50%; }
+.imsg-suggestions { width: 100%; padding: 19px 5px 0; }
+.imsg-suggestions > span { color: #8a8e9e; font-size: 10px; }
+.imsg-suggestions > div { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.imsg-suggestions button { border: 1px solid #e6e7ed; border-radius: 20px; background: #fcfcfe; padding: 7px 11px; font-size: 11px; color: #646b82; cursor: pointer; }
+.imsg-suggestions button:hover { background: #f2f3f9; border-color: #d4d6e2; }
+.imsg-suggestions button:disabled, .imsg-rail button:disabled { opacity: .5; cursor: default; }
+.imsg-suppressed { font-size: 11px; color: #8c6b3a; margin-top: 12px; text-align: center; }
+.imsg-moments-toggle { display: none; }
+@media (max-width: 1120px) and (min-width: 861px) {
+  .imsg-page { grid-template-columns: minmax(170px, 220px) minmax(0, 390px); gap: 40px; }
+  .imsg-page > .conversation-inspector { grid-column: 1 / -1; max-width: 650px; justify-self: center; }
+  .conversation-inspector-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+  .conversation-inspector-body > small { grid-column: 1 / -1; }
+}
+@media (max-width: 860px) {
+  .imsg-page { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .imsg-stage { order: 1; }
+  .imsg-rail { order: 0; padding: 0; }
+  .imsg-rail-heading { margin: 0; gap: 10px; }
+  .imsg-rail h2 { font-size: 15px; letter-spacing: -.3px; }
+  .imsg-rail-heading > span { font-size: 10px; margin-right: auto; }
+  .imsg-moments-toggle { display: inline-flex; border: 0; background: #f3f3fa; color: #686e86; border-radius: 7px; padding: 7px 10px; font-size: 10px; }
+  .imsg-rail .imsg-moments, .imsg-rail .imsg-rail-actions { display: none; }
+  .imsg-rail[data-expanded="true"] .imsg-moments { display: grid; margin-top: 12px; }
+  .imsg-rail[data-expanded="true"] .imsg-rail-actions { display: flex; flex-wrap: wrap; }
+  .imsg-rail-note { width: 100%; }
+  .imsg-simulation { margin: 8px 0 0; font-size: 9px; }
+  .imsg-phone { height: 690px; min-height: 0; }
+  .imsg-page > .conversation-inspector { order: 2; width: min(100%, 390px); }
+}
+@media (max-width: 480px) {
+  .app-shell:has(.imsg-page) > main.sms-main { padding: 16px 14px 32px; }
+  .imsg-phone { padding: 10px; height: 675px; border-radius: 48px; }
+  .imsg-screen { border-radius: 38px; }
+  .imsg-island { width: 104px; height: 29px; top: 10px; }
+  .imsg-status { padding: 14px 22px 3px; font-size: 13px; }
+  .imsg-nav { padding-top: 12px; padding-bottom: 8px; }
+  .imsg-thread { padding-inline: 12px; }
+  .imsg-bubble { font-size: 14px; }
+  .imsg-suggestions { padding-top: 15px; }
+}
+/* The interview opens on the phone; controls stay behind a deliberate disclosure. */
+.imsg-page.phone-only {
+  display: grid;
+  grid-template-columns: minmax(220px, 272px) minmax(0, 390px);
+  justify-content: center;
+  align-items: start;
+  column-gap: 64px;
+  max-width: 980px;
+}
+.phone-only > .imsg-stage { width: auto; }
+.phone-only > .imsg-rail { position: sticky; top: 24px; width: auto; margin: 0; display: block; }
+.phone-only .imsg-moments { display: flex; flex-direction: column; }
+.phone-only .imsg-rail-actions { display: flex; }
+.phone-only > .conversation-inspector { display: none; }
+.imsg-demo-label { display: flex; align-items: center; justify-content: space-between; width: calc(100% - 8px); color: #777d91; font-size: 9px; letter-spacing: 1.3px; margin: 0 0 14px; }
+.imsg-demo-label > span { font-size: 9px; letter-spacing: 0; color: #9195a4; }
+.imsg-demo-toggle { display: flex; align-items: center; gap: 6px; border: 0; background: transparent; color: #8c91a0; font-size: 10px; padding: 13px; margin-top: 5px; cursor: pointer; }
+.phone-only .imsg-suggestions { padding-top: 14px; display: flex; align-items: center; gap: 9px; justify-content: center; }
+.phone-only .imsg-suggestions > div { margin: 0; }
+.phone-only .imsg-suggestions > span { font-size: 9px; }
+.phone-only .imsg-phone { height: min(750px, calc(100dvh - 170px)); min-height: 620px; }
+@media (max-width: 480px) {
+  .phone-only .imsg-phone { height: 660px; min-height: 0; }
+  .imsg-demo-label { margin-bottom: 11px; }
+}
+.imsg-thread > * { flex-shrink: 0; }
+@media (max-width: 760px) {
+  .app-shell:has(.imsg-page) .app-header { height: auto; min-height: 0; }
+}
+@media (max-width: 620px) {
+  .app-shell:has(.imsg-page) .app-header { height: auto; min-height: 108px; padding-top: 16px; padding-bottom: 0; }
+}
+/* phone-only is more specific than the stacked layout above, so small screens must opt out here. */
+@media (max-width: 860px) {
+  .imsg-page.phone-only {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    max-width: 440px;
+    margin-inline: auto;
+  }
+  .phone-only > .imsg-stage { order: 0; width: min(100%, 390px); }
+  .phone-only > .imsg-rail {
+    order: 1;
+    position: static;
+    width: min(100%, 390px);
+    padding-top: 4px;
+  }
+  .phone-only .imsg-moments {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .phone-only .imsg-moments button {
+    grid-template-columns: 24px minmax(0, 1fr);
+    min-height: 48px;
+    padding: 8px 10px;
+  }
+  .phone-only .imsg-moments button strong { font-size: 13px; }
+  .phone-only .imsg-moment-arrow { display: none; }
+  .phone-only .imsg-rail-actions { display: flex; flex-direction: column; margin-top: 16px; }
+  .phone-only .imsg-phone {
+    width: 100%;
+    height: min(720px, calc(100dvh - 188px));
+    min-height: 540px;
+  }
+  .imsg-demo-label { width: 100%; gap: 8px; flex-wrap: wrap; }
+}
+@media (max-width: 480px) {
+  .phone-only .imsg-phone {
+    height: min(680px, calc(100dvh - 168px));
+    min-height: 0;
+  }
+  .phone-only .imsg-moments { grid-template-columns: 1fr; }
+}

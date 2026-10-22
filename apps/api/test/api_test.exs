@@ -1,7 +1,7 @@
-defmodule IndebtedApi.ApiTest do
+defmodule RecoveryApi.ApiTest do
   use ExUnit.Case, async: true
   import Plug.Test
-  alias IndebtedApi.Endpoint
+  alias RecoveryApi.Endpoint
 
   defp request(method, path, body \\ nil) do
     conn(method, path, if(body, do: Jason.encode!(body), else: nil))

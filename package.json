@@ -1,5 +1,5 @@
 {
-  "name": "indebted-case-study",
+  "name": "debt-recovery-agent",
   "version": "0.1.0",
   "private": true,
   "workspaces": ["apps/web"],

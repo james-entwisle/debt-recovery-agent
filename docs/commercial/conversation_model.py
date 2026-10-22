@@ -1,84 +1,119 @@
-"""Reproduce the separate V2 conversational sensitivity. Standard library only."""
+"""Reproduce the cohort progression calculator. Python standard library only."""
+import argparse
+import copy
 import csv
 import json
 import math
 from pathlib import Path
-
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
+IDS = ("C2", "C3", "C4")
+STAGES = ("portal", "start", "confirm", "pay")
 
 
-def calculate(rows, inputs, lift=None):
-    values = list(inputs.values())
-    if not all(isinstance(v, (float, int)) and math.isfinite(v) and v >= 0 for v in values):
-        raise ValueError("Conversation assumptions must be finite and non-negative")
-    for name in ("sms_reachable_pct", "response_pct", "responder_lift_pp"):
-        if inputs[name] > 100:
-            raise ValueError(f"{name} exceeds 100")
-    lift = inputs["responder_lift_pp"] if lift is None else lift
-    engaged = [row for row in rows if row["cohort_id"] in {"C2", "C3", "C4"}]
-    population = sum(int(row["consumers"]) for row in engaged)
-    reachable = population * inputs["sms_reachable_pct"] / 100
-    responders = reachable * inputs["response_pct"] / 100
-    payers = 0
-    cash = 0
-    for row in engaged:
-        count, paid = int(row["consumers"]), int(row["paid_30d"])
-        added = responders * count / population * min(lift / 100, 1 - paid / count)
-        payers += added
-        cash += added * float(row["cash_collected_30d_usd"]) / paid * inputs["payer_cash_multiplier"]
-    fees = cash * .15
-    payment = cash * .02
-    sms = responders * inputs["net_extra_sms_per_responder"] * .035
-    ai = responders * inputs["ai_turns_per_responder"] * inputs["hypothetical_ai_turn_cost_usd"]
-    support = responders * inputs["extra_support_conversations_per_100_responders"] / 100 * 6
-    savings = responders * inputs["avoided_support_conversations_per_100_responders"] / 100 * 6
-    contribution = fees - payment - sms - ai - support + savings
-    return dict(lift_pp=lift, engaged=population, reachable=reachable, responders=responders,
-                additional_payers=payers, additional_cash_usd=cash, fees_usd=fees,
-                payment_cost_usd=payment, sms_cost_usd=sms, ai_cost_usd=ai,
-                extra_support_cost_usd=support, support_savings_usd=savings,
-                contribution_per_intake_usd=contribution,
-                annual_contribution_usd=contribution * inputs["new_equivalent_intakes"],
-                payback_monthly_intakes=inputs["investment_usd"] / contribution if contribution > 0 else None)
+def validate(a):
+    if a["audience"] not in {"engaged", *IDS}:
+        raise ValueError("Unknown cohort")
+    numbers = [v for k, v in a.items() if k not in {"audience", "rates"}]
+    if set(a["rates"]) != set(IDS):
+        raise ValueError("Three cohort rate tables required")
+    for cohort in a["rates"].values():
+        if set(cohort) != {"current", "adaptive"}:
+            raise ValueError("Current and adaptive rates required")
+        for rates in cohort.values():
+            if set(rates) != set(STAGES):
+                raise ValueError("Four progression stages required")
+            numbers.extend(rates.values())
+            if any(not isinstance(v, (int, float)) or v > 100 for v in rates.values()):
+                raise ValueError("Rates must be percentages")
+    if any(isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or v < 0 for v in numbers):
+        raise ValueError("Inputs must be finite non-negative numbers")
+    if a["reach"] > 100 or a["incrementality"] > 100 or not 1 <= a["months"] <= 36:
+        raise ValueError("Percentage or horizon out of range")
+
+
+def relevant(cid, stage):
+    return not (stage == "portal" and cid != "C2") and not (stage == "start" and cid == "C4")
+
+
+def calculate(source, a):
+    validate(a)
+    selected = [r for r in source if r["cohort_id"] in IDS and (a["audience"] == "engaged" or r["cohort_id"] == a["audience"])]
+    weight = sum(int(row["consumers"]) for row in selected)
+    rows = []
+    for row in selected:
+        cid, n, paid = row["cohort_id"], int(row["consumers"]), int(row["paid_30d"])
+        population = a["population"] * n / weight
+        reached = population * a["reach"] / 100
+        def progress(rates):
+            remaining = reached
+            counts = {}
+            for stage in STAGES:
+                remaining *= rates[stage] / 100 if relevant(cid, stage) else 1
+                counts[stage] = remaining
+            return counts
+        current, adaptive = progress(a["rates"][cid]["current"]), progress(a["rates"][cid]["adaptive"])
+        raw = (adaptive["pay"] - current["pay"]) * a["incrementality"] / 100
+        payers = max(-reached * paid / n, min(raw, reached * (1 - paid / n)))
+        cash = payers * float(row["cash_collected_30d_usd"]) / paid * a["cashMultiplier"]
+        rows.append(dict(id=cid, population=population, reached=reached, current=current, adaptive=adaptive, payers=payers, cash=cash))
+    def total(key):
+        return sum(row[key] for row in rows)
+    reached, cash = total("reached"), total("cash")
+    support, sms, ai = reached * a["support"] / 100 * 6, reached * a["sms"] * .035, reached * a["turns"] * a["turnCost"]
+    contribution = cash * .13 - support - sms - ai - a["ongoing"]
+    progression = [dict(stage=s, current=sum(r["current"][s] for r in rows), adaptive=sum(r["adaptive"][s] for r in rows)) for s in STAGES]
+    return dict(population=total("population"), reached=reached, payers=total("payers"), cash=cash, fees=cash * .15, payment=cash * .02, support=support, sms=sms, ai=ai, contribution=contribution, annual=contribution * 12, horizon=contribution * a["months"], netAfterBuild=contribution * a["months"] - a["investment"], payback=a["investment"] / contribution if contribution > 0 else None, progression=progression, rows=rows)
+
+
+def no_change(a):
+    a = copy.deepcopy(a)
+    for cid in IDS:
+        a["rates"][cid]["adaptive"] = copy.deepcopy(a["rates"][cid]["current"])
+    return a
 
 
 def main():
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true")
-    args = parser.parse_args()
-    inputs = json.loads((HERE / "conversation-assumptions.json").read_text())
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--check", action="store_true")
+    p.add_argument("--assumptions", type=Path, default=HERE / "conversation-assumptions.json")
+    p.add_argument("--output", type=Path, default=HERE / "conversation-scenarios.json")
+    args = p.parse_args()
+    a = json.loads(args.assumptions.read_text())
     with (ROOT / "brief/03_historical_cohorts.csv").open() as stream:
-        rows = list(csv.DictReader(stream))
-    cases = [calculate(rows, inputs, lift) for lift in [0, 1, 3, 5, 10]]
-    reference = cases[2]
-    assert reference["engaged"] == 18000
-    assert reference["responders"] == 3240
-    assert math.isclose(reference["additional_cash_usd"], 17064)
-    assert math.isclose(reference["contribution_per_intake_usd"], 1246.32)
-    assert math.isclose(reference["annual_contribution_usd"], 14955.84)
-    assert math.isclose(cases[0]["annual_contribution_usd"], -11664)
-    assert calculate(rows, {**inputs, "response_pct": 0})["payback_monthly_intakes"] is None
-    assert calculate(rows, {**inputs, "sms_reachable_pct": 0})["additional_cash_usd"] == 0
-    capped = calculate(rows, {**inputs, "responder_lift_pp": 100})
-    assert capped["additional_payers"] <= capped["responders"]
-    for invalid in [float("nan"), float("inf"), -1]:
-        try:
-            calculate(rows, {**inputs, "hypothetical_ai_turn_cost_usd": invalid})
-        except ValueError:
-            pass
-        else:
-            raise AssertionError("Invalid cost accepted")
-    result = json.dumps({"assumptions": inputs, "scenarios": cases}, indent=2) + "\n"
-    output = HERE / "conversation-scenarios.json"
+        source = list(csv.DictReader(stream))
+    cases = []
+    patches = [("reference", {}), ("click_only", dict(audience="C2", population=10000)), ("portal_no_start", dict(audience="C3", population=6000)), ("incomplete_plan", dict(audience="C4", population=2000)), ("half_incrementality", dict(incrementality=50)), ("half_cash", dict(cashMultiplier=.5)), ("zero_reach", dict(reach=0)), ("ongoing_cost_without_reach", dict(reach=0, ongoing=2000)), ("conversation_costs", dict(sms=1.2, turns=1.2)), ("short_horizon", dict(months=3))]
+    for name, patch in patches:
+        inputs = {**copy.deepcopy(a), **patch}
+        cases.append(dict(name=name, inputs=inputs, result=calculate(source, inputs)))
+    cases.append(dict(name="no_improvement", inputs=no_change(a), result=calculate(source, no_change(a))))
+    regression = no_change(a)
+    regression["rates"]["C2"]["adaptive"]["portal"] = 30
+    cases.append(dict(name="worse_progression", inputs=regression, result=calculate(source, regression)))
     if args.check:
-        if not output.exists() or output.read_text() != result:
-            raise SystemExit("Conversational outputs are stale; regenerate with conversation_model.py")
-        print("Conversational model: arithmetic, zero reach/response, conversion cap and saved output checks passed")
+        r = cases[0]["result"]
+        assert r["population"] == 18000 and r["reached"] == 10800
+        assert math.isclose(r["payers"], 324) and math.isclose(r["cash"], 56880)
+        assert math.isclose(r["annual"], 73180.8)
+        assert math.isclose(cases[-2]["result"]["annual"], -15552)
+        assert cases[-1]["result"]["payers"] < 0
+        assert cases[6]["result"]["payback"] is None
+        for invalid in [float("nan"), float("inf"), -1]:
+            try:
+                calculate(source, {**a, "turnCost": invalid})
+            except ValueError:
+                pass
+            else:
+                raise AssertionError("Invalid input accepted")
+    content = json.dumps(dict(assumptions=a, cases=cases), indent=2) + "\n"
+    if args.check:
+        if args.output.read_text() != content:
+            raise SystemExit("Stale output; run conversation_model.py")
+        print("Graduation model: calibrated original case, cohort, stage, cost and saved-output checks passed")
     else:
-        output.write_text(result)
-        print(output)
+        args.output.write_text(content)
+        print(args.output)
 
 
 if __name__ == "__main__":

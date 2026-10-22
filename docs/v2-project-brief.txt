@@ -2,13 +2,13 @@
 
 ## Your mission
 
-We are pivoting the product experience for the InDebted Product Lead case study.
+We are pivoting the product experience for the product case study.
 
 **Preserve our existing Adaptive Resolution investment thesis, core decision engine, compliance rules, cohort analysis and commercial model. Replace the confusing journey simulator with a compelling two-way SMS conversation simulator, and reposition the portal as a set of just-in-time (JIT) interfaces surfaced when consumers need to complete specific actions.**
 
 This is an evolution of our existing implementation, not a greenfield rebuild.
 
-We want to demonstrate what a competent, persistent AI-powered debt-resolution assistant could look like if InDebted evolved Composer from a one-way outbound message generator into a two-way, context-aware consumer-resolution experience.
+We want to demonstrate what a competent, persistent AI-powered debt-resolution assistant could look like if Composer evolved from a one-way outbound message generator into a two-way, context-aware consumer-resolution experience.
 
 The product should feel like an ongoing conversation with an assistant that understands the consumer's needs, remembers relevant context and helps them progress towards appropriate voluntary resolution.
 
@@ -24,7 +24,7 @@ We are under a strict three-hour take-home timebox. Implement a coherent working
 
 ## Current state
 
-InDebted's Composer personalises outbound collection messages but operates within a fixed schedule.
+Composer personalises outbound collection messages but operates within a fixed schedule.
 
 It doesn't currently respond to consumer engagement events such as clicks, authenticated portal visits or incomplete repayment-plan flows.
 
@@ -111,7 +111,7 @@ Prefer a simple, understandable interface over a complicated internal workflow d
 
 ## Objective
 
-Demonstrate a realistic two-way SMS conversation between an InDebted resolution assistant and a consumer, driven by account state, conversational intent and existing journey orchestration.
+Demonstrate a realistic two-way SMS conversation between a resolution assistant and a consumer, driven by account state, conversational intent and existing journey orchestration.
 
 This should be the centrepiece of the interview demonstration.
 
@@ -158,7 +158,7 @@ Add a reset action that restores the selected scenario to its original fixture s
 
 Create a credible phone-style SMS interface with:
 
-- InDebted assistant identity.
+- Debt Recovery Agent identity.
 - Chat bubbles for inbound and outbound messages.
 - Message timestamps.
 - Message status, clearly identifying simulated sending.
@@ -314,7 +314,7 @@ The supplied scenarios are about contact/event decisions, not fully populated co
 
 Extend them using separate, clearly labelled synthetic inbound SMS fixtures.
 
-Do not mutate the original files or claim the invented messages came from InDebted's dataset.
+Do not mutate the original files or claim the invented messages came from the source dataset.
 
 ---
 
@@ -607,7 +607,7 @@ A consumer messages the assistant, asks a question or opens a secure interface.
 
 **Proactive collections outreach**
 
-InDebted decides to initiate another communication.
+The operator decides to initiate another communication.
 
 Do not treat them as interchangeable.
 
@@ -683,7 +683,7 @@ The calculation should separate:
 2. Conversational participation.
 3. Incremental paid conversion.
 4. Additional settled cash.
-5. InDebted's retained 15% revenue.
+5. The operator's retained 15% revenue.
 6. 2% payment cost.
 7. Incremental messaging, AI and support costs.
 8. Annualised contribution.

@@ -1,5 +1,5 @@
 {
-  "source": "Invented candidate V2 conversation examples; not supplied InDebted data",
+  "source": "Invented candidate V2 conversation examples; not supplied source data",
   "examples": [
     {"intent": "payday_alignment", "text": "I get paid every second Friday."},
     {"intent": "plan_preference", "text": "Yes, around $50."},

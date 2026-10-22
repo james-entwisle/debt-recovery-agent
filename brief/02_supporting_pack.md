@@ -1,6 +1,6 @@
 # Case study supporting pack
 
-> **All figures, observations, example copy, system details and policy limits in this pack are invented for the exercise. Only the Composer background in the brief reflects InDebted's real product. The rules are exercise assumptions, not US law, and carry no legal approval.**
+> **All figures, observations, example copy, system details and policy limits in this pack are invented for the exercise. Only the Composer background in the brief reflects the current product. The rules are exercise assumptions, not US law, and carry no legal approval.**
 
 The tables in this pack hold everything you need for a recommendation. The CSV and JSON are optional inputs for building; you do not need to process every record.
 
@@ -31,7 +31,7 @@ These are body excerpts. The sending service adds a versioned disclosure and opt
 Email subject: Your account options  
 Body: You can review your account with [creditor] and the available payment options in your secure portal. If you have a question or need help, you can contact our team. [View account]
 
-SMS body: InDebted: You can review your account and available options here: [secure account link]. [Fixed disclosure and opt-out block]
+SMS body: Debt Recovery: You can review your account and available options here: [secure account link]. [Fixed disclosure and opt-out block]
 
 ## Consumer observations
 
@@ -106,7 +106,7 @@ All amounts are USD. The economics support a first decision, not a full forecast
 | Input                    | Exercise assumption                                                                                                                                        |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Retained collections fee | 15% of settled cash. The other 85% belongs to clients.                                                                                                     |
-| Variable payment cost    | 2% of settled cash, paid by InDebted.                                                                                                                      |
+| Variable payment cost    | 2% of settled cash, paid by the operator.                                                                                                                      |
 | Communication cost       | Email $0.003 per send; SMS $0.035 per send.                                                                                                                |
 | Composer cost            | $0.012 extra per draft and review attempt, including rejected attempts.                                                                                    |
 | Support cost             | $6 extra per conversation the intervention creates.                                                                                                        |

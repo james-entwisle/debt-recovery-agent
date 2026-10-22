@@ -1,10 +1,12 @@
 # Adaptive Resolution
 
-Help an engaged consumer take the next useful step. They reply to an SMS, explain what is getting in the way, and receive a relevant response or a focused, authenticated task to review approved options, save progress or ask for help.
+Help a consumer take the next useful step from the message thread they already use. They reply by SMS, or by iMessage where the handset and permission allow it, and say what is getting in the way: a payday, an account question, an interruption, or a need for help. The agent answers in the thread, or opens one authenticated task for that need. The portal is there to complete the task.
 
-This is a local InDebted Product Lead case study using synthetic data. V2 combines an **SMS Simulator**, a **Just-in-Time Portal** and a **Financial Model**. The conversation runs through deterministic rules; all messages, identity checks, account updates and payments are simulated.
+We chose a conversation because the current journey cannot tell those needs apart. Composer personalises the outbound email or SMS and still sends it on a fixed schedule. A click, a visit, or an unfinished plan does not change the next message, and the link opens the same account page. In the synthetic intake, 82,000 of 100,000 people never open that link. The same schedule settles $10.50 per person when there is no engagement and $95 after an unfinished plan. Eight interviews and fifty support conversations suggest the reason for leaving is often a date, an interruption, or an account question. The aim is faster recovery: less time to a confirmed plan, and earlier settled cash, with opt-outs and complaints kept in view. The [product vision](docs/product-vision.md) walks through that choice, the cohort split, and the measures.
 
-Start with the [two-page investment recommendation](output/pdf/DECISION.pdf), also available as [Markdown](DECISION.md). For the working demonstration, follow [Run locally](#run-locally) and the [demo guide](docs/demo-guide.md). Verification results and unresolved work live in the [build log](docs/build-log.md).
+This is a local product case study using synthetic data. V2 combines an **SMS Simulator**, a **Just-in-Time Portal** and a **Financial Model**. The conversation runs through deterministic rules; all messages, identity checks, account updates and payments are simulated.
+
+Start with the [product vision](docs/product-vision.md), then the [two-page investment recommendation](output/pdf/DECISION.pdf), also available as [Markdown](DECISION.md). For the working demonstration, follow [Run locally](#run-locally) and the [demo guide](docs/demo-guide.md). Verification results and unresolved work live in the [build log](docs/build-log.md).
 
 ## The product and investment thesis
 
@@ -18,26 +20,17 @@ The consumer value is less repetition, clearer choices and room to decide withou
 
 ## Commercial case
 
-The V2 model separates SMS reach from willingness to reply. Its reference assumes 60% eligible SMS reach and 30% replies: 18,000 consumers become 10,800 reachable consumers and 3,240 responders. It then tests hypothetical conversion lift among responders, using the historical cohort cash-per-payer proxy.
+The opportunity is the 18,000 engaged consumers in each intake: 10,000 who clicked, 6,000 who visited without starting a plan, and 2,000 who started one and left it. They already produce 4,600 payers, a 25.56% paid rate and $820,000 settled cash. At 13% that baseline is $106,600 before messaging and support. It is not the value of the change. We use this group rather than only the 2,000 unfinished plans because a click or a visit is already a signal, and 2,000 people is too small to be the whole case. The other 82,000 are a later expansion.
 
-```text
-Incremental contribution = 13% of additional settled cash
-                          - extra SMS, model and support costs
-                          + measured support savings
-```
+The hypothesis is a higher 30-day settled-payment rate in this group than the fixed journey produces. The assistant and the just-in-time tasks are how someone would move from their current stage onto a confirmed plan and then a settled payment. A plan earns no fee until cash settles. The reference assumes 60% of the 18,000 encounter the intervention. Lift is an absolute increase in paid conversion among those people. Costs use the 15% fee, the 2% payment cost, and two extra support conversations per 100 reached consumers at $6. The new message replaces a scheduled one, so the send cost nets to zero. The build cap is $50,000.
 
-The exercise supplies 15% retained fees, 2% payment costs, $0.035 per SMS and $6 per support conversation. The reference adds four SMS, four hypothetical $0.01 AI turns and two support conversations per 100 responders, with zero support savings. The AI price is an assumption; the demo calls no model. A confirmed plan earns no fee until cash settles.
-
-| Hypothetical lift among responders | Extra cash per intake | Annual contribution before build | Simple payback on $50,000 |
+| Hypothetical reached lift | Extra cash per intake | Annual contribution before build | Simple payback on $50,000 |
 | --- | ---: | ---: | ---: |
-| No lift | $0 | -$11,664 | None |
-| +1 percentage point | $5,688 | -$2,791 | None |
-| +3 percentage points | $17,064 | $14,956 | 40.1 intakes |
-| +5 percentage points | $28,440 | $32,702 | 18.3 intakes |
+| +1 percentage point | $18,960 | $14,026 | 42.8 months |
+| +3 percentage points | $56,880 | $73,181 | 8.2 months |
+| +5 percentage points | $94,800 | $132,336 | 4.5 months |
 
-These scenarios assume twelve equivalent new intakes and persistent effects. They exclude unpriced setup, maintenance and oversight. Payback extends the assumed run rate and excludes build time and ramp. The range is sensitivity, not a forecast. It does **not** justify broad rollout at the assumed cost.
-
-The Financial Model also preserves the earlier reached-consumer calculation and editable payback target. Those have different denominators from V2's responder model. Its roughly $148k full-reach, +3-point annual contribution excludes new costs and the reply funnel. See [commercial reasoning and reproducible calculations](docs/commercial/README.md) for definitions, downside cases and both models.
+The +3-point row is the arithmetic reference: about $73,000 a year before the build, and about $23,000 left after it in the first year. Twelve equivalent new intakes, persistent effects, and no unpriced operating costs. The range is sensitivity, not a forecast. Cohort counts, unit costs, downside cases and the separate reply-funnel extension are in the [commercial model](docs/commercial/README.md).
 
 ## What the demonstration does
 
@@ -99,6 +92,12 @@ The deterministic assistant classifies bounded explicit intents, records stated 
 
 Token validation, purpose-bound cookies and draft revalidation are implemented. Identity proof, SMS delivery, support operations, source services and money movement are simulated. Drafts and conversations expire after inactivity and disappear on restart. Local operator endpoints intentionally expose synthetic data without authentication. This app must not be deployed as a production consumer service. Inbound SMS availability, durable storage, retention, security review and US compliance approval remain dependencies.
 
+## Focused JIT actions
+
+The component-library follow-up prioritises five tasks: compact four-step plan setup, return to a saved step, a payment-date request, a frequency-change request and early payoff. The operator-only state selector opens each task; active-plan examples use an explicit **Load active plan example** control. Consumer navigation never silently changes the account.
+
+Setup follows approved option, schedule, masked example method and final review. Saving preserves the selected option, safe method reference and current step in the existing server draft. No card number, bank credentials or security code is collected. Date/frequency changes are structured requests for review because the case supplies no amendment authority; existing instalments remain in place. Early payoff reviews the current verified balance and records a pending simulated payment, without declaring settlement or cancelling a plan. See the [component contract](docs/jit-components-contract.md) and [implementation brief](docs/jit-component-brief.txt).
+
 ## Verify
 
 Run from the repository root:
@@ -132,10 +131,11 @@ The HTTP suites verify original policy behaviour and V2 conversation, cookie and
 
 | Read this | When you need it |
 | --- | --- |
+| [Product vision](docs/product-vision.md) | See the personal-agent thesis, the cohort the link never reaches, and the recovery dials. |
 | [Decision note](DECISION.md) · [two-page PDF](output/pdf/DECISION.pdf) | Assess the recommendation, evidence, scope, economics, pilot and expand/change/stop criteria. |
 | [Product philosophy](docs/product-philosophy.md) | Understand the consumer experience, autonomy boundaries and trade-offs guiding V2. |
 | [Discovery and alternatives](docs/discovery.md) | Trace the move from abandoned-plan reminders to conversation and see what could overturn it. |
-| [Commercial reasoning and models](docs/commercial/README.md) | Inspect assumptions, calculations, denominators, sensitivities and reproduction/export commands. |
+| [Commercial model](docs/commercial/README.md) | Read the 18,000-person investment case: cohorts, unit costs, contribution and payback. |
 | [Assumptions and validation](docs/assumptions.md) | Find missing evidence and the checks required before production or expansion. |
 | [Architecture](docs/architecture.md) | Understand component responsibilities, authoritative state, replay, drafts and authentication limits. |
 | [Demo guide](docs/demo-guide.md) | Run the normal case and meaningful exceptions, with expected results and troubleshooting. |

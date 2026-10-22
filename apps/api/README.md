@@ -11,7 +11,7 @@ The service binds to `127.0.0.1:4000`. Set `API_PORT=4001` to change it. `GET /h
 
 ## Ash model
 
-`IndebtedApi.AdaptiveResolution` is the business domain, the boundary for related resolution operations. It exposes generated code interfaces for two resources:
+`RecoveryApi.AdaptiveResolution` is the business domain, the boundary for related resolution operations. It exposes generated code interfaces for two resources:
 
 | Resource | Action | Responsibility |
 | --- | --- | --- |
@@ -22,7 +22,7 @@ Resource attributes include enum-constrained atoms, dates, timestamps, amounts, 
 
 Ash policies require a simulated journey-engine actor for evaluation and a simulated portal actor for matching. Domain authorization is always enabled, including when a caller tries `authorize?: false`. These are internal operation boundaries for the local demonstration. Separate JIT endpoints implement scoped demo-token authentication. Production identity verification remains unimplemented; unauthenticated operator endpoints are local synthetic controls. See the [architecture](../../docs/architecture.md) for the trust boundary.
 
-`IndebtedApi.CaseStudy` groups the demonstration harness. Its `Demonstration` resource validates HTTP operation arguments and calls the session service. Contact eligibility remains a deterministic decision rule, so restricted accounts receive an explained `SUPPRESS` decision rather than losing access to an explanation through an authorization error.
+`RecoveryApi.CaseStudy` groups the demonstration harness. Its `Demonstration` resource validates HTTP operation arguments and calls the session service. Contact eligibility remains a deterministic decision rule, so restricted accounts receive an explained `SUPPRESS` decision rather than losing access to an explanation through an authorization error.
 
 ## Conversation, drafts and access
 
@@ -44,7 +44,7 @@ Audit entries include ordered sequence numbers, evaluated inputs, decisions, tem
 
 ## Modifying the demonstration
 
-Change engagement ranking, the 45-minute waiting interval, eligibility, timing and shared budgets in `lib/indebted_api/policy.ex`. A contextual replacement moves the same queued contact to the next permitted time after that interval, keeping its original schedule visible for comparison. Change preference matching in `lib/indebted_api/portal.ex` and action authorization in the two Ash resources. Change simulated effects and replay transitions in `lib/indebted_api/replay.ex`. Conversation routing and fixed replies live in `lib/indebted_api/conversation.ex`; scoped command permissions live in `lib/indebted_api/jit_auth.ex`.
+Change engagement ranking, the 45-minute waiting interval, eligibility, timing and shared budgets in `lib/recovery_api/policy.ex`. A contextual replacement moves the same queued contact to the next permitted time after that interval, keeping its original schedule visible for comparison. Change preference matching in `lib/recovery_api/portal.ex` and action authorization in the two Ash resources. Change simulated effects and replay transitions in `lib/recovery_api/replay.ex`. Conversation routing and fixed replies live in `lib/recovery_api/conversation.ex`; scoped command permissions live in `lib/recovery_api/jit_auth.ex`.
 
 The supplied files under `brief/` are read without modification. Additional plan terms live in `priv/fixtures/approved_plan_options.json`, labelled as invented demonstration fixtures. Plan confirmation requires a matching option, explicit confirmation and a current review token. Payment commands only set a synthetic pending state. All contacts, payment actions and template previews are simulated; no messaging, payment or model provider is connected.
 

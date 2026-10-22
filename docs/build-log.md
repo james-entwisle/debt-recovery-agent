@@ -1,8 +1,8 @@
 # Build log
 
-V1 records below describe the completed event-driven portal demonstration. V2 supersedes its navigation, conversational and authentication scope; the current implementation and verification are recorded at the end. Original exercise inputs remain unchanged.
+V1 records below describe the completed event-driven portal demonstration. V2 supersedes its navigation, conversational and authentication scope. Later sections are history. The current working tree is the 21:45 Sydney record at the end.
 
-Latest progress review: 22 October 2026, 20:48 Sydney. V1 is committed at `6512444`. V2 is implemented in the working tree and still under integration. Backend and fresh-process HTTP checks pass; frontend lint and verification through the default running servers still need attention. This snapshot does not mark V2 complete.
+Latest implementation record: V2 was committed at `597f151` on 22 October 2026, 20:56 Sydney. Focused JIT tasks, the phone-style conversation, the product vision and the public-name change are uncommitted on top of that commit. The 21:45 record states which checks were rerun. The conversational sequence in that record is the current design history, including the move from consumer-prompted moments to agent follow-up when a reply or a plan stalls. Mobile layout for the phone is still open. Production dependencies remain unresolved.
 
 ## V1 execution checklist
 
@@ -70,7 +70,7 @@ Final integration verification passed at 20:55 Sydney. No production capability 
 
 ### Independent progress review, 22 October 2026, 20:48 Sydney
 
-Reviewed the current working tree against the V2 brief, contracts, source and tests. The implementation chat, `Set up Indebted interview repo`, was still active, so these results apply to the files present during this review. Its chat ID is `01a162a4-e3cd-7972-805e-0d4c5ef205ba`. No application code was changed by this review.
+Reviewed the current working tree against the V2 brief, contracts, source and tests. The implementation chat, `Set up the case-study repo`, was still active, so these results apply to the files present during this review. Its chat ID is `01a162a4-e3cd-7972-805e-0d4c5ef205ba`. No application code was changed by this review.
 
 Implemented so far:
 
@@ -107,6 +107,10 @@ Remaining integration work:
 AI involvement remains development assistance from Codex and the earlier frontend, backend and commercial workstreams. Consumer replies use deterministic code and synthetic templates. Live LLM calls, inbound SMS delivery, real authentication, durable resumption, production support operations and payments are deliberately deferred. No production readiness, compliance approval or causal return is claimed.
 
 
+### Final V2 integration record, 22 October 2026, 20:56 Sydney
+
+Recorded by the implementation workstream with commit `597f151`. These results supersede the earlier lint and stale-server findings.
+
 - Final V2 backend verification: 65 ExUnit tests pass, including the preserved policy cases, conversation intent/memory, escalation persistence, immutable terms, draft revalidation and token/cookie scope/expiry. Formatting and warnings-as-errors compilation pass.
 - Final frontend lint, TypeScript checks and production build pass. The running original and V2 HTTP suites pass directly on API4000 and through the Next.js proxy on3000. The final V2 suite also verifies confirmed draft status, completed task descriptors and current conversation outcomes.
 - Browser verification completed SMS payday then amount memory, an SMS-generated JIT task, pre-verification financial-data hiding, scoped demo verification, saved draft, leaving, a fresh verified return, revalidation, explicit plan confirmation and the resulting SMS/policy outcome. S06 due-handoff suppression was checked in the new UI. The original HTTP suite continues to prove S05 and S06 before delayed event arrival.
@@ -114,3 +118,50 @@ AI involvement remains development assistance from Codex and the earlier fronten
 - Original and conversational Python models pass reproducibility checks. The actual TypeScript conversational calculation matches independent saved Python scenarios, with zero reach/response and conversion caps checked. The small Node module-type warning in this standalone verification is non-blocking; no app configuration change was needed.
 - Final decision PDF is exactly two A4 pages with 11pt body text; both final pages were visually inspected. Fresh V2 screenshots replace obsolete V1 screenshots. All five original brief files remain byte-identical.
 - No optional live LLM, production SMS/email, database, identity provider or payment integration was added. Production security, compliance, inbound feasibility, durable state, retention and mature causal outcomes remain explicit dependencies. V2 uses bounded server memory and discloses restart/idle expiry.
+
+
+### Documentation pass, 22 October 2026, 20:55 Sydney
+
+- Reworked the root README around V2's consumer problem, evidence, falsifying assumption, staged investment, conversational economics, smaller pilot, autonomy and decision gates. Added a task-oriented documentation index and retained local run/verification instructions.
+- Added product philosophy and a separate demo guide. Reorganised commercial documentation to lead with V2 and distinguish responder lift from the original reach model. Both app READMEs, architecture, brand guidance and the brief digest now describe current V2 behaviour; the development ownership agreement is distinguished from the implemented HTTP contract.
+- Reconciled the headline commercial cases with saved outputs and reran both Python model checks successfully. Verified 88 local documentation links/anchors, the actual TypeScript conversational calculation against independent cases, original-file integrity and whitespace. No application code, supplied brief files or decision-note source/PDF changed in this pass. Application integration status remains governed by the dated verification entries above.
+
+### Current working tree, 22 October 2026, 21:45 Sydney
+
+Uncommitted on `597f151`. This record supersedes the 20:56 integration snapshot as the description of the tree. It does not replace that snapshot's checks.
+
+Focused tasks from `docs/jit-component-brief.txt` are implemented under `docs/jit-components-contract.md`. Plan setup can save the selected step and a masked example method. Date and frequency changes are review requests and leave the existing schedule in place. Early payoff records a pending payment for the reviewed balance and does not cancel a plan. Operator-only setup loads an active-plan example. `apps/api/test/jit_components_test.exs` covers those boundaries. The contract records an earlier pass of 72 backend tests, both HTTP suites, frontend lint, type checks, a production build, and browser checks of setup, resume, date, frequency and early payoff. Those checks predate the naming change below. The screenshots from that pass were removed because they showed the previous header mark.
+
+The SMS tab is now the phone thread in `imessage-demo.tsx`. A message can open one secure task preview. The portal remains the task, not a second chat. The design sequence for that thread is below. Mobile layout for it is still being adjusted and is not signed off.
+
+### Conversational interface, in order, 22 October 2026
+
+1. **21:09.** The operator dashboard was the wrong demo. The SMS view should be a phone thread: a personal agent in the message the consumer already has, with one just-in-time link when an action is needed. Grey suggested replies inside the thread are a demo device. They are not a claim that iOS shows unsent messages.
+2. **21:12.** The thread stays live. A rail of moments steps through the account sequence, and the suggested replies stay visible, with a short note that they are examples.
+3. **21:16.** The old three-column simulator was still what opened. The phone has to be the default SMS view.
+4. **21:19.** The assistant is not named after another company's agent. Copy should sound like a person helping with an account: short, specific, and not an essay about reach.
+5. **21:20.** The thread can carry one link. It cannot carry a poll. A choice such as fortnightly or monthly belongs inside the task that link opens. The moments should follow the account, not a list of unrelated prompts.
+6. **21:27.** An opening that announced the creditor and the balance as a stiff notice was rejected. The first message has to sound like the start of a conversation.
+7. **21:35.** The improved copy was still too short and too cheerful. People writing about a debt are often distressed. Messages can be a little longer and should explain the next step. Add a silence moment: a few days, no reply, balance still open, no need to answer, STOP still available. Not every path is a completed plan.
+8. **21:36.** A pass removed the moment rail and buried the suggested replies. Both came back. Suggested replies sit in the phone, where they can be seen. The rail stays beside it on a wide screen.
+9. **21:40.** The opening regressed to a stock policy line. Conversational copy is the product surface. The fixed disclosure stays in its own labelled block and does not replace the message.
+10. **21:43.** The full operator inspector is not the demonstration. The phone is.
+11. **21:46.** The consumer will not narrate the pipeline. They will not text "I started a plan yesterday" or "I want to finish it" so the demo can move. The agent monitors the account: no reply, plan not started, plan started and not finished, card declined, balance still open. The next message is one the service sends. Each moment is a different stretch of the thread, with its own wording, not the same chrome filled with a new consumer prompt. The opening should say there is an account, the outstanding balance, and who it is with, then offer a plan where the person can choose when repayment starts.
+
+What the code does now, against that last decision: the "No reply" moment is an agent line shown in the thread and is not typed by the consumer. The other moments still send a consumer sentence through the live engine, and the ghost replies in the phone still offer those sentences. The rail note still says moments send example replies. Closing that gap is the open conversational change. A follow-up still has to pass the existing contact policy before anything is treated as sent. The silence line is labelled as an example, not as a delivered proactive message.
+
+Mobile work is in progress in `conversation-phone.css`. On a narrow screen the phone stays first, the moment list stacks under it, and the inspector stays out of the phone view. That pass is not finished and has not been signed off at desktop and phone widths.
+
+`docs/product-vision.md` is the short product narrative: a thread-native agent, the 82,000 people who never open the account link, and the recovery measures. The README opens with that choice and lists the note in the documentation index.
+
+The tree is prepared for a public repository. Visible copy, the header, package names and the Elixir application no longer use the previous company name. The application is `RecoveryApi` in `apps/api/lib/recovery_api`; the health service name is `recovery_api`. The header is a navy tile with an aqua bubble and a purple bubble, plus the words Debt Recovery Agent. The phone contact is Debt Recovery. SMS copy says "Hi, this is Debt Recovery." `brief/START_HERE.md`, `brief/01_candidate_brief.md` and `brief/02_supporting_pack.md` were edited for the same reason, so `scripts/check-brief.py` will no longer report those three files as byte-identical to the supplied originals. `brief/03_historical_cohorts.csv` and `brief/04_consumer_scenarios.json` were not edited. Git history still contains the previous name.
+
+Checks run after the rename, on 22 October 2026:
+
+| Check | Result |
+| --- | --- |
+| `mix test` in `apps/api` | 72 tests, zero failures. This includes the focused JIT cases and the preserved policy regressions. |
+| Browser, `http://127.0.0.1:3000` | Header reads Debt Recovery Agent. The phone thread opens with "Hi, this is Debt Recovery." The task label reads Secure account. The page title is Adaptive Resolution. |
+| `GET /health` | `{"status":"ok","service":"recovery_api"}`. The API was restarted, so in-memory sessions from the previous process are gone. |
+
+Not rerun after the rename, the commercial-guide rewrite, or the brief-text edits: frontend lint, type check, production build, `scripts/check-demo.py`, `scripts/check-v2.py`, both commercial Python `--check` commands, and `scripts/check-brief.py`. The 20:56 and JIT-contract results do not cover this later tree. No live model call, SMS delivery, or payment was added.

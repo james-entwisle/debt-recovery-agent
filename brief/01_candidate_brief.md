@@ -21,7 +21,7 @@ You have two engineers, shared access to design and compliance, and four weeks t
 ## Make a recommendation
 
 - Explain the consumer problem, the evidence for it and the assumption most likely to prove you wrong.
-- Estimate the value to consumers and to InDebted. Use the supplied data, show a few calculations and label your assumptions.
+- Estimate the value to consumers and to the operator. Use the supplied data, show a few calculations and label your assumptions.
 - Choose what to build first, what to leave out and the strongest alternative you considered. If you would defer investment, demonstrate the experiment or diagnostic you would run instead.
 
 ## What to bring

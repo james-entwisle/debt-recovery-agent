@@ -1,0 +1,626 @@
+# Frontend implementation brief: JIT Resolution Interfaces
+
+## Objective
+
+Refactor the Adaptive Resolution JIT Portal into a library of small, focused, consumer-facing financial interfaces.
+
+The primary product experience is a two-way SMS conversation with a resolution assistant. When the consumer expresses an actionable intent, the agent can open a secure just-in-time interface designed to complete that specific task.
+
+**Do not build a traditional, all-in-one debt-management dashboard.**
+
+Think of JIT interfaces as interactive components that can be summoned from a conversation, used independently and dismissed once the task is completed.
+
+Examples:
+
+- "Can I change my next payment date?" → Change Payment Date.
+- "Can I pay $100 today?" → One-off Payment.
+- "I want to clear the whole balance." → Pay Off Balance.
+- "Can I pay fortnightly instead?" → Change Frequency.
+- "I want to set up a payment plan." → Multi-step Plan Setup.
+- "I got interrupted yesterday." → Resume Plan Draft.
+
+Each interaction should require the minimum necessary consumer input.
+
+## 1. Preserve the existing application
+
+Inspect existing components, routes, shared state and backend contracts before making changes.
+
+Do not rebuild the application unnecessarily.
+
+Keep the three primary tabs:
+
+1. SMS Simulator.
+2. JIT Portal.
+3. Financial Model.
+
+The JIT Portal is the second tab.
+
+The SMS Simulator should be able to open a specific JIT interface through a shared action descriptor.
+
+The JIT Portal must also expose a **JIT State Selector**, allowing an interviewer to preview and interact with each individual interface independently.
+
+Maintain the current visual design language where reasonable.
+
+---
+
+## 2. JIT interface architecture
+
+Build a reusable JIT component system rather than separate pages with duplicated state.
+
+Suggested structure:
+
+```text
+JITPortal
+├── JITStateSelector
+├── JITActionRenderer
+│   ├── PlanSetupFlow
+│   ├── PlanManagementActions
+│   ├── PaymentActions
+│   ├── AccountAssistance
+│   └── SessionAndAuthentication
+├── JITActionHeader
+├── JITActionFooter
+└── JITResult / Confirmation
+```
+
+Each JIT action receives:
+
+- Consumer/account ID.
+- Action type.
+- Current authoritative account state.
+- Existing plan state, if any.
+- Approved repayment options.
+- Relevant conversation context.
+- Authentication/session status.
+- Optional preselected values.
+- Completion and cancellation callbacks.
+
+Actions should emit meaningful structured results to the shared application state.
+
+For example:
+
+```typescript
+type JITAction = {
+  id: string;
+  type: JITActionType;
+  consumerId: string;
+  sessionId: string;
+  context?: {
+    preferredDate?: string;
+    preferredFrequency?: "weekly" | "fortnightly" | "monthly";
+    preferredAmount?: number;
+    selectedPlanId?: string;
+  };
+};
+
+type JITResult = {
+  actionId: string;
+  status:
+    | "completed"
+    | "draft_saved"
+    | "cancelled"
+    | "requires_help"
+    | "blocked"
+    | "pending";
+  details?: Record<string, unknown>;
+};
+```
+
+Reuse the existing shared contracts if equivalent types already exist.
+
+---
+
+# 3. State group A: Repayment plan creation
+
+This is the largest JIT interaction.
+
+It should be a compact multi-step flow, not a large dashboard.
+
+## Step 1: Choose an approved repayment option
+
+Present the creditor-approved plans available to the authenticated consumer.
+
+Display relevant terms:
+
+- Instalment amount.
+- Payment frequency.
+- First payment date.
+- Number of instalments or duration, if available.
+- Total amount payable.
+
+Allow consumers to specify preferences such as their next payday or preferred frequency.
+
+Use those preferences to **match against approved options** rather than generate new terms.
+
+Where no option is suitable, provide a clear Request Assistance action.
+
+Use clearly labelled synthetic plan-option data when actual approved options are unavailable.
+
+## Step 2: Review schedule
+
+Show a clear schedule for the selected approved arrangement.
+
+Include:
+
+- First payment.
+- Regular amount and frequency.
+- Upcoming instalment dates.
+- Remaining amount.
+- Expected completion date, if supported by the approved arrangement.
+
+This should be visually simple, perhaps a summary card with an expandable instalment schedule.
+
+Do not allow arbitrary edits that would create terms outside creditor approval.
+
+## Step 3: Choose payment method
+
+Allow the consumer to:
+
+- Select an existing eligible payment method.
+- Add a new payment method through a simulated secure flow.
+- Return to the previous step.
+
+Use masked method summaries, such as a card ending in four digits.
+
+Do not collect or persist actual card numbers, banking credentials or security codes.
+
+A real implementation would require an approved payment provider and appropriate payment-method authorisation.
+
+## Step 4: Review and confirm
+
+This is the commitment boundary.
+
+Display:
+
+- Creditor and account.
+- Total outstanding balance.
+- Selected approved repayment arrangement.
+- First payment date.
+- Instalment amount.
+- Frequency.
+- Payment method.
+- Required consent/authorisation placeholders.
+
+Make clear that the consumer has not agreed to an arrangement until they explicitly confirm.
+
+The confirmation action should call the appropriate simulated backend operation and verify that the approved terms remain valid.
+
+## Step 5: Plan confirmed
+
+Show a focused success state:
+
+- Repayment plan confirmed.
+- Next payment date and amount.
+- Payment method summary.
+- Option to view the plan.
+
+Update shared account state to reflect an active plan only after successful simulated confirmation.
+
+If confirmation fails or account state changes, show a recoverable error rather than success.
+
+---
+
+# 4. State group B: Save and resume an unfinished plan
+
+This is particularly important because the supplied brief explicitly identifies the inability to save and resume incomplete plans as a current product limitation.
+
+Treat it as a **proposed new capability**, not something the current product already supports.
+
+Allow a consumer to:
+
+1. Begin selecting an approved repayment arrangement.
+2. Save an incomplete draft.
+3. Exit the JIT UI.
+4. Return through a simulated secure action link.
+5. Authenticate.
+6. Resume the saved draft.
+7. Revalidate the approved options and account state.
+8. Continue to final review and confirmation.
+
+The draft should preserve:
+
+- Selected approved plan ID.
+- Selected permitted schedule.
+- Current step.
+- Safe, relevant consumer preferences.
+- Draft creation and last-modified timestamps.
+
+Do not store sensitive payment credentials in a plan draft.
+
+**An unfinished or saved plan is not an active repayment agreement.**
+
+Saving must not create payments or authorise future debits.
+
+Show a lightweight "Saved for later" confirmation.
+
+Support an expired or invalid draft state that asks the consumer to review current options again.
+
+Use the existing session-management implementation where possible. Otherwise provide a lightweight simulated implementation with an explicit persistence boundary.
+
+---
+
+# 5. State group C: Manage an active plan
+
+These should be small, standalone JIT interfaces.
+
+Do not send consumers through the original full plan-creation flow for minor changes.
+
+## C1. Active Plan Overview
+
+Show:
+
+- Current agreed instalment.
+- Payment frequency.
+- Next scheduled payment date.
+- Remaining account balance.
+- Payment method summary.
+- Relevant available actions.
+
+Keep it compact.
+
+This is an entry point for other plan-management actions, not a complete dashboard.
+
+## C2. Change Next Payment Date
+
+Triggered by:
+
+"Can I move my next payment to Friday?"
+
+Show:
+
+- Current next payment date.
+- Available alternative dates, only where permitted by authoritative account/creditor rules.
+- Brief explanation of any consequences supported by the available data.
+- Review and confirmation.
+
+Do not imply that an approved future plan automatically permits arbitrary amendments to an active plan.
+
+If changing the date requires creditor agreement or human approval, present **Request Date Change** rather than immediately modifying the schedule.
+
+Only show success once an authorised change operation has confirmed it.
+
+## C3. Change Payment Frequency
+
+Triggered by:
+
+"Can I pay fortnightly rather than monthly?"
+
+Show:
+
+- Current frequency.
+- Any explicitly approved alternative arrangements.
+- Updated instalment schedule where permitted.
+- Review and confirmation.
+
+If no change is authorised, offer structured assistance.
+
+Do not invent a new instalment amount or frequency.
+
+## C4. Change Payment Method
+
+Triggered by:
+
+"I need to use a different card."
+
+Show:
+
+- Current masked method.
+- Available saved methods.
+- Secure simulated method-add flow.
+- Clear confirmation of which future payments the change affects.
+
+Do not automatically initiate a payment when updating a payment method.
+
+---
+
+# 6. State group D: Payments
+
+These are separate from plan creation and management.
+
+## D1. Make One-off Payment
+
+Triggered by:
+
+"I can pay $100 now."
+
+Display:
+
+- Verified account balance.
+- Consumer-selected payment amount.
+- Payment method selector.
+- Review and confirmation.
+
+Validate the payment amount against allowed constraints.
+
+A one-off payment must not implicitly create or modify a repayment plan.
+
+Use simulated payment processing.
+
+## D2. Pay Off Balance Early
+
+Triggered by:
+
+"I want to pay everything off."
+
+This is a particularly useful micro-JIT interface.
+
+Display:
+
+- Current verified outstanding balance.
+- Available payment method.
+- Explicit confirmation action.
+
+Do not assume early settlement discounts, penalty fees or other consequences not specified in the account data.
+
+If the consumer has an active plan, explain only the consequences that are supported by authoritative state. Do not automatically cancel or alter future instalments without an authorised operation.
+
+The completion state should reflect the actual simulated payment result.
+
+## D3. Payment Processing and Result
+
+Support:
+
+- Payment pending.
+- Payment settled.
+- Payment unsuccessful.
+- Retry or support route where appropriate.
+
+Do not show "Paid" merely because a payment was initiated.
+
+Pending and settled states must remain distinct.
+
+---
+
+# 7. State group E: Account assistance
+
+## E1. Account Clarification
+
+Triggered by:
+
+"Who is this creditor?" or "Why is my balance different?"
+
+After authentication, show:
+
+- Verified creditor display name.
+- Current verified balance.
+- Account details that the source service actually makes available.
+- A clear option to request assistance.
+
+Do not invent transaction histories or reasons for a balance difference.
+
+## E2. Request Assistance
+
+Use one reusable assistance component with contextual variants:
+
+- Payment dates don't fit.
+- Payment amount or affordability concern.
+- Account/balance question.
+- Dispute.
+- Financial hardship.
+- Other assistance.
+
+Preselect the reason from the SMS conversation where appropriate.
+
+Allow the consumer to submit a structured request without making a repayment commitment.
+
+Show a confirmation that the request was recorded, without promising an immediate human response.
+
+Do not treat a submitted assistance request as proof that an authoritative account hold has been applied.
+
+---
+
+# 8. State group F: Authentication and session recovery
+
+JIT interfaces should be opened through simulated, purpose-bound secure action links.
+
+Support these interface states:
+
+- Authentication required.
+- Valid session.
+- Expired link.
+- Invalid/reused link.
+- Session expired.
+- Return to saved draft.
+
+Reuse the backend's session and magic-link infrastructure.
+
+Do not implement frontend-only authentication that can access account-specific content with an arbitrary consumer ID.
+
+Any account-specific balance, creditor data or plan terms should be unavailable until the simulated server validates access.
+
+Avoid disclosing sensitive data in link previews or query parameters.
+
+The existing product requires authentication before account access. The proposed low-friction magic-link mechanism is new functionality that must be clearly labelled as simulated.
+
+---
+
+# 9. JIT State Selector
+
+The JIT Portal tab should have a compact selector so that we can demonstrate each component directly during the interview.
+
+Suggested hierarchy:
+
+**Plan Setup**
+
+- Select Plan
+- Review Schedule
+- Select Payment Method
+- Confirm Plan
+- Setup Complete
+- Save / Resume Draft
+
+**Plan Management**
+
+- Active Plan Overview
+- Change Payment Date
+- Change Frequency
+- Change Payment Method
+
+**Payments**
+
+- One-off Payment
+- Early Payoff
+- Payment Result
+
+**Assistance**
+
+- Account Clarification
+- Request Help
+
+**Session**
+
+- Authentication
+- Expired Session
+
+Use a dropdown or grouped side navigation, whichever fits the current application's design best.
+
+When a state is selected:
+
+- Render the corresponding JIT component.
+- Set up compatible mock account state.
+- Allow interaction.
+- Show meaningful completion or failure.
+- Allow returning to the state selector.
+
+State selection is a **demo operator capability**. Do not make it look like a consumer-facing menu in the actual JIT interface.
+
+Ensure active-plan management actions have compatible active-plan fixtures, while creation actions use accounts without active plans.
+
+Do not change the authoritative account state silently when navigating between consumer actions. Keep demonstration fixture overrides clearly separate from real consumer behaviour.
+
+---
+
+# 10. SMS-to-JIT integration
+
+The SMS Simulator is the primary experience.
+
+The JIT components should be invokable by structured action descriptors.
+
+Examples:
+
+| Consumer message | JIT action |
+|---|---|
+| "I want to set up a plan" | Plan Setup |
+| "I get paid every second Friday" | Payday-Aware Plan Selection |
+| "I need to change my payment date" | Change Payment Date |
+| "Can I pay fortnightly?" | Change Frequency, if an active plan exists; otherwise Plan Selection |
+| "I want to pay $100 now" | One-off Payment |
+| "I want to clear my debt" | Pay Off Balance |
+| "I got interrupted" | Resume Draft if one exists; otherwise Plan Selection |
+| "I don't recognise this balance" | Account Clarification / Assistance |
+
+Opening an action should:
+
+1. Create or reuse the correct authenticated JIT session.
+2. Open the matching micro-interface.
+3. Populate it with permitted conversation context.
+4. Fetch current authoritative account data.
+5. Validate the available actions.
+6. Allow the consumer to complete or abandon the task.
+7. Return a structured result to the SMS simulator.
+
+On completion, the conversation should update contextually.
+
+For example:
+
+"Your repayment plan has been confirmed. You can review its details using your secure link."
+
+Only show that response if the simulated confirmation actually succeeded.
+
+Do not allow the frontend to declare a payment settled or plan active without the corresponding approved backend state transition.
+
+---
+
+# 11. UI design principles
+
+The JIT UI should be noticeably more focused than a traditional customer portal.
+
+Prioritise:
+
+- One task per surface.
+- Small, self-contained components.
+- Clear titles.
+- Minimal inputs.
+- Large, obvious primary actions.
+- A visible way to cancel or return.
+- Clear distinction between draft, review and confirmed states.
+- Consumer-friendly language.
+- Mobile-first dimensions.
+- No unnecessary sidebars inside consumer interfaces.
+- No generic dashboard navigation when a specific action is requested.
+
+For a change-date interaction, don't show the balance chart, payment history, full plan table and support centre.
+
+Show the current date, permitted alternatives and a confirmation control.
+
+For the multi-step plan setup, use a compact progress indicator and preserve progress between steps.
+
+Consider rendering the JIT interface as a mobile-sized card or panel, even when the surrounding demonstration runs on desktop.
+
+The overarching principle:
+
+**Conversation for understanding intent. JIT UI for completing specific financial actions.**
+
+---
+
+# 12. Implementation priorities
+
+## P0: Implement first
+
+- JIT State Selector.
+- Reusable action renderer.
+- Multi-step plan setup.
+- Review and explicit confirmation.
+- Change Payment Date.
+- Change Frequency.
+- One-off Payment.
+- Early Payoff.
+- Request Assistance.
+- SMS-to-JIT action handoff.
+
+## P1: Next
+
+- Saved draft/resume interaction.
+- Change Payment Method.
+- Active Plan Overview.
+- Authentication/session recovery states.
+- Context-aware return to SMS.
+- Payment pending and failure states.
+
+## P2: Polish
+
+- Additional animations.
+- Richer schedule visualisations.
+- More detailed account information.
+- Advanced edge cases.
+- Additional reusable financial widgets.
+
+Preserve existing completed features rather than duplicating them.
+
+Make the core user interactions functional, not merely decorative.
+
+---
+
+# 13. Definition of done
+
+The JIT Portal implementation is successful when:
+
+- All major JIT categories can be selected independently.
+- The plan setup behaves as a multi-step flow.
+- The current step and draft state are correctly preserved.
+- A plan is not active until explicitly confirmed.
+- Payment-method selection exists.
+- Change-date and change-frequency actions enforce approved terms.
+- Early payoff uses a verified outstanding balance.
+- Payment pending and settled remain distinct.
+- Unsupported requests route to assistance.
+- Session and authentication boundaries are visible and enforced by the demo backend.
+- An SMS conversation can open a specific contextual JIT action.
+- The action can return a meaningful result to the conversation.
+- The UI remains mobile-first and focused.
+- Existing financial model and backend compliance logic are preserved.
+- The application builds successfully.
+
+Start by inspecting existing components and the shared backend contracts. Implement the reusable JIT renderer and the core flows before adding further visual polish.
+
+Do not stop after generating a plan. Implement and test the working components.

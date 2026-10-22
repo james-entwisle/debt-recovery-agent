@@ -1,5 +1,7 @@
 # V2 additive integration contract
 
+This records the completed V2 agreement. Current focused-library extensions and ownership are in `jit-components-contract.md`.
+
 This records the V2 development agreement and workstream ownership, not a supplied case fact. Read the [current HTTP/data contract](integration-contract.md) for implemented interfaces and [architecture](architecture.md) for runtime boundaries. Existing policy, session view and commands remain compatible. The local operator simulator can inspect synthetic sessions; consumer JIT endpoints require a separate scoped demo cookie. No real identity verification, communication or money movement occurs.
 
 ## Ownership

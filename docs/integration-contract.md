@@ -1,12 +1,12 @@
 # Local demonstration contract
 
-The current Phoenix routes and `IndebtedApi.Replay.view/1` are the source of truth for this contract. Next.js proxies `/api/*` to `API_URL`, default `http://127.0.0.1:4000`. All records and effects are synthetic. Scoped, expiring demo-token authentication is implemented for JIT tasks. Identity verification and external providers remain simulated. The operator session routes intentionally expose synthetic data locally and are not production consumer endpoints.
+The current Phoenix routes and `RecoveryApi.Replay.view/1` are the source of truth for this contract. Next.js proxies `/api/*` to `API_URL`, default `http://127.0.0.1:4000`. All records and effects are synthetic. Scoped, expiring demo-token authentication is implemented for JIT tasks. Identity verification and external providers remain simulated. The operator session routes intentionally expose synthetic data locally and are not production consumer endpoints.
 
 ## HTTP
 
 | Method and path on API | Request | Success |
 | --- | --- | --- |
-| `GET /health` | None | `{status: "ok", service: "indebted_api"}` |
+| `GET /health` | None | `{status: "ok", service: "recovery_api"}` |
 | `GET /scenarios` | None | `{scenarios: [{id, label}]}` |
 | `POST /sessions` | `{scenario_id: "S04", arm: "treatment"}` | `{ok: true, view}` |
 | `GET /sessions/:id` | None | `{ok: true, view}` |
@@ -78,3 +78,10 @@ Missing/expired/incorrect cookies and invalid/reused/expired/wrong-purpose token
 Conversation outcomes append a labelled service outcome to the same SMS session. Incoming replies neither create proactive contacts nor reset rolling budgets. A persistent assistance route pauses payment prompts without inventing a formal account hold. Human compliance must validate permitted service-reply classification before a real US pilot.
 
 The conversational financial section calculates independently in a typed local module and has a Python reproducibility companion. It inherits the selected population, cohort mix, cash multiplier and investment while keeping SMS reach, response, responder lift and new costs separate from the preserved backend economics endpoint. No responder-only causal result is implied.
+
+
+## Focused JIT library extensions
+
+The current additive task contract is in `jit-components-contract.md`. Added states are `active_plan`, `change_date`, `change_frequency` and `early_payoff`. `portal.payment_methods` contains only server-issued masked synthetic references. `add_demo_payment_method` adds a fixed second example; no payment credentials are collected. Drafts preserve `step`, `payment_method_id`, stable draft ID and creation/update timestamps. Confirmation can specify an eligible example method.
+
+`setup_demo_active_plan` is an audited operator-only fixture setup, excluded from all consumer scopes. `request_plan_change` records a date or frequency request in `plan_change_requests` with status `requested`, preserving current terms and schedule. The date and frequency cookies accept only their own request subtype. `simulate_early_payoff` requires explicit confirmation, the reviewed balance equal to fresh authority, and an eligible method. It records pending, preserves the active plan and balance until later authoritative settlement, and blocks another payment while pending.

@@ -1,6 +1,6 @@
-defmodule IndebtedApi.ReplayTest do
+defmodule RecoveryApi.ReplayTest do
   use ExUnit.Case, async: true
-  alias IndebtedApi.{Fixtures, Policy, Replay, Session}
+  alias RecoveryApi.{Fixtures, Policy, Replay, Session}
 
   defp run(id \\ "S04"), do: Replay.new("test", Fixtures.scenario(id))
 

@@ -21,6 +21,16 @@ function roundedMoney(value: number) {
 }
 
 export function CommercialModel() {
+  const [showLegacy, setShowLegacy] = useState(false);
+  return <div className="financial-model"><ConversationEconomics />
+    <details className="historical-context" onToggle={(event) => setShowLegacy(event.currentTarget.open)}>
+      <summary>Earlier 18,000-consumer portal model and original full-reach comparison</summary>
+      {showLegacy && <LegacyCommercialModel />}
+    </details>
+  </div>;
+}
+
+function LegacyCommercialModel() {
   const [data, setData] = useState<Economics | null>(null);
   const [inputs, setInputs] = useState<Assumptions | null>(null);
   const [busy, setBusy] = useState(false);
@@ -88,7 +98,7 @@ export function CommercialModel() {
     <div className="financial-model">
       <header className="financial-heading">
         <div>
-          <h1>Financial model</h1>
+          <h2>Earlier engaged-consumer model</h2>
           <p>Illustrative scenarios, not a forecast.</p>
         </div>
         <span className="model-source">Synthetic case study · USD</span>
@@ -566,7 +576,6 @@ export function CommercialModel() {
           constant effect.
         </p>
       </section>
-      <ConversationEconomics data={data} />
       <details className="historical-context">
         <summary>Historical baseline and model limits</summary>
         <div className="details-body">

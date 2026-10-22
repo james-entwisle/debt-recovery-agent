@@ -53,7 +53,7 @@ The pack permits assuming an equivalent new, eligible, non-overlapping intake ev
 
 ## Economics to use later
 
-All amounts are USD. InDebted retains 15% of settled cash and pays variable payment costs of 2%, leaving 13% before other incremental costs. Email costs $0.003 per send, SMS $0.035, Composer $0.012 per draft/review attempt including rejections, and incremental support $6 per conversation. The full allocation costs $50,000: 40 engineer-days at $1,000 plus $10,000 for shared design and compliance. Smaller work may cost less.
+All amounts are USD. The operator retains 15% of settled cash and pays variable payment costs of 2%, leaving 13% before other incremental costs. Email costs $0.003 per send, SMS $0.035, Composer $0.012 per draft/review attempt including rejections, and incremental support $6 per conversation. The full allocation costs $50,000: 40 engineer-days at $1,000 plus $10,000 for shared design and compliance. Smaller work may cost less.
 
 A later recommendation should estimate incremental contribution as `0.13 × incremental settled cash - incremental communication costs - model attempts × 0.012 - incremental support conversations × 6`. Compare that with the chosen build cost and label reach, lift and persistence assumptions. Account for any replaced scheduled sends when estimating incremental costs. Do not assign revenue directly to plan creation.
 

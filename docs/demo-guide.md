@@ -8,11 +8,23 @@ The controls beside the conversation belong to the local operator. Switching sce
 
 1. Select S04. Send `I get paid every second Friday`, then `Yes, around $50`. Inspect the intent, remembered fortnightly frequency and $50 preference. No approved fixture matches this combination; the assistant cannot invent one.
 2. Reset S04 for the successful draft path. In JIT Portal, select `Draft plan setup`, create a demo secure link, simulate the identity check and verify. Account details appear inside the task after verification.
-3. Set weekly frequency and a maximum of $80. Choose the fixed weekly $80 option and save the draft. Check that no active plan or payment was created.
+3. Choose the fixed weekly $80 option. Continue through schedule review to payment-method selection. Save and finish later at that step. Check that no active plan or payment was created.
 4. Leave the task, return to SMS and ask to continue the interrupted plan. Open the resume action, create and verify its fresh link, then resume. The server rechecks current account state, draft expiry and unchanged terms.
-5. Review the schedule and explicitly confirm. A synthetic active plan appears, the SMS thread records the outcome and later proactive collection prompts are suppressed. No debit occurs.
+5. Resume at the saved payment-method step, choose a masked demo method, then review and explicitly confirm. A synthetic active plan appears, the SMS thread records the outcome and later proactive collection prompts are suppressed. No debit occurs.
 
 An incomplete plan event alone cannot restore fields. Reset and send `I started setting up a plan yesterday but got interrupted` to show the no-saved-draft route.
+
+
+## Five focused actions
+
+The JIT operator selector groups plan setup, plan management, payments and assistance. It is outside the consumer task card. Each task has one purpose and a visible return to the conversation.
+
+- Plan setup uses four steps: approved option, schedule, masked example method, review and explicit confirmation. The simulated add-method path never collects payment credentials.
+- Resume restores the last explicitly saved step and safe selections after fresh verification and revalidation. Consent is never restored as already accepted.
+- Change date and change frequency require an active plan. Use the explicit **Load active-plan example** operator control for the compatible monthly fixture. Review the requested value and submit it. The result is a request for team review; the agreed schedule remains unchanged.
+- Early payoff reviews the current verified balance and a masked method, then requires explicit confirmation. Its result is pending. The balance and active-plan schedule are not cleared or cancelled by payment initiation.
+
+SMS can open the same tasks. With the active example loaded, send `Can I move my next payment to Friday?`, `Can I pay fortnightly instead?` or `I want to clear my debt`. Without an active plan, frequency preferences open approved plan selection.
 
 ## Exception cases
 

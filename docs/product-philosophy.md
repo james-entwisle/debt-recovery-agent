@@ -1,6 +1,6 @@
 # Product philosophy
 
-Adaptive Resolution helps an engaged consumer explain what they need and take an appropriate next step. Conversation captures the need; a just-in-time task makes the relevant action available. This is the [V2 product hypothesis](v2-project-brief.txt), subject to the evidence and investment gates in [DECISION.md](../DECISION.md).
+Adaptive Resolution helps an engaged consumer explain what they need and take an appropriate next step. Conversation captures the need; a just-in-time task makes the relevant action available. The showcase narrative is the [product vision](product-vision.md). This is the [V2 product hypothesis](v2-project-brief.txt), subject to the evidence and investment gates in [DECISION.md](../DECISION.md).
 
 ## Begin with the barrier
 

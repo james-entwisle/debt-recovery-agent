@@ -1,64 +1,47 @@
 "use client";
-
 import { useState } from "react";
-import { money, number, type Economics } from "@/lib/api";
-import { defaults, calculateConversation, type Inputs } from "./conversation-economics-calculation";
-import styles from "./conversation-economics.module.css";
-
-const fields: { key: keyof Inputs; label: string; max: number; step: number; help: string }[] = [
-  { key: "smsReach", label: "SMS-reachable share, %", max: 100, step: 1, help: "Eligible consumers who can receive the intervention" },
-  { key: "response", label: "Reply rate among reachable, %", max: 100, step: 1, help: "A separate, unmeasured delivery assumption" },
-  { key: "lift", label: "Added paid conversion among responders, pp", max: 100, step: 0.5, help: "Illustrative absolute difference, not an estimated effect" },
-  { key: "turns", label: "AI turns per responder", max: 100, step: 1, help: "Include retries and review in the assumed turn count" },
-  { key: "turnCost", label: "Hypothetical cost per AI turn, $", max: 10, step: 0.001, help: "Editable placeholder, not the supplied Composer price" },
-  { key: "sends", label: "Net extra SMS sends per responder", max: 100, step: 0.5, help: "After any verified scheduled-send replacement savings" },
-  { key: "escalations", label: "Extra support conversations per 100 responders", max: 100, step: 0.5, help: "Costed at the exercise assumption of $6 each" },
-  { key: "savings", label: "Avoided support conversations per 100 responders", max: 100, step: 0.5, help: "Defaults to zero; credit only measured reductions" },
-];
-
-export function ConversationEconomics({ data }: { data: Economics }) {
-  const [inputs, setInputs] = useState(defaults);
-  const result = calculateConversation(data, inputs);
-  const low = calculateConversation(data, inputs, 1);
-  const high = calculateConversation(data, inputs, 5);
-  return (
-    <section className={styles.panel} aria-labelledby="conversation-economics-title">
-      <div className={styles.heading}>
-        <div><span className={styles.eyebrow}>Proposed conversational delivery</span><h2 id="conversation-economics-title">What changes when consumers reply?</h2></div>
-        <span className={styles.badge}>Separate sensitivity</span>
+import { calculateConversation, defaults, sourcePopulation, cohortIds, cohortNames, stages, stageNames, relevantStage, type Inputs, type Audience, type CohortId, type Stage } from "./conversation-economics-calculation";
+import "./conversation-economics.css";
+const usd=(v:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(v);
+const number=(v:number)=>new Intl.NumberFormat("en-US",{maximumFractionDigits:1}).format(v);
+type NumericKey=Exclude<keyof Inputs,"audience"|"rates">;
+export function ConversationEconomics(){
+  const [inputs,setInputs]=useState<Inputs>(defaults);
+  const [editing,setEditing]=useState<CohortId>("C2");
+  const result=calculateConversation(inputs);
+  const horizon=inputs.months===12?"Annual contribution":`Contribution over ${inputs.months} months`;
+  const editCohort=inputs.audience==="engaged"?editing:inputs.audience;
+  function update(key:NumericKey,value:number){setInputs(current=>({...current,[key]:value}));}
+  function field(key:NumericKey,label:string,max:number,step=1,min=0){return <label className="field" key={key}>{label}<input type="number" min={min} max={max} step={step} value={inputs[key]} onChange={e=>update(key,Math.min(max,Math.max(min,Number(e.target.value))))}/></label>;}
+  function scope(audience:Audience){setInputs(current=>({...current,audience,population:sourcePopulation[audience]}));}
+  function rate(side:"current"|"adaptive",stage:Stage,value:number){setInputs(current=>({...current,rates:{...current.rates,[editCohort]:{...current.rates[editCohort],[side]:{...current.rates[editCohort][side],[stage]:value}}}}));}
+  function noImprovement(){setInputs(current=>({...current,rates:{C2:{current:current.rates.C2.current,adaptive:{...current.rates.C2.current}},C3:{current:current.rates.C3.current,adaptive:{...current.rates.C3.current}},C4:{current:current.rates.C4.current,adaptive:{...current.rates.C4.current}}}}));}
+  return <section className="cohort-calculator" aria-labelledby="conversation-economics-title">
+    <header className="heading"><div><h1 id="conversation-economics-title">Cohort progression calculator</h1><p>Change how many people move to the next step. See what that is worth.</p></div><span className="badge">Synthetic USD · Scenarios, not forecasts</span></header>
+    <div className="scope" role="group" aria-label="Choose a stalled cohort">
+      <button aria-pressed={inputs.audience==="engaged"} onClick={()=>scope("engaged")}>Original engaged cohort<span>18,000 consumers</span></button>
+      {cohortIds.map(id=><button key={id} aria-pressed={inputs.audience===id} onClick={()=>scope(id)}>{cohortNames[id]}<span>{number(sourcePopulation[id])} consumers</span></button>)}
+    </div>
+    <div className="workspace">
+      <div className="controls"><h2>Audience and investment</h2>{field("population","Consumers in the selected cohort",1000000,1000)}{field("reach","Encounter the adaptive journey, %",100)}{field("investment","Upfront investment, USD",1000000,1000)}
+        <p className="note">The original 18,000 includes 10,000 click-only consumers, 6,000 portal visitors without a plan start and 2,000 incomplete plans. They are exclusive source cohorts, not observed funnel steps.</p>
       </div>
-      <p className={styles.intro}>The model above remains unchanged. This extension uses its calculated audience, cohort mix, payer-cash multiplier and investment. SMS reach and reply rate are additional assumptions.</p>
-      <div className={styles.summary}>
-        <div><span>Annual contribution at +1 to +5 pp among responders</span><strong>{money(low.annual)} to {money(high.annual)}</strong><small>Before build. Scenario range, not a forecast or confidence interval.</small></div>
-        <div><span>Selected +{number(inputs.lift)} pp scenario</span><strong>{result.payback === null ? "No payback" : `${number(result.payback)} monthly intakes`}</strong><small>Simple payback after launch, excluding build time and ramp.</small></div>
+      <div className="results" aria-live="polite"><p className="label">Value of the progression changes below</p><div className="selected"><div><span>Additional payers per intake</span><strong>{number(result.payers)}</strong><small>After the incremental-payment assumption</small></div><div><span>Simple payback</span><strong>{result.payback===null?"No payback":`${number(result.payback)} months`}</strong><small>{result.payback!==null && result.payback>inputs.months?"Beyond the modelled period":"Operating run rate after launch"}</small></div></div>
+        <div className="net"><span>{horizon}, after running costs</span><strong>{usd(result.horizon)}</strong></div><div className="net"><span>After the {usd(inputs.investment)} build, over {inputs.months} months</span><strong>{usd(result.netAfterBuild)}</strong></div>
+        <div className="target"><h2>Four-month investment goal</h2><strong>{usd(inputs.investment/4)} contribution needed per month</strong><p className="note">Current settings produce {usd(result.contribution)} per month.{result.contribution<inputs.investment/4?` The gap is ${usd(inputs.investment/4-result.contribution)} per month.`:" This scenario meets the goal."} Excludes build time, ramp and settlement delays.</p></div>
       </div>
-      <details className={styles.inputs}>
-        <summary>Edit conversational assumptions</summary>
-        <div className={styles.grid}>
-          {fields.map((field) => <label key={field.key}>{field.label}<input type="number" min="0" max={field.max} step={field.step} value={inputs[field.key]} onChange={(event) => {
-            const value = Math.min(field.max, Math.max(0, Number(event.target.value)));
-            setInputs((current) => ({ ...current, [field.key]: value }));
-          }} /><small>{field.help}</small></label>)}
-        </div>
-      </details>
-      <div className={styles.bridge} aria-label="Conversational audience and cash calculation">
-        <div><span>Engaged audience</span><strong>{number(data.assumptions.population)}</strong></div>
-        <span aria-hidden="true">→</span><div><span>SMS reachable</span><strong>{number(result.reachable)}</strong></div>
-        <span aria-hidden="true">→</span><div><span>Responders</span><strong>{number(result.responders)}</strong></div>
-        <span aria-hidden="true">→</span><div><span>Extra payers</span><strong>{number(result.payers)}</strong></div>
-        <span aria-hidden="true">→</span><div><span>Extra settled cash</span><strong>{money(result.cash)}</strong></div>
-      </div>
-      <dl className={styles.ledger}>
-        <div><dt>Retained fees, 15%</dt><dd>{money(result.fees)}</dd></div>
-        <div><dt>Payment costs, 2%</dt><dd>−{money(result.payment)}</dd></div>
-        <div><dt>Net extra SMS</dt><dd>−{money(result.sms)}</dd></div>
-        <div><dt>Hypothetical AI turns</dt><dd>−{money(result.ai)}</dd></div>
-        <div><dt>Extra support</dt><dd>−{money(result.support)}</dd></div>
-        <div><dt>Assumed support savings</dt><dd>+{money(result.supportSavings)}</dd></div>
-        <div className={styles.total}><dt>Contribution per monthly intake</dt><dd>{money(result.contribution)}</dd></div>
-      </dl>
-      <p className={styles.note}>All costs and effects above are incremental. The supplied $0.012 Composer draft/review attempt is not a validated two-way conversation cost. This extension does not add the earlier model&apos;s costs again. Costs incurred for non-responders or other operating work must be estimated separately.</p>
-      <p className={styles.note}>Responders are self-selected. This bridge is planning arithmetic, not a causal estimate. Evaluate 30-day settled cash per randomised consumer, including non-responders and suppressed accounts. The original 18,000-consumer baseline collected $820,000; the full-reach +3 pp example gives about $148,000 annual contribution before new costs, as a sensitivity only.</p>
+    </div>
+    <section className="section"><div className="heading"><div><h2>Change the graduation rates</h2><p className="note">Current journey versus adaptive journey, among people reaching each step. Rates below are illustrative, not measured transition rates.</p></div></div>
+      {inputs.audience==="engaged"&&<div className="scope" role="group" aria-label="Cohort whose progression rates to edit">{cohortIds.map(id=><button key={id} aria-pressed={editing===id} onClick={()=>setEditing(id)}>{cohortNames[id]}</button>)}</div>}
+      <div className="tableScroll"><table><thead><tr><th>{cohortNames[editCohort]}</th><th>Current journey %</th><th>Adaptive journey %</th></tr></thead><tbody>{stages.map(stage=><tr key={stage}><th>{stageNames[stage]}</th>{relevantStage(editCohort,stage)?(["current","adaptive"] satisfies ("current"|"adaptive")[]).map(side=><td key={side}><input aria-label={`${cohortNames[editCohort]} ${side} ${stage}`} type="number" min="0" max="100" step="0.5" value={Math.round(inputs.rates[editCohort][side][stage]*10000)/10000} onChange={e=>rate(side,stage,Math.min(100,Math.max(0,Number(e.target.value))))}/></td>):<td colSpan={2}>Already reached at cohort entry</td>}</tr>)}</tbody></table></div>
+      <div className="actions"><button className="reset" onClick={()=>setInputs(current=>({...defaults,audience:current.audience,population:current.population}))}>Restore original +3-point illustration</button><button className="reset" onClick={noImprovement}>Set no progression improvement</button></div>
+      <p className="note">The starting illustration is calibrated to the original +3-point paid-conversion scenario in each reached cohort. It is not evidence those graduation improvements will occur. The current confirmation totals match historical cohort rates; the intermediate steps and first-payment rate remain assumptions.</p>
     </section>
-  );
+    <section className="section"><h2>How many more people progress?</h2><p className="note">{number(result.reached)} of {number(result.population)} consumers encounter the journey. Some enter with earlier steps already complete. Counts describe modelled plan-path progression; other one-off payments are outside this path.</p><div className="tableScroll"><table><thead><tr><th>Milestone</th><th>Current journey</th><th>Adaptive journey</th><th>Additional people</th></tr></thead><tbody>{result.progression.map(row=><tr key={row.stage}><th>{stageNames[row.stage]}</th><td>{number(row.current)}</td><td>{number(row.adaptive)}</td><td>{row.adaptive-row.current>0?"+":""}{number(row.adaptive-row.current)}</td></tr>)}</tbody></table></div></section>
+    <div className="bridge" aria-label="Incremental commercial value">{[['Extra payers',number(result.payers)],['Extra settled cash',usd(result.cash)],['Retained fees',usd(result.fees)],['Monthly contribution',usd(result.contribution)]].map(([label,value])=><div key={label}><span>{label}</span><strong>{value}</strong></div>)}</div>
+    <details className="details"><summary>Costs and commercial assumptions</summary><div className="grid">{field("support","Extra support conversations per 100 reached",100,.5)}{field("sms","Net extra SMS per reached consumer",100,.5)}{field("turns","AI turns per reached consumer",100,1)}{field("turnCost","Hypothetical cost per AI turn, USD",10,.001)}{field("ongoing","Other monthly running costs, USD",1000000,100)}{field("cashMultiplier","Cash per extra payer × source amount",3,.1)}{field("incrementality","Extra plan payers who would not pay anyway, %",100,1)}{field("months","Months to model",36,1,1)}</div>
+      <dl className="ledger">{[['Extra cash × 15% fee',result.fees],['Payment costs · 2%',-result.payment],['Extra support',-result.support],['Net extra SMS',-result.sms],['Hypothetical AI turns',-result.ai],['Other running costs',-inputs.ongoing],['Monthly contribution',result.contribution]].map(([label,value])=><div key={label}><dt>{label}</dt><dd>{typeof value==="number"?usd(value):value}</dd></div>)}</dl><p className="note">Historical cash per payer is $170/$180/$190 for click-only/portal-no-start/incomplete cohorts. Additional payers may pay less. A plan earns no fee until money settles. Zero net SMS assumes replacement of scheduled sends; AI cost is hypothetical and defaults to no live calls. Include actual conversation costs when known.</p>
+    </details>
+    <p className="note">No conversion gain is caused merely by adding conversation. The value must come from better progression and additional settled cash versus control. Returning later, asking for help and declining a plan remain valid outcomes. Test cash per randomised consumer, including people who do not engage, and follow 60/90-day outcomes to distinguish acceleration. Annualisation assumes twelve new equivalent intakes and sustained effects. The full 100,000 is context, not the default target.</p>
+  </section>;
 }

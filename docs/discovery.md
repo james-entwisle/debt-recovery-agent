@@ -1,6 +1,6 @@
 # Why test conversational resolution?
 
-The [original brief](../brief/01_candidate_brief.md), [supporting pack](../brief/02_supporting_pack.md) and [historical CSV](../brief/03_historical_cohorts.csv) control the evidence. The user supplied the [V1 direction](master-project-brief.txt) and subsequent [V2 request](v2-project-brief.txt). All supporting-pack research, economics and system details are synthetic. The product thesis below is a proposal, not an existing InDebted capability.
+The [original brief](../brief/01_candidate_brief.md), [supporting pack](../brief/02_supporting_pack.md) and [historical CSV](../brief/03_historical_cohorts.csv) control the evidence. The user supplied the [V1 direction](master-project-brief.txt) and subsequent [V2 request](v2-project-brief.txt). All supporting-pack research, economics and system details are synthetic. The product thesis below is a proposal, not an existing product capability.
 
 ## How the thesis developed
 
@@ -13,6 +13,8 @@ The interviews suggested payday-aware assistance, interruption recovery and acco
 Portal guidance can address those needs after authentication, but misses consumers who leave and never return. Outbound orchestration can bring them back, but still requires the system to guess what they need. The V2 proposal lets a consumer state that need in a two-way conversation and opens a focused authenticated task when needed. A session can retain explicit preferences and, as a new capability, an unconfirmed draft. Neither an inbound message nor a plan-start event is permission to contact, an agreement or evidence of ability to pay.
 
 This evolves the original reasoning. The same policy engine, current source-state checks, approved options and settled-cash outcome remain. Conversation changes how the need becomes visible. JIT tasks change how the consumer completes a relevant action. Both introduce infrastructure, security, content and support dependencies that a broader product pitch must not hide.
+
+Current experience principles are in [product philosophy](product-philosophy.md). This document preserves the evidence, evolution and alternatives behind them.
 
 ## Alternatives and trade-offs
 
@@ -28,12 +30,12 @@ This evolves the original reasoning. The same policy engine, current source-stat
 | Activate no-engagement and open-only cohorts | Larger population of 82,000 | Little evidence of barriers; opens are weak signals | Further discovery before expansion. |
 | Existing journey | Avoids build cost and new failures | Leaves friction unresolved and learns little about barriers | Randomised control and fallback if investment gates fail. |
 
-## What would overturn the recommendation?
+## Current decision: progression within the original cohort
 
-Relevance may be the wrong problem. Consumers may mainly need financial flexibility or different creditor terms. SMS-reachable share, willingness to reply and causal lift are unknown. Conversation also creates costs for people who receive help but never pay. At the illustrative 60% SMS reach and 30% reply rate, only 3,240 of 18,000 consumers converse. A +1 to +5-point responder-lift range produces about -$2,791 to $32,702 annual contribution before build under the stated new costs. This is scenario arithmetic, not a forecast or confidence interval. Do not make the case look better by treating responders as a random sample or by calling three points conservative.
+The user's current direction retains the original 18,000-person scope. Conversation does not create value by itself. The test is whether it helps click-only consumers reach the portal, visitors start a plan, or incomplete-plan consumers confirm, followed by additional settled cash. The calculator therefore compares current and adaptive graduation rates at each cohort's actual entry point. The starting example is calibrated to the original +3-point paid-lift sensitivity, not inferred from the cross-sectional cohort table.
 
-The full-reach +3-point scenario still gives about $148,000 annual contribution before new costs. It is a useful upper-delivery sensitivity, not proof of an attractive investment. Test reach, support demand and cash per assigned consumer before expanding. A $50,000 cap is a spending ceiling, not a requirement to use all 40 engineer-days.
+The 18,000 comprises 10,000 click-only, 6,000 portal-without-start and 2,000 incomplete-plan consumers. It does not mean 18,000 portal visitors. The remaining 82,000 accounts in the full intake are future discovery scope, not a denominator to inflate the current return. A separate 100,000-person expansion was considered and is not the default investment case.
 
-Week one should establish whether a limited inbound workflow can operate with approved US content, an acceptable identity approach and human support. If it cannot, switch to a constrained diagnostic or defer production. Do not claim a four-week launch of an autonomous conversational collector. After a successful combined test, compare the lower-complexity alternative to establish whether conversation earns its extra cost.
+At illustrative 60% encounter, the reference gives 324 extra payers, $56,880 extra cash and $73,181 annual contribution after assumed support costs, before build. This is the original commercial case expressed through graduation rates. The current/intervention transition rates are unmeasured. Halving incremental cash or the share who would not pay anyway gives 20.8-month payback. No progression improvement loses $15,552 annual support costs before build. Conversation costs must still be added when known.
 
-[DECISION.md](../DECISION.md) contains the investment gates. [Assumptions](assumptions.md) names validation priorities. The [commercial model](commercial/README.md) separates evidence, delivery assumptions and incremental value.
+The strongest alternative remains a smaller portal-only improvement. Validate barriers, approvals, costs and cash per randomised consumer before expansion. [DECISION.md](../DECISION.md) owns investment gates; [the commercial model](commercial/README.md) contains definitions, stage counts, assumptions and reproducible checks.

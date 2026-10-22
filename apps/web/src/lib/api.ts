@@ -24,10 +24,36 @@ const optionSchema = z.object({
   reason_codes: z.array(z.string()),
 });
 export const jitStateSchema = z.enum([
-  "account", "options", "payday", "draft", "resume", "review", "payment",
-  "clarification", "help", "pending",
+  "account",
+  "options",
+  "payday",
+  "draft",
+  "resume",
+  "review",
+  "payment",
+  "clarification",
+  "help",
+  "pending",
+  "active_plan",
+  "change_date",
+  "change_frequency",
+  "early_payoff",
 ]);
 export type JitState = z.infer<typeof jitStateSchema>;
+export const draftStepSchema = z.enum([
+  "options",
+  "schedule",
+  "method",
+  "review",
+]);
+export type DraftStep = z.infer<typeof draftStepSchema>;
+const paymentMethodSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  last4: z.string(),
+  eligible: z.boolean(),
+});
+export type PaymentMethod = z.infer<typeof paymentMethodSchema>;
 const preferencesSchema = z.object({
   payday: z.string().optional(),
   frequency: z.string().optional(),
@@ -38,24 +64,54 @@ const conversationSchema = z.object({
   mode: z.literal("deterministic"),
   last_intent: z.string().nullable(),
   declared_timing: z.string().nullable().optional(),
-  messages: z.array(z.object({
-    id: z.string(), direction: z.enum(["inbound", "outbound"]), kind: z.string(),
-    text: z.string(), at_utc: z.string(), status: z.string(),
-    template_id: z.string().nullable(), jit_action_id: z.string().nullable(),
-  })),
-  decision: z.object({
-    intent: z.string(), classification: z.string(), allowed_actions: z.array(z.string()),
-    chosen_action: z.string(), reasons: z.array(z.string()), escalation_required: z.boolean(),
-    template_id: z.string().nullable(),
-  }).nullable(),
-  jit_actions: z.array(z.object({
-    id: z.string(), consumer_id: z.string(), intent: z.string(), state: jitStateSchema,
-    status: z.string(), created_at_utc: z.string(),
-  })),
-  draft: z.object({
-    id: z.string(), option_id: z.string(), status: z.string(), saved_at_utc: z.string(),
-    expires_at_utc: z.string(), preferences: preferencesSchema, invalid_reason: z.string().nullable().optional(),
-  }).nullable(),
+  messages: z.array(
+    z.object({
+      id: z.string(),
+      direction: z.enum(["inbound", "outbound"]),
+      kind: z.string(),
+      text: z.string(),
+      at_utc: z.string(),
+      status: z.string(),
+      template_id: z.string().nullable(),
+      jit_action_id: z.string().nullable(),
+    }),
+  ),
+  decision: z
+    .object({
+      intent: z.string(),
+      classification: z.string(),
+      allowed_actions: z.array(z.string()),
+      chosen_action: z.string(),
+      reasons: z.array(z.string()),
+      escalation_required: z.boolean(),
+      template_id: z.string().nullable(),
+    })
+    .nullable(),
+  jit_actions: z.array(
+    z.object({
+      id: z.string(),
+      consumer_id: z.string(),
+      intent: z.string(),
+      state: jitStateSchema,
+      status: z.string(),
+      created_at_utc: z.string(),
+    }),
+  ),
+  draft: z
+    .object({
+      id: z.string(),
+      option_id: z.string(),
+      status: z.string(),
+      saved_at_utc: z.string(),
+      expires_at_utc: z.string(),
+      preferences: preferencesSchema,
+      invalid_reason: z.string().nullable().optional(),
+      step: draftStepSchema.default("options"),
+      payment_method_id: z.string().nullable().default(null),
+      created_at_utc: z.string().optional(),
+      updated_at_utc: z.string().optional(),
+    })
+    .nullable(),
 });
 export const viewSchema = z.object({
   session_id: z.string(),
@@ -132,10 +188,22 @@ export const viewSchema = z.object({
     can_confirm: z.boolean(),
     review_token: z.string(),
     matching_rule: z.string(),
+    payment_methods: z.array(paymentMethodSchema).default([]),
   }),
   support_requests: z.array(
     z.object({ id: z.string(), message: z.string(), status: z.string() }),
   ),
+  plan_change_requests: z
+    .array(
+      z.object({
+        id: z.string(),
+        change_type: z.enum(["date", "frequency"]),
+        requested_date: z.string().nullable().optional(),
+        requested_frequency: z.string().nullable().optional(),
+        status: z.string(),
+      }),
+    )
+    .default([]),
   confirmed_plan: z
     .object({
       label: z.string(),
@@ -144,13 +212,22 @@ export const viewSchema = z.object({
       total_usd: z.number(),
       first_payment_date: z.string(),
       frequency: z.string(),
+      payment_method_id: z.string().optional(),
+      payment_method_label: z.string().optional(),
       last_payment_date: z.string(),
       payment_schedule: z.array(
         z.object({ date: z.string(), amount_usd: z.number() }),
       ),
     })
     .nullable(),
-  payment: z.object({ amount_usd: z.number(), status: z.string() }).nullable(),
+  payment: z
+    .object({
+      amount_usd: z.number(),
+      status: z.string(),
+      payment_method_id: z.string().optional(),
+      payment_method_label: z.string().optional(),
+    })
+    .nullable(),
   experiment: z.object({
     assigned_arm: z.string(),
     preview_arm: z.string(),
@@ -193,20 +270,65 @@ export type Command =
       option_id: string;
       confirmed: true;
       review_token: string;
+      payment_method_id?: string;
     }
-  | { type: "simulate_payment"; amount_usd: number; confirmed: true }
+  | {
+      type: "simulate_payment";
+      amount_usd: number;
+      confirmed: true;
+      payment_method_id?: string;
+    }
+  | {
+      type: "simulate_early_payoff";
+      confirmed: true;
+      reviewed_balance_usd: number;
+      payment_method_id: string;
+    }
+  | { type: "request_plan_change"; change_type: "date"; requested_date: string }
+  | {
+      type: "request_plan_change";
+      change_type: "frequency";
+      requested_frequency: string;
+    }
+  | { type: "setup_demo_active_plan" | "add_demo_payment_method" }
   | { type: "set_stop"; stopped: boolean }
   | { type: "handoff"; contact_id: string }
   | { type: "receive_sms"; text: string }
   | { type: "create_jit"; state: JitState }
-  | { type: "save_draft"; option_id: string }
-  | { type: "resume_draft" | "expire_draft" | "expire_jit_links" | "expire_jit_session" | "exhaust_contact_budget" | "resolve_support_review" }
-  | { type: "patch_account"; patch: {
-      balance_usd?: number; pilot_scope_allowed?: boolean; language?: string;
-      timezone?: string; email_allowed?: boolean; sms_allowed?: boolean;
-      payment_status?: string; plan_status?: string; holds?: string[];
-      contact_window_override?: { start_hour: number; end_hour: number; weekdays: number[] };
-    } };
+  | {
+      type: "save_draft";
+      option_id: string;
+      step?: DraftStep;
+      payment_method_id?: string;
+    }
+  | {
+      type:
+        | "resume_draft"
+        | "expire_draft"
+        | "expire_jit_links"
+        | "expire_jit_session"
+        | "exhaust_contact_budget"
+        | "resolve_support_review";
+    }
+  | {
+      type: "patch_account";
+      patch: {
+        balance_usd?: number;
+        pilot_scope_allowed?: boolean;
+        language?: string;
+        timezone?: string;
+        email_allowed?: boolean;
+        sms_allowed?: boolean;
+        payment_status?: string;
+        plan_status?: string;
+        holds?: string[];
+        contact_window_override?: {
+          start_hour: number;
+          end_hour: number;
+          weekdays: number[];
+        };
+      };
+    };
 export type Scenario = { id: string; label: string };
 const responseSchema = z.discriminatedUnion("ok", [
   z.object({ ok: z.literal(true), view: viewSchema }),
@@ -264,16 +386,37 @@ export const api = {
       command,
     }),
   jitLink: async (sessionId: string, actionId: string) =>
-    z.object({ ok: z.literal(true), token: z.string(), action_id: z.string(), expires_at_utc: z.string() })
-      .parse(await requestRaw(`/sessions/${encodeURIComponent(sessionId)}/jit-links`, { action_id: actionId })),
+    z
+      .object({
+        ok: z.literal(true),
+        token: z.string(),
+        action_id: z.string(),
+        expires_at_utc: z.string(),
+      })
+      .parse(
+        await requestRaw(
+          `/sessions/${encodeURIComponent(sessionId)}/jit-links`,
+          { action_id: actionId },
+        ),
+      ),
   jitVerify: (sessionId: string, actionId: string, token: string) =>
-    session("/jit/verify", { session_id: sessionId, action_id: actionId, token }),
-  jitView: (sessionId: string, actionId: string) =>
-    session(`/jit/${encodeURIComponent(sessionId)}/${encodeURIComponent(actionId)}`),
-  jitCommand: (sessionId: string, actionId: string, command: Command) =>
-    session(`/jit/${encodeURIComponent(sessionId)}/${encodeURIComponent(actionId)}/commands`, {
-      command_id: crypto.randomUUID(), command,
+    session("/jit/verify", {
+      session_id: sessionId,
+      action_id: actionId,
+      token,
     }),
+  jitView: (sessionId: string, actionId: string) =>
+    session(
+      `/jit/${encodeURIComponent(sessionId)}/${encodeURIComponent(actionId)}`,
+    ),
+  jitCommand: (sessionId: string, actionId: string, command: Command) =>
+    session(
+      `/jit/${encodeURIComponent(sessionId)}/${encodeURIComponent(actionId)}/commands`,
+      {
+        command_id: crypto.randomUUID(),
+        command,
+      },
+    ),
 };
 export function money(amount: number) {
   return new Intl.NumberFormat("en-US", {

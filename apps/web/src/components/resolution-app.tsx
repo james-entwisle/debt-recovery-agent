@@ -1,19 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, Spinner } from "@heroui/react";
-import { ArrowRight, CircleHelp, RotateCcw, ShieldCheck } from "lucide-react";
+import { ArrowRight, CircleHelp, ShieldCheck } from "lucide-react";
 import { api, type Command, type Scenario, type SessionView } from "@/lib/api";
 import { SmsSimulator } from "./sms-simulator";
+import { ImessageDemo } from "./imessage-demo";
 import { JitPortal } from "./jit-portal";
 import { CommercialModel } from "./commercial-model";
+import type { LibraryTaskId } from "./jit/action-config";
 
 export type Act = (command: Command, success?: string) => Promise<boolean>;
 
 export function ResolutionApp() {
   const [tab, setTab] = useState<"sms" | "portal" | "investment">("sms");
+  const [smsMode, setSmsMode] = useState<"phone" | "inspector">("phone");
+  const [jitReturnMode, setJitReturnMode] = useState<"phone" | "inspector">("phone");
+  const [previewTask, setPreviewTask] = useState<LibraryTaskId | undefined>(undefined);
   const [jitActionId, setJitActionId] = useState<string | null>(null);
   const [view, setView] = useState<SessionView | null>(null);
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
@@ -137,14 +141,13 @@ export function ResolutionApp() {
         Skip to content
       </a>
       <header className="app-header">
-        <Link className="wordmark" href="/" aria-label="InDebted home">
-          <Image
-            src="/brand/indebted-logo.svg"
-            alt="InDebted"
-            width={186}
-            height={33}
-            priority
-          />
+        <Link className="wordmark" href="/" aria-label="Debt Recovery Agent home">
+          <svg className="wordmark-mark" viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="8" fill="#000244" />
+            <rect x="6" y="7" width="14" height="9" rx="4.5" fill="#75ECE2" />
+            <rect x="12" y="15" width="14" height="9" rx="4.5" fill="#474CDE" />
+          </svg>
+          <span className="wordmark-name">Debt Recovery Agent</span>
         </Link>
         <nav className="view-switch" aria-label="Experience">
           <Button
@@ -159,7 +162,10 @@ export function ResolutionApp() {
             variant="ghost"
             className={tab === "portal" ? "selected" : ""}
             aria-pressed={tab === "portal"}
-            onPress={() => setTab("portal")}
+            onPress={() => {
+              if (tab === "sms") setJitReturnMode(smsMode);
+              setTab("portal");
+            }}
           >
             JIT Portal
           </Button>
@@ -175,44 +181,14 @@ export function ResolutionApp() {
       </header>
       <main
         id="main-content"
-        className={tab === "investment" ? "investment-main" : tab === "sms" ? "sms-main" : "jit-main"}
+        className={
+          tab === "investment"
+            ? "investment-main"
+            : tab === "sms"
+              ? "sms-main"
+              : "jit-main"
+        }
       >
-        {tab === "portal" && (
-          <div className="demo-toolbar">
-            <div className="demo-context">
-              <span className="demo-pill">Demo</span>
-              <span>Operator controls · Synthetic account</span>
-            </div>
-            <div className="scenario-controls">
-              <label className="sr-only" htmlFor="scenario">
-                Scenario
-              </label>
-              <select
-                id="scenario"
-                value={view?.scenario_id ?? "S04"}
-                disabled={busy}
-                onChange={(e) => void open(e.target.value)}
-              >
-                {(scenarios.length
-                  ? scenarios
-                  : [{ id: "S04", label: "Incomplete plan" }]
-                ).map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.id} · {s.label}
-                  </option>
-                ))}
-              </select>
-              <Button
-                variant="ghost"
-                size="sm"
-                isDisabled={busy || !view}
-                onPress={() => void open(view?.scenario_id ?? "S04")}
-              >
-                <RotateCcw size={14} /> Reset
-              </Button>
-            </div>
-          </div>
-        )}
         {error && (
           <div className="alert error" role="alert">
             <CircleHelp size={18} />
@@ -237,32 +213,66 @@ export function ResolutionApp() {
         </div>
         {tab === "investment" ? (
           <CommercialModel />
+        ) : tab === "sms" && smsMode === "phone" && view ? (
+          <ImessageDemo
+            key={view.session_id}
+            view={view}
+            busy={busy}
+            act={act}
+            open={async (id) => { await open(id); }}
+            onPreview={(task) => {
+              setPreviewTask(task);
+              setJitReturnMode("phone");
+              setTab("portal");
+            }}
+            onOpenJit={(actionId) => {
+              setPreviewTask(undefined);
+              setJitReturnMode("phone");
+              setJitActionId(actionId);
+              setTab("portal");
+            }}
+          />
         ) : view ? (
           tab === "portal" ? (
             <JitPortal
-              key={view.session_id}
               view={view}
               actionId={jitActionId}
+              previewTask={previewTask}
               busy={busy}
-              act={act}
-              onView={(next) => setView((current) =>
-                current?.session_id === next.session_id && current.revision <= next.revision
-                  ? next : current)}
-              onAction={setJitActionId}
-              onLeave={() => setTab("sms")}
+              onView={(next) =>
+                setView((current) => {
+                  if (!current || current.session_id !== next.session_id)
+                    return next;
+                  return current.revision <= next.revision ? next : current;
+                })
+              }
+              onLeave={() => {
+                setSmsMode(jitReturnMode);
+                setTab("sms");
+              }}
             />
           ) : (
+            <>
+            {tab === "sms" && (
+              <p className="imsg-back-to-phone">
+                <button type="button" onClick={() => setSmsMode("phone")}>
+                  Back to iPhone
+                </button>
+              </p>
+            )}
             <SmsSimulator
               view={view}
               act={act}
               busy={busy}
               scenarios={scenarios}
-              open={open}
+              open={async (id) => { await open(id); }}
               onOpenJit={(actionId) => {
+                setJitReturnMode("inspector");
                 setJitActionId(actionId);
                 setTab("portal");
               }}
             />
+            </>
           )
         ) : (
           <div className="loading-state">
@@ -275,9 +285,7 @@ export function ResolutionApp() {
             ) : (
               <>
                 <h1>Connect to the demonstration</h1>
-                <p>
-                  Run the API and retry to explore SMS and JIT tasks.
-                </p>
+                <p>Run the API and retry to explore SMS and JIT tasks.</p>
                 <Button onPress={() => void open("S04")}>
                   Open S04 <ArrowRight size={16} />
                 </Button>

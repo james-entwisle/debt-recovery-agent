@@ -1,17 +1,16 @@
-# InDebted product UI guidelines
+# Product UI guidelines
 
-Rebuilt on 22 October 2026 from the [InDebted website](https://www.indebted.co/), its [customer portal page](https://www.indebted.co/solution/customer-portal), the live [site stylesheet](https://www.indebted.co/css/cook.css), and the two consumer-interface images supplied by the user. This is an implementation guide for the case study, not an official InDebted brand manual.
+The interface keeps a navy, white and purple account style. The header is a symbolic two-way mark beside the name Debt Recovery Agent. Manrope is bundled locally. Its source is the [Google Fonts repository](https://github.com/google/fonts/tree/main/ofl/manrope), and its OFL licence is included beside the font.
 
-## Observed identity
+## Identity
 
-- The official logo has a navy wordmark and a rounded aqua symbol. Use the supplied website SVG unchanged, with its original proportions. Do not recreate the wordmark in text.
-- The site defines Manrope as its sans-serif family. Use the locally bundled variable Manrope font for the entire application. Its source is the [Google Fonts repository](https://github.com/google/fonts/tree/main/ofl/manrope), and its OFL licence is included beside the font.
-- Navy `#000244`, action purple `#474CDE`, aqua `#75ECE2`, pale aqua `#C9F2EE` and white are present in the live stylesheet. The logo also uses navy `#020452`.
+- Wordmark: a 32px navy tile, an aqua bubble and a purple bubble, then the words Debt Recovery Agent.
+- Navy `#000244`, action purple `#474CDE`, aqua `#75ECE2`, pale aqua `#C9F2EE` and white.
 - The supplied consumer UI images use white surfaces, navy headings, purple payment actions, restrained grey separators and sans-serif type.
 
 ## Product decisions
 
-Use InDebted's identity with the clarity of a modern account/payment app. Reference patterns from [Stripe Checkout](https://stripe.com/payments/checkout), [Revolut](https://www.revolut.com/) and [Airbnb](https://www.airbnb.com/): a clear task hierarchy, familiar controls, deliberate whitespace and progressive disclosure. These are design references, not a claim to reproduce their products or an objective market ranking.
+Use this navy, white and purple identity with the clarity of a modern account/payment app. Reference patterns from [Stripe Checkout](https://stripe.com/payments/checkout), [Revolut](https://www.revolut.com/) and [Airbnb](https://www.airbnb.com/): a clear task hierarchy, familiar controls, deliberate whitespace and progressive disclosure. These are design references, not a claim to reproduce their products or an objective market ranking.
 
 ### Colour
 
@@ -26,7 +25,7 @@ Use InDebted's identity with the clarity of a modern account/payment app. Refere
 | Action | `#474CDE` | Primary button, active selection, focus |
 | Action hover | `#393DC3` | Primary interaction feedback |
 | Action wash | `#F1F1FD` | Selected / contextual state |
-| Aqua | `#75ECE2` | Official logo and small brand accents |
+| Aqua | `#75ECE2` | Wordmark accent and small highlights |
 | Error | `#B42318` | Failed validation and blocked state |
 
 White is the dominant surface. Purple is used for actions and selected state. Aqua is a supporting accent. No green theme, decorative gradients, tinted full-page backgrounds or marketing illustrations inside task flows.
@@ -51,7 +50,7 @@ HeroUI buttons, consistent 10px radii, 44px minimum touch targets and 48px form 
 
 Lead with the task: “Choose your next step”, “Payment options”, “Review plan”. One short supporting sentence where needed. Do not repeat the same reassurance in a header, footer and helper block. Put account explanations, matching rules and fixture provenance in expandable detail. Keep explicit confirmation and simulated-payment boundaries visible at the relevant action. No invented greetings, promises, urgency, approved terms or affordability claims.
 
-### Journey simulator and investment
+### SMS simulator and financial model
 
 Use the same typography, brand colours and controls at higher information density. Keep state, reasons and actions visually distinct. Raw audit JSON belongs behind a disclosure. Preserve the sensitivity range and uncertainty labels in the commercial model.
 
@@ -59,8 +58,10 @@ Use the same typography, brand colours and controls at higher information densit
 
 Check the real rendered UI at desktop and mobile widths. Verify keyboard focus, form labels, contrast, no horizontal overflow, no-match assistance, explicit confirmation and shared state. Test S04/S05/S06 against backend responses. Brand revisions must not introduce frontend policy decisions or change the integration contract.
 
-## Account journey hierarchy
+## V2 task hierarchy
 
-The home screen has two payment choices: finish setting up a plan, or make a one-off payment. Date, frequency and amount preferences belong inside plan selection, behind an optional disclosure. Do not turn every preference or backend guard into a consumer destination.
+SMS Simulator is the main entry point. Keep consumer conversation central, local operator controls separate, and evaluated decisions available beside it. Raw audit detail remains expandable.
 
-Plan selection leads to review and explicit confirmation, then an account overview with scheduled payments, completion date and a working support route. A pending payment replaces payment actions with its current status. Choosing to review later acknowledges the choice in place. Only S04, S05 and S06 are exposed in the take-home demo selector; other policy cases remain backend checks.
+JIT Portal opens one relevant task after simulated verification. Explicit preferences belong in option matching; save/return preserves only an unconfirmed draft. Plan review requires explicit confirmation, and pending payment replaces further payment prompts with status. Help remains available without choosing a payment arrangement.
+
+The operator selector exposes all twelve supplied scenarios. S04/S05/S06 are the short normal/exception walkthrough. The [product philosophy](../../docs/product-philosophy.md) explains these interaction choices and the [demo guide](../../docs/demo-guide.md) gives current steps.

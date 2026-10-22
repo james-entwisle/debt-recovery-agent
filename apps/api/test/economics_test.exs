@@ -1,6 +1,6 @@
-defmodule IndebtedApi.EconomicsTest do
+defmodule RecoveryApi.EconomicsTest do
   use ExUnit.Case, async: true
-  alias IndebtedApi.Economics
+  alias RecoveryApi.Economics
 
   test "supplied baseline and stated base scenario reconcile" do
     {:ok, output} = Economics.calculate()

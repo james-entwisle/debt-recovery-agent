@@ -16,6 +16,6 @@ Next.js App Router, HeroUI 3 and TypeScript render V2's SMS Simulator, JIT Porta
 
 ## Presentation and limits
 
-[brand.md](brand.md) contains palette, typography and copy guidance. The official InDebted SVG is bundled unchanged; Manrope is bundled locally with its OFL licence. The SMS, JIT and financial views share the white, navy and purple system.
+[brand.md](brand.md) contains palette, typography and copy guidance. The header uses a symbolic wordmark. Manrope is bundled locally with its OFL licence. The SMS, JIT and financial views share the white, navy and purple system.
 
 All account data, approved options and effects are synthetic. Schedule dates come from the backend and represent planned payments, not settlement history or a guaranteed payoff date. Messages and payments are simulated; payment-method editing and production authentication are outside this demonstration. The fixed disclosure is an exercise placeholder, not approved legal copy.
