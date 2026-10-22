@@ -1,0 +1,6 @@
+cohort_id,signal,consumers,paid_7d,paid_30d,plan_confirmed_30d,paid_and_plan_30d,cash_collected_30d_usd,opted_out_30d,complained_30d,synthetic
+C0,no_observed_engagement,60000,1800,4200,2400,1600,630000,360,36,true
+C1,tracked_open_only,22000,1100,2200,1540,1000,330000,176,22,true
+C2,tracked_click_only,10000,1000,1800,1000,700,306000,100,12,true
+C3,portal_visit_without_plan_start,6000,1200,1800,900,650,324000,72,12,true
+C4,plan_started_incomplete,2000,700,1000,600,450,190000,30,6,true

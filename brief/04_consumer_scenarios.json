@@ -1,0 +1,544 @@
+{
+  "synthetic": true,
+  "version": "1.1",
+  "description": "Independent illustrative scenarios, not historical cohort microdata. See Files and data definitions in the supporting pack for semantics.",
+  "scenarios": [
+    {
+      "scenario_id": "S01",
+      "consumer_id": "SYN-001",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "none",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A01",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q01",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E01",
+          "type": "email_open",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": []
+    },
+    {
+      "scenario_id": "S02",
+      "consumer_id": "SYN-002",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "none",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A02",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q02",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E02",
+          "type": "message_click",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": []
+    },
+    {
+      "scenario_id": "S03",
+      "consumer_id": "SYN-003",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "none",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A03",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q03",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E03",
+          "type": "portal_visit",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": []
+    },
+    {
+      "scenario_id": "S04",
+      "consumer_id": "SYN-004",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "started",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A04",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q04",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E04",
+          "type": "plan_started",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": []
+    },
+    {
+      "scenario_id": "S05",
+      "consumer_id": "SYN-005",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "started",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A05",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q05",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E05",
+          "type": "plan_started",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": [
+        {
+          "effective_at_utc": "2026-09-16T14:10:00Z",
+          "state_patch": {
+            "email_allowed": false,
+            "sms_allowed": false
+          },
+          "event": {
+            "event_id": "E05-optout",
+            "type": "all_electronic_opt_out",
+            "occurred_at_utc": "2026-09-16T14:10:00Z",
+            "ingested_at_utc": "2026-09-16T14:22:00Z"
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "S06",
+      "consumer_id": "SYN-006",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "started",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A06",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q06",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E06",
+          "type": "plan_started",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": [
+        {
+          "effective_at_utc": "2026-09-16T14:10:00Z",
+          "state_patch": {
+            "payment_status": "pending"
+          },
+          "event": {
+            "event_id": "E06-payment",
+            "type": "payment_initiated",
+            "occurred_at_utc": "2026-09-16T14:10:00Z",
+            "ingested_at_utc": "2026-09-16T14:24:00Z"
+          }
+        }
+      ]
+    },
+    {
+      "scenario_id": "S07",
+      "consumer_id": "SYN-007",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "none",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A07a",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-10T14:00:00Z"
+        },
+        {
+          "attempt_id": "A07b",
+          "channel": "sms",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        },
+        {
+          "attempt_id": "A07c",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-16T13:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q07",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E07",
+          "type": "portal_visit",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": []
+    },
+    {
+      "scenario_id": "S08",
+      "consumer_id": "SYN-008",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": null,
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "none",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A08",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q08",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E08",
+          "type": "portal_visit",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": []
+    },
+    {
+      "scenario_id": "S09",
+      "consumer_id": "SYN-009",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": false,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "none",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A09",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q09",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E09",
+          "type": "message_click",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": []
+    },
+    {
+      "scenario_id": "S10",
+      "consumer_id": "SYN-010",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "none",
+        "holds": [
+          "hardship_review"
+        ],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A10",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q10",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E10",
+          "type": "portal_visit",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        }
+      ],
+      "subsequent_updates": []
+    },
+    {
+      "scenario_id": "S11",
+      "consumer_id": "SYN-011",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "started",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A11",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q11",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E11",
+          "type": "plan_started",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:30:03Z"
+        },
+        {
+          "event_id": "E11",
+          "type": "plan_started",
+          "occurred_at_utc": "2026-09-16T13:30:00Z",
+          "ingested_at_utc": "2026-09-16T13:31:00Z"
+        }
+      ],
+      "subsequent_updates": []
+    },
+    {
+      "scenario_id": "S12",
+      "consumer_id": "SYN-012",
+      "decision_time_utc": "2026-09-16T14:00:00Z",
+      "state_at_decision": {
+        "balance_usd": 640,
+        "pilot_scope_allowed": true,
+        "language": "en",
+        "timezone": "America/New_York",
+        "email_allowed": true,
+        "sms_allowed": true,
+        "payment_status": "none",
+        "plan_status": "active",
+        "holds": [],
+        "contact_window_override": null
+      },
+      "contact_history": [
+        {
+          "attempt_id": "A12",
+          "channel": "email",
+          "attempted_at_utc": "2026-09-14T14:00:00Z"
+        }
+      ],
+      "queued_contacts": [
+        {
+          "contact_id": "Q12",
+          "channel": "sms",
+          "scheduled_at_utc": "2026-09-18T14:00:00Z",
+          "template_id": "reminder_v1"
+        }
+      ],
+      "incoming_events": [
+        {
+          "event_id": "E12",
+          "type": "portal_visit",
+          "occurred_at_utc": "2026-09-15T14:00:00Z",
+          "ingested_at_utc": "2026-09-16T13:59:00Z"
+        }
+      ],
+      "subsequent_updates": []
+    }
+  ]
+}

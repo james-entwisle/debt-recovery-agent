@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+apps/api/_build/
+apps/api/deps/
+apps/api/doc/
+apps/api/erl_crash.dump

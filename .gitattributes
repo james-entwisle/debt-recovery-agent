@@ -1,0 +1,2 @@
+# Preserve original source files, including their line endings and whitespace.
+brief/** -text -whitespace
