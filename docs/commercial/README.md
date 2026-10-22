@@ -54,21 +54,53 @@ Assume 18,000 engaged consumers each intake and 60% of them encounter the interv
 | +1 point | $18,960 | $14,026 | -$35,974 | 42.8 months |
 | +3 points | $56,880 | $73,181 | $23,181 | 8.2 months |
 | +5 points | $94,800 | $132,336 | $82,336 | 4.5 months |
+| +10 points, speculative | $189,600 | $280,224 | $230,224 | 2.1 months |
 
 No lift, with the reference support cost, loses $15,552 a year before the build. The formulas, the full-reach sensitivity, and the one-change downside cases are in [Original model reference scenarios](#original-model-reference-scenarios).
 
-The two-way assistant adds a reply funnel and its own message and model costs. That extension is below. It does not replace this case, and the two results are not added together.
+## Interactive cohort progression model
 
-| Model | Question and denominator | Implementation and inputs |
+The Financial Model starts with the original 18,000 and lets the reader select all three engaged cohorts, click-only consumers, portal visitors without a start, or incomplete plans. Change the population, effective encounter rate and current/adaptive graduation rates. The model shows additional portal arrivals, starts, confirmations, first plan payments, settled cash, contribution and payback. The original paid-lift model remains available as a separate comparison; do not add its returns to the progression model.
+
+The source cohorts are exclusive starting populations. The calculator's sequential paths are **assumptions**, not transitions measured by the historical table. A portal visitor has already reached the portal; an incomplete-plan consumer has already started. Those gates are skipped for the appropriate entry cohorts.
+
+| Entry cohort | Current assumed path | Adaptive assumed change |
 | --- | --- | --- |
-| Original reach/lift model | What if a fraction of the 18,000 encounter the intervention? Lift is among those reached. | Backend Economics and independent [model.py](model.py), [inputs](assumptions.json) and [saved cases](scenarios.csv). |
-| Conversational extension | What if only the people who can receive SMS, and then reply, are affected? Lift is among replies. | UI calculation checked against [conversation_model.py](conversation_model.py), [inputs](conversation-assumptions.json) and [saved cases](conversation-scenarios.json). |
+| Click only | 50% arrive × 40% start × 50% confirm × 70% first payment | Arrival becomes 71.4286%; subsequent rates unchanged |
+| Portal, no start | 50% start × 30% confirm × 70% first payment | Start becomes 64.2857%; subsequent rates unchanged |
+| Incomplete plan | 30% confirm × 70% first payment | Confirmation becomes 34.2857%; subsequent rate unchanged |
 
-The [historical CSV](../../brief/03_historical_cohorts.csv) and [supporting pack](../../brief/02_supporting_pack.md) supply the baselines and the unit costs. The [V1 request](../master-project-brief.txt) and [V2 request](../v2-project-brief.txt) supply proposed directions, not measured effects.
+Current confirmation-rate products match the historical cohort confirmation rates, but the intermediate transitions and first-payment rates are unmeasured. These illustrative adaptive rates reproduce exactly the original +3-point paid-lift arithmetic in each reached cohort. They are a calibration, not an independent estimate or forecast. Historical one-off payments are outside this modelled plan path. More plan payments may substitute for payments that would happen anyway; the editable genuine-incrementality assumption tests that risk.
 
-## V2 conversational extension
+At 60% encounter, 10,800 consumers enter the modelled paths:
 
-The Financial Model preserves the original model and adds this independent conversational sensitivity. It does not silently treat the original effective-reach assumption as both SMS availability and reply rate. The extension inherits the calculated population, cohort mix, marginal-payer cash multiplier and investment from the original screen. Its own inputs are SMS-reachable share, reply rate, absolute conversion lift among responders, AI turns and hypothetical cost, net extra SMS, added support and avoided support. Support savings default to zero. The saved Python cases reproduce the default 18,000-person cohort mix.
+| Milestone | Current illustration | Adaptive illustration | Additional people |
+| --- | ---: | ---: | ---: |
+| Portal reached, including those already there | 7,800 | 9,085.71 | 1,285.71 |
+| Plan started, including existing incomplete starts | 4,200 | 5,228.57 | 1,028.57 |
+| Plan confirmed | 1,500 | 1,962.86 | 462.86 |
+| First plan payment settled | 1,050 | 1,374 | 324 |
+
+```text
+reached_i = selected population × source cohort mix_i × effective encounter
+current plan payers_i = reached_i × product(current rates for remaining gates_i)
+adaptive plan payers_i = reached_i × product(adaptive rates for remaining gates_i)
+additional payers_i = (adaptive - current) × genuine incrementality
+additional cash = sum(additional payers_i × historical cash per payer_i × cash multiplier)
+contribution = additional cash × (15% - 2%)
+               - reached × extra support conversations per reached × $6
+               - reached × net extra SMS per reached × $0.035
+               - reached × AI turns per reached × hypothetical turn cost
+               - other recurring costs
+annual contribution = contribution × 12 equivalent new intakes
+simple payback = investment / contribution, if positive
+```
+
+Additional payers are bounded by historical paid-conversion headroom; negative progression is also allowed. The default assumes 100% of extra plan payers are genuinely additional, unchanged historical marginal cash, two extra support conversations per 100 reached, net-zero replacement sends, no AI turns and no other recurring cost. These reproduce the original illustration; zero unpriced costs do not establish production economics. The hypothetical $0.01 AI-turn input is not the pack's $0.012 Composer attempt cost. Count retries, reviews, provider setup, oversight, infrastructure and ongoing maintenance in a delivery estimate. No support savings are credited.
+
+The reference gives $56,880 additional cash, $8,532 retained fees, $1,137.60 payment costs and $1,296 support costs per intake: **$6,098.40 contribution**. Annual contribution is $73,180.80; first-year net after build is $23,180.80. Halving genuine incrementality or marginal cash reduces annual contribution to $28,814.40 and extends payback to 20.82 months. No progression improvement loses $15,552 annually before build. Conversation is the proposed mechanism; reply rate is a diagnostic, not a second filter silently applied to the original effective-reach assumption.
+
+Reproduce the progression model independently from the CSV:
 
 ```sh
 python3 docs/commercial/conversation_model.py
@@ -76,41 +108,7 @@ python3 docs/commercial/conversation_model.py --check
 node --experimental-strip-types docs/commercial/check-conversation-ui.mjs
 ```
 
-Inputs are in [conversation-assumptions.json](conversation-assumptions.json); saved results are in [conversation-scenarios.json](conversation-scenarios.json). The standard-library script checks the baseline, arithmetic, zero reach and response, conversion caps, invalid costs and output freshness. It leaves the earlier model and generated files unchanged.
-
-```text
-SMS reachable = engaged population × eligible SMS-reachable share
-responders = SMS reachable × response rate
-extra payers_i = responders × cohort share_i × min(responder lift, remaining conversion headroom_i)
-extra cash = sum(extra payers_i × historical cash per payer_i × payer cash multiplier)
-contribution = cash × 15% - cash × 2%
-               - responders × net extra SMS × $0.035
-               - responders × AI turns × hypothetical turn cost
-               - responders × added support rate × $6
-               + responders × avoided support rate × $6
-annual contribution = contribution × 12 equivalent new intakes
-simple payback = investment / contribution, when positive
-```
-
-These costs are incremental to control. The starting SMS is assumed to replace an existing scheduled contact without a net send increase; the extra-send input captures subsequent service replies after any verified displacement savings. Costs for non-responders, content approval, human review, provider setup, maintenance and infrastructure are not supplied and require a delivery estimate. Do not subtract the earlier model's support and communication costs again. They describe a separate scenario, not an additional cost layer.
-
-The editable $0.01 AI-turn placeholder is hypothetical. The source's $0.012 applies to Composer draft/review attempts and has not been validated for a multi-turn assistant. Four assumed turns should include the chosen review/retry allowance; production estimates must measure actual attempts and oversight. The UI uses no live model and incurs no provider costs.
-
-Reference inputs are 60% SMS reach, 30% reply rate, four net extra SMS and four AI turns per responder, two additional support conversations per 100 responders, no avoided support, unchanged historical payer cash and $50,000 build. All are assumptions except the exercise unit costs and historical cash proxy. Do not call them conservative.
-
-| Hypothetical responder lift | Extra cash per intake | Annual contribution before build | Simple payback |
-| --- | ---: | ---: | ---: |
-| 0 points | $0 | -$11,664 | None |
-| +1 point | $5,688 | -$2,791 | None |
-| +3 points | $17,064 | $14,956 | 40.12 intakes |
-| +5 points | $28,440 | $32,702 | 18.35 intakes |
-| +10 points, speculative | $56,880 | $77,069 | 7.79 intakes |
-
-The +1 to +5-point range is sensitivity, not a forecast or confidence interval. At +3 points, 10,800 SMS-reachable consumers become 3,240 responders and 97.2 additional expected payers. Fees are $2,559.60, payment costs $341.28, SMS $453.60, hypothetical AI $129.60 and support $388.80, giving $1,246.32 per intake. No-lift losses illustrate that help and conversation cost money even without collections gains. Other benefits such as reduced confusion may matter but are unpriced here.
-
-A lift among responders has a different denominator from the earlier reached-consumer model. Under a simplifying constant-effect assumption, +3 responder points at 60% reach and 30% replies corresponds to +0.54 points across the assigned population. Responders are self-selected and may have a different baseline, cash value and treatment response. This bridge cannot establish causal lift. The experiment's primary metric remains treatment-control 30-day net settled cash per randomised consumer, with non-responders and later suppressed accounts retained. Exposure, reply rate and support use are diagnostics.
-
-The full-reach +3-point result of $147,888 annual contribution before other costs remains an original sensitivity. It does not pass through this response-rate funnel and is not the conversational forecast. Production investment should use verified reach and costs, mature randomised cash evidence and a comparison with the lower-complexity alternative.
+[Inputs](conversation-assumptions.json), [saved cases](conversation-scenarios.json), [Python model](conversation_model.py) and [UI parity check](check-conversation-ui.mjs) cover twelve cases, including individual cohorts, zero reach, no improvement, worse progression, smaller payments, lower incrementality and added conversation costs. The check compares the UI calculation's source snapshot and outputs with the CSV and independent Python calculation. It does not establish causal impact or verify delivery capabilities.
 
 ## Reproduce the original model
 
@@ -204,11 +202,13 @@ The volume case assumes twice as many new, non-overlapping eligible consumers ev
 
 Under the reference assumptions, operating break-even requires about +0.53 points among reached consumers. The reference case creates only $23,180.80 first-year net before unknown operating costs, so it is a thin case for broader rollout. Recovering $50,000 within twelve intakes requires about +2.22 points among reached, or about 41.0% uniform reach at +3 points. These are proposed economic hurdles conditional on all other inputs, not predicted effects. Cash catch-up in the control arm can remove durable incremental value even if 30-day cash initially improves.
 
+For **four-month payback**, $50,000 requires $12,500 contribution per intake. At 60% reach and $1,296 support cost, that requires $106,123.08 extra settled cash per intake: about 604.5 additional payers at the reference mix, or **+5.60 percentage points among reached consumers** (about +3.36 points across the full 18,000). The +5-point case falls short at 4.53 months. This hurdle assumes unchanged marginal payment value, genuinely incremental cash, sustained equivalent intakes and zero net extra messaging/model/other costs. Every additional $1,000 monthly cost raises the reached-lift hurdle by about 0.41 points. These are required conditions, not expected outcomes. Build time, ramp and settlement/reporting delays extend calendar recovery.
+
 ## Measurement and limits
 
 Randomise at t0 by consumer and stratify C2-C4. Analyse treatment-control 30-day net settled cash per assigned consumer, subtract actual incremental costs and retain later suppressed consumers in their original arm. Report exposure separately. Do not estimate a causal effect by comparing reached consumers with people who did not engage.
 
-The planning calculation uses a two-proportion normal approximation, 80% power, two-sided 5% alpha, equal allocation, source paid baseline 25.56% and a 1.8-point assigned effect. It returns 18,852 total consumers for the illustrative +3-point reached lift at 60% reach. This is a paid-outcome planning proxy for the reference mix, not proof the cash outcome is powered. It does not account for operational loss, sequential monitoring or multiple segment claims. This 1.8-point assigned effect belongs to the original reach model. The V2 reply funnel implies a different effect and needs new sizing. The source lacks cash variance. Obtain individual-level pilot outcomes and estimate cash uncertainty before committing to an efficacy sample size. Four weeks gets the pilot launched; final 30-day outcomes mature later. Follow 60/90-day cash and adherence before treating acceleration as durable value.
+The planning calculation uses a two-proportion normal approximation, 80% power, two-sided 5% alpha, equal allocation, source paid baseline 25.56% and a 1.8-point assigned effect. It returns 18,852 total consumers for the illustrative +3-point reached lift at 60% reach. This is a paid-outcome planning proxy for the reference mix, not proof the cash outcome is powered. It does not account for operational loss, sequential monitoring or multiple segment claims. This 1.8-point assigned effect belongs to the original reach model and the calibrated progression reference. Different graduation assumptions need new sizing. The source lacks cash variance. Obtain individual-level pilot outcomes and estimate cash uncertainty before committing to an efficacy sample size. Four weeks gets the pilot launched; final 30-day outcomes mature later. Follow 60/90-day cash and adherence before treating acceleration as durable value.
 
 Historical reconciliation and scenario arithmetic are checked by the script, including zero reach, zero lift, payment ceilings, fading lift, non-finite input rejection and saved-output freshness. This is the complete financial-model validation scope. Real scale, causal lift, consumer safety and technical operation require separate verification.
 

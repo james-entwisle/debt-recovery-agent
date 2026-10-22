@@ -2,7 +2,7 @@
 
 Help a consumer take the next useful step from the message thread they already use. They reply by SMS, or by iMessage where the handset and permission allow it, and say what is getting in the way: a payday, an account question, an interruption, or a need for help. The agent answers in the thread, or opens one authenticated task for that need. The portal is there to complete the task.
 
-We chose a conversation because the current journey cannot tell those needs apart. Composer personalises the outbound email or SMS and still sends it on a fixed schedule. A click, a visit, or an unfinished plan does not change the next message, and the link opens the same account page. In the synthetic intake, 82,000 of 100,000 people never open that link. The same schedule settles $10.50 per person when there is no engagement and $95 after an unfinished plan. Eight interviews and fifty support conversations suggest the reason for leaving is often a date, an interruption, or an account question. The aim is faster recovery: less time to a confirmed plan, and earlier settled cash, with opt-outs and complaints kept in view. The [product vision](docs/product-vision.md) walks through that choice, the cohort split, and the measures.
+We chose a conversation because the current journey cannot tell those needs apart. Composer personalises the outbound email or SMS and still sends it on a fixed schedule. A click, a visit, or an unfinished plan does not change the next message, and the link opens the same account page. In the synthetic intake, 82,000 of 100,000 people show no tracked click or portal signal in the preceding 24 hours. The same schedule settles $10.50 per person when there is no engagement and $95 after an unfinished plan. Eight interviews and fifty support conversations suggest the reason for leaving is often a date, an interruption, or an account question. The aim is faster recovery: less time to a confirmed plan, and earlier settled cash, with opt-outs and complaints kept in view. The [product vision](docs/product-vision.md) walks through that choice, the cohort split, and the measures.
 
 This is a local product case study using synthetic data. V2 combines an **SMS Simulator**, a **Just-in-Time Portal** and a **Financial Model**. The conversation runs through deterministic rules; all messages, identity checks, account updates and payments are simulated.
 
@@ -29,8 +29,9 @@ The hypothesis is a higher 30-day settled-payment rate in this group than the fi
 | +1 percentage point | $18,960 | $14,026 | 42.8 months |
 | +3 percentage points | $56,880 | $73,181 | 8.2 months |
 | +5 percentage points | $94,800 | $132,336 | 4.5 months |
+| +10 percentage points, speculative | $189,600 | $280,224 | 2.1 months |
 
-The +3-point row is the arithmetic reference: about $73,000 a year before the build, and about $23,000 left after it in the first year. Twelve equivalent new intakes, persistent effects, and no unpriced operating costs. The range is sensitivity, not a forecast. Cohort counts, unit costs, downside cases and the separate reply-funnel extension are in the [commercial model](docs/commercial/README.md).
+The +3-point row is the arithmetic reference: about $73,000 a year before the build, and about $23,000 left after it in the first year. Twelve equivalent new intakes, persistent effects, and no unpriced operating costs. The range is sensitivity, not a forecast. The interactive calculator lets you choose an engaged cohort and change portal arrival, plan start, confirmation and first-payment graduation rates. Its starting illustration reproduces the +3-point case; the transitions are assumptions, not historical measurements. Four-month payback requires $12,500 monthly contribution, or about +5.60 points among reached consumers under the reference costs. Cohort counts, formulas, downside cases and reproducible checks are in the [commercial model](docs/commercial/README.md).
 
 ## What the demonstration does
 
@@ -38,7 +39,7 @@ The +3-point row is the arithmetic reference: about $73,000 a year before the bu
 | --- | --- |
 | SMS Simulator | Select S01-S12, send an invented consumer reply, retain explicit preferences across turns, inspect the evaluated intent, current source state, next action and audit. |
 | JIT Portal | Open a task from SMS or choose one independently. Exchange a single-use demo token for a scoped cookie, review fixed approved options, save/resume an unconfirmed draft, confirm explicitly or request help. |
-| Financial Model | Explore reach, response, lift and cost sensitivity, alongside the preserved original model. Calculations have independent Python checks. |
+| Financial Model | Choose an engaged cohort, edit current/adaptive graduation rates, and see extra payers, cash, costs and payback. The original paid-lift model remains available; calculations have independent Python checks. |
 
 The backend retains the original contact-policy engine. Incoming engagement grants no new permission. Proactive contact uses current authoritative state, verified local timing and one shared cross-channel budget. Payment pending, opt-out, active plans and holds suppress inappropriate outreach. Requested service replies have a separate classification that still needs production compliance approval.
 
